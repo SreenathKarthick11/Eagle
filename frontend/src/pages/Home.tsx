@@ -1,13 +1,15 @@
-// Home Page
+// Home page
 
+import { useNavigate } from "react-router-dom";
 import { Navbar } from '../components/navbar';
 
 export const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div>
       <Navbar />
-      <h2>Welcome to the Home Page</h2>
-      <p>This is the main landing page of the application.</p>
+      <h2>Welcome to the Home Page</h2>      
     </div>
-  )
-}
+  );
+};
