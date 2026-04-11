@@ -1,10 +1,7 @@
 // Home page
-
-import { useNavigate } from "react-router-dom";
 import { Navbar } from '../components/navbar';
 
 export const Home = () => {
-  const navigate = useNavigate();
 
   return (
     <div>
