@@ -1,0 +1,42 @@
+/* Profile.css */
+
+.profile-page {
+  max-width: 600px;
+  margin: 88px auto 0; /* Centered horizontally, pushed down for Navbar */
+  padding: 0 24px;
+}
+
+.page-header {
+  color: #1e1e2f;
+  font-size: 24px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 12px;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Dialog Styling */
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+md-outlined-text-field {
+  width: 100%;
+}
