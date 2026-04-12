@@ -1,18 +1,46 @@
-// Example component
 import { useNavigate } from "react-router-dom";
+
+import '@material/web/button/text-button.js';
+import "./styles/navbar.css";
+
+// import your image
+import userIcon from "../assets/user.png";
 
 export const Navbar = () => {
   const navigate = useNavigate();
+
   return (
     <nav className="navbar">
+      
+      {/* LEFT */}
+      <div className="nav-left" onClick={() => navigate("/profile")}>
+        <img src={userIcon} alt="profile" className="profile-img" />
+
+        <div className="profile-info">
+          <p className="name">Sreenath</p>
+          <p className="role">Admin</p>
+        </div>
+      </div>
+
+      {/* RIGHT */}
+      <div className="nav-right">
         {/* @ts-ignore */}
-        <md-list>
-          {/* @ts-ignore */}
-          <md-list-item type="button" onClick={() => navigate("/")}><div slot="start">Home</div></md-list-item>
-          {/* @ts-ignore */}
-          <md-list-item type="button" onClick={() => navigate("/login")}><div slot="start">Login</div></md-list-item>
+        <md-text-button onClick={() => navigate("/")}>Home</md-text-button>
+
         {/* @ts-ignore */}
-        </md-list>
+        <md-text-button onClick={() => navigate("/admin")}>Admin</md-text-button>
+
+        {/* @ts-ignore */}
+        <md-text-button onClick={() => navigate("/create-event")}>Create Event</md-text-button>
+
+        {/* @ts-ignore */}
+        <md-text-button onClick={() => navigate("/black-list")}>Black List</md-text-button>
+
+        {/* @ts-ignore */}
+        <md-text-button onClick={() => navigate("/login")}>Logout</md-text-button>
+        
+      </div>
+
     </nav>
-  )
-}
+  );
+};

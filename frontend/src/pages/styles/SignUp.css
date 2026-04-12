@@ -3,6 +3,10 @@
   font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
 }
+body {
+  margin: 0;
+  padding-top: 0;
+}
 .login-container {
   height: 100vh;
   display: flex;
