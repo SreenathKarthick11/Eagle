@@ -1,0 +1,5 @@
+.content {
+  /* Offset by Navbar height (64px) + some extra breathing room (16px) */
+  margin-top: 80px; 
+  padding: 0 24px;
+}
