@@ -30,7 +30,7 @@ export const Profile = () => {
   }
 
   return (
-    <>
+    <div className="ProfilePage">
       <Navbar />
       
       <div className="content profile-page">
@@ -112,6 +112,6 @@ export const Profile = () => {
         </div>
         {/*@ts-ignore*/}
       </md-dialog>
-    </>
+    </div>
   );
 };
