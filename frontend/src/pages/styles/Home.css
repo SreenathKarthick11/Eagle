@@ -1,5 +1,153 @@
-.content {
-  /* Offset by Navbar height (64px) + some extra breathing room (16px) */
-  margin-top: 80px; 
-  padding: 0 24px;
+/* Layout */
+ .hcontent {
+  display: flex;
+  gap: 24px;
+  padding: 96px 24px 24px;
+  background: #f5f6fa;
+  min-height: 100vh;
+}
+
+/* Panels */
+.filter-box {
+  flex: 1;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Header row */
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* Button styling */
+.filter-btn {
+  height: 36px;
+  font-size: 13px;
+}
+
+.events-box {
+  flex: 2;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Headings */
+.homepage h2 {
+  margin-bottom: 16px;
+}
+
+h4 {
+  margin: 12px 0 8px;
+}
+
+/* Inputs */
+md-outlined-text-field{
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+md-outlined-select{
+  width: 95%;
+  margin-bottom: 16px;
+}
+
+/* Campus Chips */
+.chip-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: #e0e0e0;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.chip:hover {
+  background: #d0d0d0;
+}
+
+.chip.active {
+  background: #6c5ce7;
+  color: white;
+}
+
+/* Tags */
+/* Selected tags */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* Available tags section */
+.available-tags {
+  margin-top: 12px;
+}
+
+/* Tag base */
+.tag {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #e0e0e0;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+/* Selected */
+.tag.active {
+  background: #6c5ce7;
+  color: white;
+}
+
+/* "+X more" */
+.tag.more {
+  background: #d0d0d0;
+  cursor: default;
+}
+
+/* Event List */
+md-list {
+  padding: 0;
+}
+
+md-list-item {
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+md-list-item:hover {
+  background: rgba(108, 92, 231, 0.08);
+  border-color: #6c5ce7;
+}
+
+/* Scroll */
+md-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+md-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+md-list::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 120, 0.4);
+  border-radius: 10px;
 }
