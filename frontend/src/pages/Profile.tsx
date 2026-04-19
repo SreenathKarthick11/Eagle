@@ -48,7 +48,8 @@ export const Profile = () => {
           <md-outlined-text-field
             label="Username"
             value={userData.username}
-            onInput={(e) => setUserData({...userData, username: e.target.value})}
+            readOnly
+            disabled
           />
 
           {/* @ts-ignore */}

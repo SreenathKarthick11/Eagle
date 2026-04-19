@@ -14,7 +14,6 @@ import '@material/web/select/select-option.js';
 import close_icon from "../assets/close.png";
 
 export const BlackList = () => {
-  const [eventDateTime, setEventDateTime] = useState("");
   const [selectedVisitor, setSelectedVisitor] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState("");
@@ -43,14 +42,6 @@ export const BlackList = () => {
         <div className="left-panel">
           <h2>Events</h2>
 
-          {/* Date Time */}
-          {/* @ts-ignore */}
-          <md-outlined-text-field
-            type="datetime-local"
-            label="Select Event Time"
-            onInput={(e: any) => setEventDateTime(e.target.value)}>
-            {/* @ts-ignore */}    
-        </md-outlined-text-field>
 
         {/* @ts-ignore */}
         <md-outlined-select label="Pick an Event" className="event-select" 

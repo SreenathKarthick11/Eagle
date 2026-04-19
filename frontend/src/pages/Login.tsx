@@ -6,16 +6,16 @@ import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/button/filled-button.js';
 
 export const Login = () => {
-  const emailRef = useRef<any>(null);
+  const usernameRef = useRef<any>(null);
   const passwordRef = useRef<any>(null);
 
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    const email = emailRef.current?.value;
+    const username = usernameRef.current?.value;
     const password = passwordRef.current?.value;
 
-    console.log(email, password);
+    console.log(username, password);
     navigate("/");
   };
 
@@ -25,7 +25,7 @@ export const Login = () => {
         <h2 className="login-title">Login</h2>
 
         {/* @ts-ignore */}
-        <md-outlined-text-field ref={emailRef} label="Email" type="email" class="login-input" ></md-outlined-text-field>
+        <md-outlined-text-field ref={usernameRef} label="Username" class="login-input" ></md-outlined-text-field>
 
         {/* @ts-ignore */}
         <md-outlined-text-field ref={passwordRef} label="Password" type="password" class="login-input" ></md-outlined-text-field>
