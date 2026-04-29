@@ -1,0 +1,17 @@
+.layout_shell {
+  display: grid;
+
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+  width: 100vw;
+}
+
+.layout_navbar {
+  background: var(--md-sys-color-surface-container);
+  z-index: 10;
+}
+
+.layout_main {
+  overflow-y: auto;
+  background: var(--md-sys-color-background);
+}
