@@ -7,7 +7,7 @@ export const Adminbar = () => {
 
   return (
     <nav className="adminbar">
-      <div className="left">
+      <div className="nav-buttons">
         <md-text-button onClick={() => navigate("/admin/blacklist")}>
           Blacklist
         </md-text-button>
