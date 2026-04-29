@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 
-import '@material/web/button/text-button.js';
+import "@material/web/button/text-button.js";
 import "./styles/navbar.css";
 
-// import your image
+// Imprort user image
 import userIcon from "../assets/user.png";
 
 export const Navbar = () => {
@@ -11,7 +11,6 @@ export const Navbar = () => {
 
   return (
     <nav className="navbar">
-      
       {/* LEFT */}
       <div className="nav-left" onClick={() => navigate("/profile")}>
         <img src={userIcon} alt="profile" className="profile-img" />
@@ -24,23 +23,24 @@ export const Navbar = () => {
 
       {/* RIGHT */}
       <div className="nav-right">
-        {/* @ts-ignore */}
         <md-text-button onClick={() => navigate("/")}>Home</md-text-button>
 
-        {/* @ts-ignore */}
-        <md-text-button onClick={() => navigate("/admin")}>Admin</md-text-button>
+        <md-text-button onClick={() => navigate("/admin")}>
+          Admin
+        </md-text-button>
 
-        {/* @ts-ignore */}
-        <md-text-button onClick={() => navigate("/create-event")}>Create Event</md-text-button>
+        <md-text-button onClick={() => navigate("/create-event")}>
+          Create Event
+        </md-text-button>
 
-        {/* @ts-ignore */}
-        <md-text-button onClick={() => navigate("/black-list")}>Black List</md-text-button>
+        <md-text-button onClick={() => navigate("/black-list")}>
+          Black List
+        </md-text-button>
 
-        {/* @ts-ignore */}
-        <md-text-button onClick={() => navigate("/login")}>Logout</md-text-button>
-        
+        <md-text-button onClick={() => navigate("/login")}>
+          Logout
+        </md-text-button>
       </div>
-
     </nav>
   );
 };
