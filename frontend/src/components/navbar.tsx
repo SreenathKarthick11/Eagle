@@ -3,26 +3,25 @@ import { useNavigate } from "react-router-dom";
 import "@material/web/button/text-button.js";
 import "./styles/navbar.css";
 
-// Imprort user image
-import userIcon from "../assets/user.png";
-
 export const Navbar = () => {
   const navigate = useNavigate();
 
   return (
     <nav className="navbar">
-      {/* LEFT */}
-      <div className="nav-left" onClick={() => navigate("/profile")}>
-        <img src={userIcon} alt="profile" className="profile-img" />
+      {/* Account */}
+      <div className="profile-grid">
+        <md-filled-button onClick={() => navigate("/profile")}>
+          <md-icon slot="icon" className="profile-icon">
+            person
+          </md-icon>
+          Sreenath
+        </md-filled-button>
 
-        <div className="profile-info">
-          <p className="name">Sreenath</p>
-          <p className="role">Admin</p>
-        </div>
+        <span className="role-label">Admin</span>
       </div>
 
-      {/* RIGHT */}
-      <div className="nav-right">
+      {/* Navigation Buttons */}
+      <div className="nav-buttons">
         <md-text-button onClick={() => navigate("/")}>Home</md-text-button>
 
         <md-text-button onClick={() => navigate("/admin")}>
