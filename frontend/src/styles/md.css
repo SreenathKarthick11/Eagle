@@ -1,0 +1,38 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz@6..96&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Material Symbols Icon Collections */
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@20..48,100..700,0..1');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL@20..48,100..700,0..1');
+
+:root {
+  /* Font Faces */
+  --brand-font: 'Bodoni Moda';
+  --headline-font: 'Bodoni Moda';
+  --title-font: 'Inter';
+  --plain-font: 'Roboto';
+
+  --md-ref-typeface-brand: var(--brand-font);
+  --md-ref-typeface-plain: var(--plain-font);
+
+  --md-sys-typescale-headline-font: var(--headline-font);
+  --md-sys-typescale-title-font: var(--title-font);
+}
+
+md-icon {
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 24px;
+}
+
+.rounded md-icon {
+  font-family: 'Material Symbols Rounded' !important;
+  font-size: 24px;
+}
+
+.sharp md-icon {
+  font-family: 'Material Symbols Sharp' !important;
+  font-size: 24px;
+}
