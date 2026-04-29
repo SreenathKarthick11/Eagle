@@ -105,6 +105,20 @@ declare module "react" {
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
+
+
+      /* Text Fields */
+      // Filled Text Fields
+      "md-filled-text-field": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & { label?: string } & { type?: string };
+
+      // Outlined Text Fields
+      "md-outlined-text-field": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & { label?: string } & { type?: string };
     }
   }
 }
