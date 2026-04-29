@@ -4,6 +4,7 @@ import { Login } from "./pages/Login";
 import { SignUp } from "./pages/SignUp";
 import { Profile } from "./pages/Profile";
 import { BlackList } from "./pages/BlackList";
+import { Admin } from "./pages/admin/Admin";
 
 function App() {
   return (
@@ -14,6 +15,9 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/black-list" element={<BlackList />} />
+
+        <Route path="/admin" element={<Admin />}>
+        </Route>
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>
