@@ -1,24 +1,26 @@
-import "./styles/Home.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "@material/web/textfield/outlined-text-field.js";
+import "@material/web/textfield/filled-text-field.js";
 import "@material/web/button/filled-button.js";
 import "@material/web/select/outlined-select.js";
+import "@material/web/select/filled-select.js";
 import "@material/web/select/select-option.js";
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
+import "@material/web/chips/chip-set.js";
+import "@material/web/chips/filter-chip.js";
+
+import { MdOutlinedTextField } from "@material/web/textfield/outlined-text-field.js";
+
+import "./styles/Home.css";
 
 export const Home = () => {
   const navigate = useNavigate();
 
-  const [checkedCampus, setCheckedCampus] = useState<any>({
-    Nila: false,
-    Shayadiri: false,
-    Ahalia: false,
-  });
-
   const [title, setTitle] = useState("");
+  const [campus, setCampus] = useState("");
   const [location, setLocation] = useState("");
   const [venue, setVenue] = useState("");
   const [tags, setTags] = useState<string[]>([]);
@@ -26,6 +28,7 @@ export const Home = () => {
   const [eventDateTime, setEventDateTime] = useState("");
 
   const allTags = ["AI", "Web", "Robotics", "ML", "Cloud", "Cybersecurity"];
+  const campuses = ["Nila", "Sahyadri", "Ahalia"];
   const locations = ["Palakkad", "Kochi", "Trivandrum"];
   const venues = ["Auditorium", "Lab", "Open Ground", "Seminar Hall"];
 
@@ -41,16 +44,9 @@ export const Home = () => {
     );
   };
 
-  const toggleCampus = (campus: string) => {
-    setCheckedCampus((prev: any) => ({
-      ...prev,
-      [campus]: !prev[campus],
-    }));
-  };
-
   const handleFilter = () => {
     console.log({
-      campus: checkedCampus,
+      campus,
       title,
       location,
       venue,
@@ -60,126 +56,120 @@ export const Home = () => {
   };
 
   return (
-    <div className="Homepage">
-      <div className="hcontent">
-        {/* FILTER PANEL */}
-        <div className="filter-box">
-          <div className="filter-header">
-            <h2>Filter Options</h2>
-            <md-filled-button className="filter-btn" onClick={handleFilter}>
-              Apply
-            </md-filled-button>
-          </div>
-
-          {/* Campus */}
-          <h4>Campus</h4>
-          <div className="chip-group">
-            {Object.keys(checkedCampus).map((campus) => (
-              <span
-                key={campus}
-                className={`chip ${checkedCampus[campus] ? "active" : ""}`}
-                onClick={() => toggleCampus(campus)}
-              >
-                {campus}
-              </span>
-            ))}
-          </div>
-
-          {/* Title */}
-          <md-outlined-text-field
-            label="Search by Title"
-            value={title}
-            onInput={(e: any) => setTitle(e.target.value)}
-          />
-
-          {/* Date Time */}
-          <md-outlined-text-field
-            type="datetime-local"
-            label="Event Date & Time"
-            onInput={(e: any) => setEventDateTime(e.target.value)}
-          />
-
-          {/* Location */}
-          <md-outlined-select
-            label="Location"
-            value={location}
-            onInput={(e: any) => setLocation(e.target.value)}
-          >
-            {locations.map((loc) => (
-              <md-select-option key={loc} value={loc}>
-                <div slot="headline">{loc}</div>
-              </md-select-option>
-            ))}
-          </md-outlined-select>
-
-          {/* Venue */}
-          <md-outlined-select
-            label="Venue"
-            value={venue}
-            onInput={(e: any) => setVenue(e.target.value)}
-          >
-            {venues.map((v) => (
-              <md-select-option key={v} value={v}>
-                <div slot="headline">{v}</div>
-              </md-select-option>
-            ))}
-          </md-outlined-select>
-
-          {/* Tags */}
-          <div className="tags-box">
-            <h4>Tags</h4>
-
-            {/* Search input */}
-            <md-outlined-text-field
-              label="Search Tags"
-              value={tagInput}
-              onInput={(e: any) => setTagInput(e.target.value)}
+    <div>
+      <div className="layout">
+        {/* Filter Sidebar */}
+        <div className="filter-sidebar">
+          <h2>Filter Events</h2>
+          <div className="filter-contents">
+            {/* Title */}
+            <md-filled-text-field
+              label="Event Title"
+              value={title}
+              onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+                const target = e.target as MdOutlinedTextField;
+                setTitle(target.value);
+              }}
             />
 
-            {/* Selected tags (collapsed view) */}
-            <div className="tags">
-              {tags.slice(0, 5).map((tag) => (
-                <span
+            {/* Date and Time */}
+            <md-filled-text-field
+              type="datetime-local"
+              label="Event Date and Time"
+              onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+                const target = e.target as MdOutlinedTextField;
+                setEventDateTime(target.value);
+              }}
+            />
+
+            {/* Campus */}
+            <md-filled-select
+              label="Campus"
+              value={campus}
+              onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+                const target = e.target as MdOutlinedTextField;
+                setCampus(target.value);
+              }}
+            >
+              {campuses.map((campus) => (
+                <md-select-option key={campus} value={campus}>
+                  <div slot="headline">{campus}</div>
+                </md-select-option>
+              ))}
+            </md-filled-select>
+
+            {/* Location */}
+            <md-filled-select
+              label="Location"
+              value={location}
+              onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+                const target = e.target as MdOutlinedTextField;
+                setLocation(target.value);
+              }}
+            >
+              {locations.map((loc) => (
+                <md-select-option key={loc} value={loc}>
+                  <div slot="headline">{loc}</div>
+                </md-select-option>
+              ))}
+            </md-filled-select>
+
+            {/* Venue */}
+            <md-filled-select
+              label="Venue"
+              value={venue}
+              onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+                const target = e.target as MdOutlinedTextField;
+                setVenue(target.value);
+              }}
+            >
+              {venues.map((v) => (
+                <md-select-option key={v} value={v}>
+                  <div slot="headline">{v}</div>
+                </md-select-option>
+              ))}
+            </md-filled-select>
+          </div>
+
+          {/* Tags */}
+          <div>Tags</div>
+          <md-filled-text-field
+            label="Search Tags"
+            value={tagInput}
+            onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+              const target = e.target as MdOutlinedTextField;
+              setTagInput(target.value);
+            }}
+          />
+
+          <div>
+            <md-chip-set>
+              {allTags.map((tag) => (
+                <md-filter-chip
                   key={tag}
-                  className="tag active"
+                  label={tag}
                   onClick={() => toggleTag(tag)}
                 >
-                  {tag} ✕
-                </span>
+                  <md-icon slot="icon">tag</md-icon>
+                </md-filter-chip>
               ))}
-
-              {/* +X more */}
-              {tags.length > 5 && (
-                <span className="tag more">+{tags.length - 5} more</span>
-              )}
-            </div>
-
-            {/* Available tags (filtered) */}
-            <div className="tags available-tags">
-              {allTags
-                .filter((tag) =>
-                  tag.toLowerCase().includes(tagInput.toLowerCase()),
-                )
-                .map((tag) => (
-                  <span
-                    key={tag}
-                    className={`tag ${tags.includes(tag) ? "active" : ""}`}
-                    onClick={() => toggleTag(tag)}
-                  >
-                    {tag}
-                  </span>
-                ))}
-            </div>
+            </md-chip-set>
           </div>
+
+          <md-filled-button onClick={handleFilter}>Apply</md-filled-button>
         </div>
 
-        {/* EVENTS PANEL */}
-        <div className="events-box">
+        {/* Events Panel */}
+        <div className="events-panel">
           <h2>Events</h2>
 
           <md-list>
             {events.map((event) => (
-              <md-list-item key={event.id} onClick={() => navigate(`/event`)}>
+              <md-list-item
+                key={event.id}
+                type="button"
+                onClick={() => navigate(`/event`)}
+              >
                 <div slot="headline">{event.name}</div>
               </md-list-item>
             ))}
