@@ -56,125 +56,123 @@ export const Home = () => {
   };
 
   return (
-    <div>
-      <div className="layout">
-        {/* Filter Sidebar */}
-        <div className="filter-sidebar">
-          <h2>Filter Events</h2>
-          <div className="filter-contents">
-            {/* Title */}
-            <md-filled-text-field
-              label="Event Title"
-              value={title}
-              onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
-                const target = e.target as MdOutlinedTextField;
-                setTitle(target.value);
-              }}
-            />
-
-            {/* Date and Time */}
-            <md-filled-text-field
-              type="datetime-local"
-              label="Event Date and Time"
-              onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
-                const target = e.target as MdOutlinedTextField;
-                setEventDateTime(target.value);
-              }}
-            />
-
-            {/* Campus */}
-            <md-filled-select
-              label="Campus"
-              value={campus}
-              onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
-                const target = e.target as MdOutlinedTextField;
-                setCampus(target.value);
-              }}
-            >
-              {campuses.map((campus) => (
-                <md-select-option key={campus} value={campus}>
-                  <div slot="headline">{campus}</div>
-                </md-select-option>
-              ))}
-            </md-filled-select>
-
-            {/* Location */}
-            <md-filled-select
-              label="Location"
-              value={location}
-              onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
-                const target = e.target as MdOutlinedTextField;
-                setLocation(target.value);
-              }}
-            >
-              {locations.map((loc) => (
-                <md-select-option key={loc} value={loc}>
-                  <div slot="headline">{loc}</div>
-                </md-select-option>
-              ))}
-            </md-filled-select>
-
-            {/* Venue */}
-            <md-filled-select
-              label="Venue"
-              value={venue}
-              onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
-                const target = e.target as MdOutlinedTextField;
-                setVenue(target.value);
-              }}
-            >
-              {venues.map((v) => (
-                <md-select-option key={v} value={v}>
-                  <div slot="headline">{v}</div>
-                </md-select-option>
-              ))}
-            </md-filled-select>
-          </div>
-
-          {/* Tags */}
-          <div>Tags</div>
+    <div className="layout">
+      {/* Filter Sidebar */}
+      <div className="filter-sidebar">
+        <h2>Filter Events</h2>
+        <div className="filter-contents">
+          {/* Title */}
           <md-filled-text-field
-            label="Search Tags"
-            value={tagInput}
+            label="Event Title"
+            value={title}
             onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
               const target = e.target as MdOutlinedTextField;
-              setTagInput(target.value);
+              setTitle(target.value);
             }}
           />
 
-          <div>
-            <md-chip-set>
-              {allTags.map((tag) => (
-                <md-filter-chip
-                  key={tag}
-                  label={tag}
-                  onClick={() => toggleTag(tag)}
-                >
-                  <md-icon slot="icon">tag</md-icon>
-                </md-filter-chip>
-              ))}
-            </md-chip-set>
-          </div>
+          {/* Date and Time */}
+          <md-filled-text-field
+            type="datetime-local"
+            label="Event Date and Time"
+            onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+              const target = e.target as MdOutlinedTextField;
+              setEventDateTime(target.value);
+            }}
+          />
 
-          <md-filled-button onClick={handleFilter}>Apply</md-filled-button>
-        </div>
-
-        {/* Events Panel */}
-        <div className="events-panel">
-          <h2>Events</h2>
-
-          <md-list>
-            {events.map((event) => (
-              <md-list-item
-                key={event.id}
-                type="button"
-                onClick={() => navigate(`/event`)}
-              >
-                <div slot="headline">{event.name}</div>
-              </md-list-item>
+          {/* Campus */}
+          <md-filled-select
+            label="Campus"
+            value={campus}
+            onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+              const target = e.target as MdOutlinedTextField;
+              setCampus(target.value);
+            }}
+          >
+            {campuses.map((campus) => (
+              <md-select-option key={campus} value={campus}>
+                <div slot="headline">{campus}</div>
+              </md-select-option>
             ))}
-          </md-list>
+          </md-filled-select>
+
+          {/* Location */}
+          <md-filled-select
+            label="Location"
+            value={location}
+            onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+              const target = e.target as MdOutlinedTextField;
+              setLocation(target.value);
+            }}
+          >
+            {locations.map((loc) => (
+              <md-select-option key={loc} value={loc}>
+                <div slot="headline">{loc}</div>
+              </md-select-option>
+            ))}
+          </md-filled-select>
+
+          {/* Venue */}
+          <md-filled-select
+            label="Venue"
+            value={venue}
+            onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+              const target = e.target as MdOutlinedTextField;
+              setVenue(target.value);
+            }}
+          >
+            {venues.map((v) => (
+              <md-select-option key={v} value={v}>
+                <div slot="headline">{v}</div>
+              </md-select-option>
+            ))}
+          </md-filled-select>
         </div>
+
+        {/* Tags */}
+        <div>Tags</div>
+        <md-filled-text-field
+          label="Search Tags"
+          value={tagInput}
+          onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
+            const target = e.target as MdOutlinedTextField;
+            setTagInput(target.value);
+          }}
+        />
+
+        <div>
+          <md-chip-set>
+            {allTags.map((tag) => (
+              <md-filter-chip
+                key={tag}
+                label={tag}
+                onClick={() => toggleTag(tag)}
+              >
+                <md-icon slot="icon">tag</md-icon>
+              </md-filter-chip>
+            ))}
+          </md-chip-set>
+        </div>
+
+        <md-filled-button onClick={handleFilter}>Apply</md-filled-button>
+      </div>
+
+      {/* Events Panel */}
+      <div className="events-panel">
+        <h2>Events</h2>
+
+        <md-list>
+          {events.map((event) => (
+            <md-list-item
+              key={event.id}
+              type="button"
+              onClick={() => navigate(`/event`)}
+            >
+              <div slot="headline">{event.name}</div>
+            </md-list-item>
+          ))}
+        </md-list>
       </div>
     </div>
   );
