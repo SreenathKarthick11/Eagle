@@ -1,4 +1,3 @@
-/* Container */
 .blacklist-container {
   display: flex;
   background-color: #ffffff;
@@ -7,14 +6,13 @@
 }
 
 .page-header {
-  margin-top: 80px; 
+  margin-top: 80px;
   color: #1e1e2f;
   font-size: 24px;
   /* padding-bottom: 12px; */
   padding-left: 24px;
 }
 
-/* Panels */
 .left-panel,
 .right-panel {
   flex: 1;
@@ -26,7 +24,6 @@
   color: rgba(15, 14, 14, 0.887);
 }
 
-/* Headings */
 .left-panel h2,
 .right-panel h2 {
   margin-bottom: 16px;
@@ -47,7 +44,8 @@ md-list {
 }
 
 /* List item styling */
-md-list-item {
+
+/* md-list-item {
   --md-list-item-container-color: #ffffff;
   --md-list-item-label-text-color: #1e1e2f;
   border: 1.5px solid #494949;
@@ -55,14 +53,15 @@ md-list-item {
   border-radius: 12px;
   width: 95%;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
+} */
 
 /* Hover effect */
-md-list-item:hover {
+
+/* md-list-item:hover {
   transform: translateY(-2px);
   border: 0px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
+} */
 
 /* Delete button */
 .delete-btn {
@@ -89,15 +88,17 @@ md-list-item:hover {
 }
 
 /* Optional: scroll if long list */
-md-list {
+
+/* md-list {
   max-height: 480px;
   overflow-y: auto;
-}
+} */
 
 /* Scroll */
 /* Scrollbar for md-list */
+
 md-list::-webkit-scrollbar {
-  padding-left: 5px;  
+  padding-left: 5px;
   width: 8px;
 }
 
@@ -107,6 +108,7 @@ md-list::-webkit-scrollbar-track {
 }
 
 /* Thumb (the draggable part) */
+
 md-list::-webkit-scrollbar-thumb {
   background: rgba(100, 100, 120, 0.4);
   border-radius: 10px;
@@ -114,6 +116,7 @@ md-list::-webkit-scrollbar-thumb {
 }
 
 /* Hover effect */
-md-list::-webkit-scrollbar-thumb:hover {
+
+/* md-list::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 100, 120, 0.7);
-}
+} */
