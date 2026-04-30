@@ -145,13 +145,21 @@ declare module "react" {
       "md-filled-text-field": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      > & { label?: string } & { type?: string } & { value?: string };
+      > & { label?: string }
+        & { type ?: string }
+        & { value?: string }
+        & { rows ?: string }
+        & { step ?: string };
 
       // Outlined Text Fields
       "md-outlined-text-field": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      > & { label?: string } & { type?: string } & { value?: string };
+      > & { label?: string }
+        & { type ?: string }
+        & { value?: string }
+        & { rows ?: string }
+        & { step ?: string };
     }
   }
 }
