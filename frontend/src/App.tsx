@@ -6,10 +6,11 @@ import { Profile } from "./pages/Profile";
 import { BlackList } from "./pages/BlackList";
 import { AdminLayout } from "./pages/admin/Layout";
 import { AdminBlackList } from "./pages/admin/BlackList";
+import { AdminCampus } from "./pages/admin/Campus";
+import { Layout } from "./pages/layout";
 
 import "./styles/light.css";
 import "./styles/md.css";
-import { Layout } from "./pages/layout";
 
 function App() {
   return (
@@ -22,9 +23,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/black-list" element={<BlackList />} />
-          {/* <Route path="/layout" element={<Layout />} /> */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="blacklist" element={<AdminBlackList />} />
+            <Route path="campuses" element={<AdminCampus />} />
           </Route>
         </Route>
 

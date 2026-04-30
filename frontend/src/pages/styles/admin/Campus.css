@@ -1,0 +1,29 @@
+.campus_panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: min-content;
+
+  height: 100%;
+
+  background: var(--md-sys-color-surface-container-low);
+  padding: 1em;
+  gap: 1rem;
+  border-radius: var(--border-radius);
+
+  box-sizing: border-box;
+}
+
+.campus_list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+
+  scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+  scrollbar-width: thin;
+}
+
+.campus_add {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: max-content;
+}
