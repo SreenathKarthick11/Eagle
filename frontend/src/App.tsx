@@ -10,6 +10,7 @@ import { AdminCampus } from "./pages/admin/Campus";
 import { Layout } from "./pages/layout";
 import { AdminLocation } from "./pages/admin/Location";
 import { AdminVenue } from "./pages/admin/Venues";
+import { AdminEvent } from "./pages/admin/Event";
 
 import "./styles/light.css";
 import "./styles/md.css";
@@ -30,6 +31,7 @@ function App() {
             <Route path="campuses" element={<AdminCampus />} />
             <Route path="locations" element={<AdminLocation />} />
             <Route path="venues" element={<AdminVenue />} />
+            <Route path="events" element={<AdminEvent />} />
           </Route>
         </Route>
 
