@@ -13,5 +13,5 @@
 
 .layout_main {
   overflow-y: auto;
-  background: var(--md-sys-color-background);
+  background: var(--md-sys-color-surface-container);
 }
