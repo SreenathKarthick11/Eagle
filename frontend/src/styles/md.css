@@ -20,6 +20,10 @@
 
   --md-sys-typescale-headline-font: var(--headline-font);
   --md-sys-typescale-title-font: var(--title-font);
+
+  /* Border Radii */
+  --border-radius: 2em;
+  --border-radius-small: 1em;
 }
 
 md-icon {
