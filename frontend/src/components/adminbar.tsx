@@ -27,7 +27,7 @@ export const Adminbar = () => {
         Events
       </md-text-button>
 
-      <md-text-button className="admin_sidebar_button" onClick={() => navigate("/admin/promote")}>
+      <md-text-button className="admin_sidebar_button" onClick={() => navigate("/admin/users")}>
         Users
       </md-text-button>
     </div>
