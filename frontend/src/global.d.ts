@@ -36,6 +36,39 @@ declare module "react" {
 
 
 
+      /* Chips */
+      // Chip Set
+      "md-chip-set": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+
+      // Assist Chip
+      "md-assist-chip": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & { label?: string };
+
+      // Filer Chip
+      "md-filter-chip": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & { label?: string };
+
+      // Input Chip
+      "md-input-chip": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & { label?: string };
+
+      // Suggestion Chip
+      "md-suggestion-chip": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & { label?: string };
+
+
+
       /* Lists */
       // List Body
       "md-list": React.DetailedHTMLProps<
@@ -47,7 +80,7 @@ declare module "react" {
       "md-list-item": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      >;
+      > & { type?:string };
 
 
 
@@ -56,19 +89,19 @@ declare module "react" {
       "md-outlined-select": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      >;
+      > & { label?: string } & { value?: string };
 
       // Filled Select
       "md-filled-select": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      >;
+      > & { label?: string } & { value?: string };
 
       // Select Option
       "md-select-option": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      >;
+      > & { value?:string };
 
 
 
@@ -112,13 +145,13 @@ declare module "react" {
       "md-filled-text-field": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      > & { label?: string } & { type?: string };
+      > & { label?: string } & { type?: string } & { value?: string };
 
       // Outlined Text Fields
       "md-outlined-text-field": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      > & { label?: string } & { type?: string };
+      > & { label?: string } & { type?: string } & { value?: string };
     }
   }
 }
