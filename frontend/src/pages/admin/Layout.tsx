@@ -7,10 +7,10 @@ import "../styles/admin/Layout.css";
 
 export const AdminLayout = () => {
   return (
-    <div className="layout">
+    <div className="admin_layout">
       <Adminbar />
 
-      <div className="panel">
+      <div className="admin_panel">
         <Outlet />
       </div>
     </div>
