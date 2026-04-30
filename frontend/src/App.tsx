@@ -9,6 +9,7 @@ import { AdminBlackList } from "./pages/admin/BlackList";
 import { AdminCampus } from "./pages/admin/Campus";
 import { Layout } from "./pages/layout";
 import { AdminLocation } from "./pages/admin/Location";
+import { AdminVenue } from "./pages/admin/Venues";
 
 import "./styles/light.css";
 import "./styles/md.css";
@@ -28,6 +29,7 @@ function App() {
             <Route path="blacklist" element={<AdminBlackList />} />
             <Route path="campuses" element={<AdminCampus />} />
             <Route path="locations" element={<AdminLocation />} />
+            <Route path="venues" element={<AdminVenue />} />
           </Route>
         </Route>
 
