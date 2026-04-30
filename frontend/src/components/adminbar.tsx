@@ -6,28 +6,28 @@ export const Adminbar = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="sidebar">
-      <md-text-button onClick={() => navigate("/admin/blacklist")}>
+    <div className="admin_sidebar">
+      <md-text-button className="admin_sidebar_button" onClick={() => navigate("/admin/blacklist")}>
         Blacklist
       </md-text-button>
 
-      <md-text-button onClick={() => navigate("/admin/campuses")}>
+      <md-text-button className="admin_sidebar_button" onClick={() => navigate("/admin/campuses")}>
         Campuses
       </md-text-button>
 
-      <md-text-button onClick={() => navigate("/admin/locations")}>
+      <md-text-button className="admin_sidebar_button" onClick={() => navigate("/admin/locations")}>
         Locations
       </md-text-button>
 
-      <md-text-button onClick={() => navigate("/admin/venues")}>
+      <md-text-button className="admin_sidebar_button" onClick={() => navigate("/admin/venues")}>
         Venues
       </md-text-button>
 
-      <md-text-button onClick={() => navigate("/admin/events")}>
+      <md-text-button className="admin_sidebar_button" onClick={() => navigate("/admin/events")}>
         Events
       </md-text-button>
 
-      <md-text-button onClick={() => navigate("/admin/promote")}>
+      <md-text-button className="admin_sidebar_button" onClick={() => navigate("/admin/promote")}>
         Users
       </md-text-button>
     </div>
