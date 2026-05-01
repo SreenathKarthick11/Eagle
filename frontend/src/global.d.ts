@@ -149,7 +149,9 @@ declare module "react" {
         & { type ?: string }
         & { value?: string }
         & { rows ?: string }
-        & { step ?: string };
+        & { step ?: string }
+        & { readOnly?: boolean }
+        & { disabled?: boolean }; 
 
       // Outlined Text Fields
       "md-outlined-text-field": React.DetailedHTMLProps<
@@ -159,7 +161,9 @@ declare module "react" {
         & { type ?: string }
         & { value?: string }
         & { rows ?: string }
-        & { step ?: string };
+        & { step ?: string }
+        & { readOnly?: boolean }
+        & { disabled?: boolean }; 
     }
   }
 }
