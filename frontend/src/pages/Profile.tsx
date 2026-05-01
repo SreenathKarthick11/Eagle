@@ -30,9 +30,7 @@ export const Profile = () => {
   }
 
   return (
-    <div className="ProfilePage">
-      <Navbar />
-      
+    <div className="ProfilePage">      
       <div className="content profile-page">
         <h2 className="page-header">User Profile</h2>
         
