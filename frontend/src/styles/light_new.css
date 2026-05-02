@@ -1,0 +1,52 @@
+:root {
+  /* --- Primary (Vibrant Teal) --- */
+  --md-sys-color-primary: rgb(0 106 116);
+  --md-sys-color-on-primary: rgb(255 255 255);
+  --md-sys-color-primary-container: rgb(173 247 255);
+  --md-sys-color-on-primary-container: rgb(0 32 36);
+
+  /* --- Secondary (Muted Teal-Grey) --- */
+  --md-sys-color-secondary: rgb(74 99 103);
+  --md-sys-color-on-secondary: rgb(255 255 255);
+  --md-sys-color-secondary-container: rgb(205 231 235);
+  --md-sys-color-on-secondary-container: rgb(5 31 35);
+
+  /* --- Tertiary (The Teal from Image 1, inverted for Light) --- */
+  /* Tertiary is now darker (T-40), Container is the light mint (T-90) */
+  --md-sys-color-tertiary: rgb(0 107 101);             /* T-40 */
+  --md-sys-color-on-tertiary: rgb(255 255 255);
+  --md-sys-color-tertiary-container: rgb(188 248 240);   /* T-90 from Image 1 */
+  --md-sys-color-on-tertiary-container: rgb(0 32 30);    /* T-10/20 from Image 1 */
+
+  /* --- Error (Standard M3 Light) --- */
+  --md-sys-color-error: rgb(186 26 26);
+  --md-sys-color-on-error: rgb(255 255 255);
+  --md-sys-color-error-container: rgb(255 218 214);
+  --md-sys-color-on-error-container: rgb(65 0 2);
+
+  /* --- Neutral/Surface (Image 3 logic for Light Mode) --- */
+  --md-sys-color-background: rgb(244 250 249);         /* Off-white teal tint */
+  --md-sys-color-on-background: rgb(25 28 28);
+
+  /* Surface Palette */
+  --md-sys-color-surface: rgb(244 250 249);
+  --md-sys-color-surface-dim: rgb(213 219 218);        /* N-87 for Light */
+  --md-sys-color-surface-bright: rgb(255 255 255);     /* N-98 */
+
+  /* Surface Containers (Descending lightness) */
+  --md-sys-color-surface-container-lowest: rgb(255 255 255); /* N-100 */
+  --md-sys-color-surface-container-low: rgb(238 244 243);    /* N-96 */
+  --md-sys-color-surface-container: rgb(233 239 238);        /* N-94 */
+  --md-sys-color-surface-container-high: rgb(227 233 232);   /* N-92 */
+  --md-sys-color-surface-container-highest: rgb(221 227 226);/* N-90 */
+
+  /* --- Utility --- */
+  --md-sys-color-on-surface: rgb(25 28 28);
+  --md-sys-color-on-surface-variant: rgb(63 73 72);     /* NV-30 logic */
+  --md-sys-color-outline: rgb(111 121 120);            /* NV-50 */
+  --md-sys-color-outline-variant: rgb(191 201 199);    /* NV-80 */
+
+  /* --- Inverse (For Snacking/Toasts) --- */
+  --md-sys-color-inverse-surface: rgb(46 49 48);
+  --md-sys-color-inverse-on-surface: rgb(238 242 241);
+}

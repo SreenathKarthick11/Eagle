@@ -14,7 +14,8 @@ import { AdminEvent } from "./pages/admin/Event";
 import { AdminUser } from "./pages/admin/User";
 import { EventCreate } from "./pages/EventCreate";
 
-import "./styles/light.css";
+// import "./styles/light.css";
+import "./styles/light_new.css";
 import "./styles/md.css";
 
 
