@@ -8,24 +8,63 @@ import "@material/web/button/filled-button.js";
 import "@material/web/button/outlined-button.js";
 
 import "./styles/Login.css";
+import { CustomDialog } from "../components/customDialog";
+import type { DialogHandle } from "../components/customDialog";
 
 export const Login = () => {
   const usernameRef = useRef<MdOutlinedTextField>(null);
   const passwordRef = useRef<MdOutlinedTextField>(null);
+  const dialogRef = useRef<DialogHandle>(null);
 
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const username = usernameRef.current?.value;
     const password = passwordRef.current?.value;
 
     if (!username || !password) {
-      alert("Please fill in all fields");
+      dialogRef.current?.open(
+        "Login Failed",
+        "Please enter both username and password."
+      );
       return;
     }
 
-    console.log(username, password);
-    navigate("/");
+    try {
+      const response = await fetch("http://localhost:5000/api/login", { //TODO: Update the backend URL as needed
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      let data: any = {};
+      try {
+        data = await response.json();
+      } catch {}
+
+      if (response.ok) {
+        const userData = {
+          ...data,
+          username, 
+        };
+
+        localStorage.setItem("user", JSON.stringify(userData));
+        navigate("/");
+      } else {
+        dialogRef.current?.open(
+          "Login Failed",
+          data.message || "Invalid credentials"
+        );
+      }
+
+    } catch (error) {
+      dialogRef.current?.open(
+        "Server Error",
+        "Unable to connect to server"
+      );
+    }
   };
 
   return (
@@ -56,6 +95,7 @@ export const Login = () => {
           <md-filled-button onClick={handleLogin}>Login</md-filled-button>
         </div>
       </div>
+      <CustomDialog ref={dialogRef} />
     </div>
   );
 };
