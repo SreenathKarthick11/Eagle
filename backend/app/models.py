@@ -7,18 +7,30 @@ class SignInRequest(BaseModel):
     username: str
     password: str
 
-class TokenResponse(BaseModel):
+class SignInResponse(BaseModel):
     access_token: str
-    token_type: str = "bearer"
+    """Check this model again"""
 
-class ProfileResponse(BaseModel):
+class SignUpRequest(BaseModel):
+    name: str
+    username: str
+    email: str
+    password: str
+    phone: str
+
+class SuccessResponse(BaseModel):
+    sucess: bool
+    
+
+class ProfileGetResponse(BaseModel):
     user_id: int
     name: str
     username: str
-    active_role: str
+    role: str
     # These are not in user_profile view directly, but we can fetch them from user_info
     email_id: Optional[str] = None
     phone_no: Optional[str] = None
+
 
 class ChangePasswordRequest(BaseModel):
     current_password: str
@@ -28,10 +40,47 @@ class UpdateProfileRequest(BaseModel):
     name: Optional[str] = None
     phone_number: Optional[str] = None
 
+# Update Profile Response will be the Success response
+
 # Event
 class EventListItem(BaseModel):
     event_name: str
     event_id: int
+
+
+class GetHomeEventFiltersResponse(BaseModel):
+    campus_ids: List[int]
+    campus_names: List[str]
+    location_ids: List[int]
+    location_names: List[str]
+    venue_ids: List[int]
+    venue_names: List[str]
+    organizer_usernames: List[str]
+    tags: List[str]
+
+
+class PostSearchEventsRequest(BaseModel):
+    campus_name: Optional[str] = None
+    venue_name: Optional[str] = None
+    location_name: Optional[str] = None
+    organizer_username: Optional[str] = None
+    start_after : Optional[datetime] = None
+    finish_before : Optional[datetime] = None
+    tags: Optional[List[str]] = None
+    require_all_tags : bool = False
+    is_full : Optional[bool] = None
+    title_substring: Optional[str] = None
+    description_substring: Optional[str] = None
+   
+class SearchEventDetail(BaseModel):
+    event_id: int
+    title: str
+    organizer_name: str
+
+class PostSearchEventsResponse(BaseModel):
+    items: List[SearchEventDetail]
+
+
 
 class EventDetail(BaseModel):
     name: str
