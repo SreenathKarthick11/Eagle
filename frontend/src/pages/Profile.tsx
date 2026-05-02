@@ -41,14 +41,14 @@ export const Profile = () => {
         } catch {}
 
         if (!res.ok) {
-          console.error(data.detail);
+          showError(data.detail);
           return;
         }
 
         setUserData(data);
 
       } catch (err) {
-        console.error("Failed to load profile");
+        showError("Failed to load profile");
       }
     };
 
