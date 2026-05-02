@@ -1,16 +1,16 @@
-import { useRef, useState } from "react";
-import "./styles/SignUp.css";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-import '@material/web/textfield/outlined-text-field.js';
-import '@material/web/button/filled-button.js';
-import '@material/web/dialog/dialog.js';
+import "@material/web/textfield/outlined-text-field.js";
+import "@material/web/button/filled-button.js";
+
+import "./styles/SignUp.css";
+import { CustomDialog } from "../components/customDialog";
+import type { DialogHandle } from "../components/customDialog";
 
 export const SignUp = () => {
-  const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
+  const dialogRef = useRef<DialogHandle>(null);
 
-  // Proper typing for Material Web elements
   const nameRef = useRef<any>(null);
   const usernameRef = useRef<any>(null);
   const emailRef = useRef<any>(null);
@@ -20,7 +20,11 @@ export const SignUp = () => {
 
   const navigate = useNavigate();
 
-  const handleSignUp = () => {
+  const showError = (msg: string) => {
+    dialogRef.current?.open("Sign Up Failed", msg);
+  };
+
+  const handleSignUp = async () => {
     const name = nameRef.current?.value;
     const username = usernameRef.current?.value;
     const email = emailRef.current?.value;
@@ -28,16 +32,52 @@ export const SignUp = () => {
     const confirmPassword = confirmPasswordRef.current?.value;
     const phone = phoneRef.current?.value;
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      setOpen(true);
+    if (!name || !username || !email || !password || !confirmPassword || !phone) {
+      showError("Please fill all fields");
       return;
     }
 
-    console.log(name, username, email, password, confirmPassword, phone);
+    if (password !== confirmPassword) {
+      showError("Passwords do not match");
+      return;
+    }
 
-    // TODO: API call here
-    navigate("/login");
+    try {
+      const response = await fetch("http://localhost:8000/api/signup", { //TODO: update the backend URL
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          username,
+          email,
+          password,
+          phone,
+        }),
+      });
+
+      let data: any = {};
+      try {
+        data = await response.json();
+      } catch {}
+
+      if (!response.ok) {
+        showError(data.detail || data.message || "Signup failed");
+        return;
+      }
+
+
+      dialogRef.current?.open("Success", "Account created successfully!");
+
+      // redirect after short delay
+      setTimeout(() => {
+        navigate("/login");
+      }, 1200);
+
+    } catch (err) {
+      showError("Unable to connect to server");
+    }
   };
 
   return (
@@ -45,73 +85,25 @@ export const SignUp = () => {
       <div className="signup-card">
         <h2 className="login-title">Sign Up</h2>
 
-        {/* @ts-ignore */}
-        <md-outlined-text-field
-          ref={nameRef}
-          label="Name"
-          type="text"
-          className="login-input"
-        />
-
-        {/* @ts-ignore */}
-        <md-outlined-text-field
-          ref={usernameRef}
-          label="Username"
-          type="text"
-          className="login-input"
-        />
-
-        {/* @ts-ignore */}
-        <md-outlined-text-field
-          ref={emailRef}
-          label="Email"
-          type="email"
-          className="login-input"
-        />
-
-        {/* @ts-ignore */}
-        <md-outlined-text-field
-          ref={passwordRef}
-          label="Password"
-          type="password"
-          className="login-input"
-        />
-
-        {/* @ts-ignore */}
-        <md-outlined-text-field
-          ref={confirmPasswordRef}
-          label="Confirm Password"
-          type="password"
-          className="login-input"
-        />
-
-        {/* @ts-ignore */}
-        <md-outlined-text-field
-          ref={phoneRef}
-          label="Phone"
-          type="tel"
-          className="login-input"
-        />
+        <md-outlined-text-field ref={nameRef} label="Name" className="login-input" />
+        <md-outlined-text-field ref={usernameRef} label="Username" className="login-input" />
+        <md-outlined-text-field ref={emailRef} label="Email" type="email" className="login-input" />
+        <md-outlined-text-field ref={passwordRef} label="Password" type="password" className="login-input" />
+        <md-outlined-text-field ref={confirmPasswordRef} label="Confirm Password" type="password" className="login-input" />
+        <md-outlined-text-field ref={phoneRef} label="Phone" type="tel" className="login-input" />
 
         <div className="btn-container">
-          {/* @ts-ignore */}
-          <md-filled-button className="button" onClick={() => navigate("/login")}>Login</md-filled-button>
-          {/* @ts-ignore */}
-          <md-filled-button className="button" onClick={handleSignUp}>Sign Up</md-filled-button>
+          <md-filled-button class="button" onClick={() => navigate("/login")}>
+            Login
+          </md-filled-button>
+
+          <md-filled-button class="button" onClick={handleSignUp}>
+            Sign Up
+          </md-filled-button>
         </div>
       </div>
 
-      {/* Dialog */}
-      {/* @ts-ignore */}
-      <md-dialog open={open} onClosed={() => setOpen(false)}>
-        <div slot="headline">Error</div>
-        <div slot="content">{error}</div>
-        <div slot="actions">
-          {/* @ts-ignore */}
-          <md-filled-button onClick={() => setOpen(false)}>Close</md-filled-button>
-        </div>
-       {/* @ts-ignore */} 
-      </md-dialog>
+      <CustomDialog ref={dialogRef} />
     </div>
   );
 };
