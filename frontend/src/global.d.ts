@@ -53,7 +53,8 @@ declare module "react" {
       "md-filter-chip": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      > & { label?: string };
+      > & { label?: string }
+        & { selected?: boolean };
 
       // Input Chip
       "md-input-chip": React.DetailedHTMLProps<
