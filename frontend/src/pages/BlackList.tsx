@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 
-import "@material/web/textfield/outlined-text-field.js";
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
 import "@material/web/button/filled-button.js";
@@ -11,57 +10,106 @@ import "@material/web/select/select-option.js";
 import type { MdOutlinedTextField } from "@material/web/textfield/outlined-text-field.js";
 import type { MdDialog } from "@material/web/dialog/dialog.js";
 
+import { CustomDialog } from "../components/customDialog";
+import type { DialogHandle } from "../components/customDialog";
+
 import "./styles/BlackList.css";
 
 export const BlackList = () => {
-  const [selectedVisitor, setSelectedVisitor] = useState<string | null>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [visitors, setVisitors] = useState<any[]>([]);
+  const [selectedVisitor, setSelectedVisitor] = useState<any>(null);
   const [selectedEvent, setSelectedEvent] = useState("");
 
   const dialogRef = useRef<MdDialog>(null);
+  const customDialogRef = useRef<DialogHandle>(null);
 
-  const events = ["Tech Talk", "Hackathon", "Workshop"];
-  const visitors = [
-    "Alan Turing",
-    "Ada Lovelace",
-    "Grace Hopper",
-    "Donald Knuth",
-    "John von Neumann",
-    "Claude Shannon",
-    "Ken Thompson",
-    "Dennis Ritchie",
-    "Barbara Liskov",
-  ];
+  const showError = (msg: string) => {
+        customDialogRef.current?.open("Error", msg);
+  };
 
+  // ---------------- LOAD EVENTS ----------------
   useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
+    const loadEvents = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    const handleOpened = () => console.log("Dialog animation finished: Open");
-    const handleClosed = () => {
-      console.log("Dialog animation finished: Closed");
+        const res = await fetch(`http://localhost:8000/api/events/${user.user_id}`);  // TODO: update with actual url
+        const data = await res.json();
+
+        setEvents(data);
+      } catch {
+        showError("Failed to load events");
+      }
     };
 
-    dialog.addEventListener("opened", handleOpened);
-    dialog.addEventListener("closed", handleClosed);
-
-    return () => {
-      dialog.removeEventListener("opened", handleOpened);
-      dialog.removeEventListener("closed", handleClosed);
-    };
+    loadEvents();
   }, []);
 
-  const openConfirmDialog = (visitor: string) => {
+  // ---------------- LOAD VISITORS ----------------
+  useEffect(() => {
+    if (!selectedEvent) return;
+
+    const loadVisitors = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8000/api/events/${selectedEvent}/visitors`     // TODO: update with actual url
+        );
+
+        const data = await res.json();
+        setVisitors(data);
+      } catch {
+        showError("Failed to load visitors");
+      }
+    };
+
+    loadVisitors();
+  }, [selectedEvent]);
+
+  // ---------------- OPEN DIALOG ----------------
+  const openConfirmDialog = (visitor: any) => {
     setSelectedVisitor(visitor);
     dialogRef.current?.show();
   };
 
-  const confirmBlacklist = () => {
-    console.log("Blacklisted: ", selectedVisitor);
-    dialogRef.current?.close();
+  // ---------------- BLACKLIST ----------------
+  const confirmBlacklist = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/api/events/blacklist", {  // TODO: update the url
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          event_id: Number(selectedEvent),
+          user_id: selectedVisitor.user_id,
+        }),
+      });
+
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {}
+
+      if (!res.ok) {
+        showError(data.detail || "Failed to blacklist");
+        return;
+      }
+
+      // remove from UI immediately
+      setVisitors((prev) =>
+        prev.filter((v) => v.user_id !== selectedVisitor.user_id)
+      );
+
+      dialogRef.current?.close();
+    } catch {
+      showError("Server error");
+    }
   };
 
   return (
     <div className="addbl_layout">
+      {/* SIDEBAR */}
       <div className="addbl_sidebar">
         <h2>Events</h2>
 
@@ -75,21 +123,23 @@ export const BlackList = () => {
             }}
           >
             {events.map((event) => (
-              <md-select-option key={event} value={event}>
-                <div slot="headline">{event}</div>
+              <md-select-option key={event.event_id} value={event.event_id}>
+                <div slot="headline">{event.title}</div>
               </md-select-option>
             ))}
           </md-filled-select>
         </div>
       </div>
 
+      {/* VISITOR PANEL */}
       <div className="addbl_panel">
         <h1>Visitors</h1>
 
         <md-list className="addbl_userlist">
-          {visitors.map((visitor, index) => (
-            <md-list-item key={index}>
-              <div slot="headline">{visitor}</div>
+          {visitors.map((visitor) => (
+            <md-list-item key={visitor.user_id}>
+              <div slot="headline">{visitor.username}</div>
+
               <md-filled-tonal-icon-button
                 slot="end"
                 onClick={() => openConfirmDialog(visitor)}
@@ -100,18 +150,24 @@ export const BlackList = () => {
           ))}
         </md-list>
 
+        {/* DIALOG */}
         <md-dialog ref={dialogRef}>
           <div slot="headline">
-            Blacklist <b>{selectedVisitor}?</b>
+            Blacklist <b>{selectedVisitor?.username}</b>?
           </div>
+
           <div slot="actions">
             <md-text-button onClick={() => dialogRef.current?.close()}>
               No
             </md-text-button>
-            <md-filled-button onClick={confirmBlacklist}>Yes</md-filled-button>
+
+            <md-filled-button onClick={confirmBlacklist}>
+              Yes
+            </md-filled-button>
           </div>
         </md-dialog>
       </div>
+      <CustomDialog ref={customDialogRef} />
     </div>
   );
 };
