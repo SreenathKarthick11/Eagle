@@ -12,9 +12,11 @@ import { AdminLocation } from "./pages/admin/Location";
 import { AdminVenue } from "./pages/admin/Venues";
 import { AdminEvent } from "./pages/admin/Event";
 import { AdminUser } from "./pages/admin/User";
+import { EventCreate } from "./pages/EventCreate";
 
 import "./styles/light.css";
 import "./styles/md.css";
+
 
 function App() {
   return (
@@ -27,6 +29,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/black-list" element={<BlackList />} />
+          <Route path="/create-event" element={<EventCreate />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="blacklist" element={<AdminBlackList />} />
             <Route path="campuses" element={<AdminCampus />} />

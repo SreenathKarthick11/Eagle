@@ -14,7 +14,7 @@ declare module "react" {
       "md-filled-button": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      >;
+      > & { class?:string };
 
       // Filled Tonal Buttons
       "md-filled-tonal-button": React.DetailedHTMLProps<
@@ -89,7 +89,9 @@ declare module "react" {
       "md-outlined-select": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
-      > & { label?: string } & { value?: string };
+      > & { label?: string }
+        & { class?:string  }
+        & { value?: string };
 
       // Filled Select
       "md-filled-select": React.DetailedHTMLProps<
@@ -151,7 +153,7 @@ declare module "react" {
         & { rows ?: string }
         & { step ?: string }
         & { readOnly?: boolean }
-        & { disabled?: boolean }; 
+        & { disabled?: boolean };
 
       // Outlined Text Fields
       "md-outlined-text-field": React.DetailedHTMLProps<
@@ -163,7 +165,16 @@ declare module "react" {
         & { rows ?: string }
         & { step ?: string }
         & { readOnly?: boolean }
-        & { disabled?: boolean }; 
+        & { class?:string }
+        & { textarea?: boolean }
+        & { disabled?: boolean };
+
+      "md-checkbox": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & { checked?: boolean }
+        & { onChange?: (e: any) => void }
+        & { disabled?: boolean};
     }
   }
 }
