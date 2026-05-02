@@ -31,7 +31,7 @@ export const Login = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/login", { //TODO: Update the backend URL as needed
+      const response = await fetch("http://localhost:8000/api/login", { //TODO: Update the backend URL as needed
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export const Login = () => {
       if (response.ok) {
         const userData = {
           ...data,
-          username, 
+          username,
         };
 
         localStorage.setItem("user", JSON.stringify(userData));
@@ -55,7 +55,7 @@ export const Login = () => {
       } else {
         dialogRef.current?.open(
           "Login Failed",
-          data.message || "Invalid credentials"
+          data.detail || data.message || "Invalid credentials"
         );
       }
 
