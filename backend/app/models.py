@@ -31,11 +31,13 @@ class SuccessResponse(BaseModel):
 
 class ProfileDetails(BaseModel):
     user_id: int
-    name: str
     username: str
+    name: str
     email_id: str 
-    phone_no: str 
-
+    phone_no: str
+    active_role: str
+    blacklist_count: int
+    last_blacklisted_at: Optional[datetime] = None
 
 class UpdateProfile(BaseModel):
     user_id: int
@@ -309,3 +311,22 @@ class AdminPromoteUser(BaseModel):
 
 # class BlacklistAddVisitorRequest(BaseModel):
 #     visitor_id: int
+
+
+class CreateCampus(BaseModel):
+    campus_name: str
+    
+class CreateLocation(BaseModel):
+    location_name: str
+    landmark: Optional[str] = None
+    latitude: str
+    longitude: str
+    campus_id: int
+
+class CreateVenue(BaseModel):
+    venue_name: str
+    capacity: int
+    location_id: int
+    
+
+

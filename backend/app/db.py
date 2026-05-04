@@ -238,26 +238,69 @@ class PGConnect:
             description_substring,
         )
 
-    def get_profile_details(self, user_id):
-        return self.call_function_one("get_profile_details", user_id)
+    def get_user_profile(self, user_id):
+        return self.call_function_one("get_user_profile", user_id)
 
-    def update_user_details(self, user_id, name, phone_no,current_password, new_password):
+    def update_user_details(
+        self, user_id, name, phone_no, current_password, new_password
+    ):
         return self.call_function_one("update_user_details", user_id, name, phone_no)
 
     def is_user_regsitered(self, user_id, event_id):
-        return self.call_scalar_function("is_user_registered",user_id,event_id)
+        return self.call_scalar_function("is_user_registered", user_id, event_id)
 
     def register_for_event(self, user_id, event_id):
-        return self.call_function_one("register_for_event",user_id, event_id)
+        return self.call_function_one("register_for_event", user_id, event_id)
 
     def cancel_registration(self, user_id, event_id):
-        return self.call_function_one("cancel_registration",user_id, event_id)
-    
-    def get_event_details(self,event_id):
-        return self.call_function_one("get_event_details",event_id)
-    
+        return self.call_function_one("cancel_registration", user_id, event_id)
+
+    def get_event_details(self, event_id):
+        return self.call_function_one("get_event_details", event_id)
+
     def edit_event_details(self, user_id, event_id, name, description):
-        return self.call_function_one("edit_event_text_fields",user_id, event_id, name, description)
+        return self.call_function_one(
+            "edit_event_text_fields", user_id, event_id, name, description
+        )
+
+    def create_campus(self, campus_name, role="postgres"):
+        return self.call_function_one("create_campus", campus_name)
+
+    def create_location(
+        self, location_name, landmark, latitude, longitude, campus_id, role="postgres"
+    ):
+        return self.call_function_one(
+            "create_location", location_name, landmark, latitude, longitude, campus_id, role=role
+        )
+
+    def create_venue(self, venue_name, capacity, location_id, role="postgres"):
+        return self.call_function_one("create_venue", venue_name, capacity, location_id)
+
+    def delete_campus(self, campus_id, role="postgres"):
+        self.call_function_one("delete_campus", campus_id)
+
+    def delete_location(self, location_id, role="postgres"):
+        self.call_function_one("delete_location", location_id)
+
+    def delete_venue(self, venue_id, role="postgres"):
+        self.call_function_one("delete_venue", venue_id)
+
+    def get_blacklists(self, event_id: Optional[int] = None, role="postgres"):
+        self.call_function_rows("get_blacklists",event_id)
+    
+    def blacklist_visitor(self, user_id, visitor_id, event_id):
+        self.call_function_one("blacklist_visitor",user_id, visitor_id, event_id)
+    
+    def reset_blacklist(self, user_id, role="postgres"):
+        self.call_function_one("reset_blacklist", user_id, role=role)
+    
+
+    
+    # def whitelist_user(self, user_id):
+    #     self.call_function_one("whitelist_user", user_id)
+    
+    
+
 #     def signup_user(self, name, username, password, email_id, phone_no):
 #         hashed_password = password
 #         return self.call_function(
@@ -367,7 +410,6 @@ class PGConnect:
 
 #     def promote_organizer_to_admin(self, admin_id, user_id):
 #         return self.call_function("promote_organizer_to_admin", admin_id, user_id)
-
 
 
 db = PGConnect()
