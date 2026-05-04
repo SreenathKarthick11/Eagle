@@ -699,7 +699,6 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION add_tag_to_event(
-    p_actor_id int,
     p_event_id int,
     p_tag_name text
 )
@@ -709,9 +708,9 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF NOT can_manage_event(p_actor_id, p_event_id) THEN
-        RAISE EXCEPTION 'not authorized for this event';
-    END IF;
+    -- IF NOT can_manage_event(p_actor_id, p_event_id) THEN
+    --     RAISE EXCEPTION 'not authorized for this event';
+    -- END IF;
 
     INSERT INTO tag(tag_name)
     VALUES (p_tag_name)
@@ -723,33 +722,32 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION remove_tag_from_event(
-    p_actor_id int,
-    p_event_id int,
-    p_tag_name text
-)
-RETURNS void
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-BEGIN
-    IF NOT can_manage_event(p_actor_id, p_event_id) THEN
-        RAISE EXCEPTION 'not authorized for this event';
-    END IF;
+-- CREATE OR REPLACE FUNCTION remove_tag_from_event(
+--     p_actor_id int,
+--     p_event_id int,
+--     p_tag_name text
+-- )
+-- RETURNS void
+-- LANGUAGE plpgsql
+-- SECURITY DEFINER
+-- SET search_path = public
+-- AS $$
+-- BEGIN
+--     IF NOT can_manage_event(p_actor_id, p_event_id) THEN
+--         RAISE EXCEPTION 'not authorized for this event';
+--     END IF;
 
-    DELETE FROM tagged_with
-    WHERE event_id = p_event_id
-      AND tag_name = p_tag_name;
+--     DELETE FROM tagged_with
+--     WHERE event_id = p_event_id
+--       AND tag_name = p_tag_name;
 
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'tag mapping not found';
-    END IF;
-END;
-$$;
+--     IF NOT FOUND THEN
+--         RAISE EXCEPTION 'tag mapping not found';
+--     END IF;
+-- END;
+-- $$;
 
 CREATE OR REPLACE FUNCTION get_event_participants(
-    p_actor_id int,
     p_event_id int
 )
 RETURNS TABLE (
@@ -764,9 +762,9 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF NOT can_manage_event(p_actor_id, p_event_id) THEN
-        RAISE EXCEPTION 'not authorized for this event';
-    END IF;
+    -- IF NOT can_manage_event(p_actor_id, p_event_id) THEN
+    --     RAISE EXCEPTION 'not authorized for this event';
+    -- END IF;
 
     RETURN QUERY
     SELECT
@@ -801,27 +799,27 @@ BEGIN
         RAISE EXCEPTION 'user is blacklisted';
     END IF;
 
-    SELECT organizer_id
-    INTO v_owner
-    FROM event
-    WHERE event_id = p_event_id;
+    -- SELECT organizer_id
+    -- INTO v_owner
+    -- FROM event
+    -- WHERE event_id = p_event_id;
 
-    IF v_owner IS NULL THEN
-        RAISE EXCEPTION 'event not found';
-    END IF;
+    -- IF v_owner IS NULL THEN
+    --     RAISE EXCEPTION 'event not found';
+    -- END IF;
 
     IF NOT is_admin(p_actor_id) AND v_owner <> p_actor_id THEN
         RAISE EXCEPTION 'not authorized for this event';
     END IF;
 
-    IF NOT EXISTS (
-        SELECT 1
-        FROM visitor_of
-        WHERE event_id = p_event_id
-          AND visitor_id = p_visitor_id
-    ) THEN
-        RAISE EXCEPTION 'visitor did not attend this event';
-    END IF;
+    -- IF NOT EXISTS (
+    --     SELECT 1
+    --     FROM visitor_of
+    --     WHERE event_id = p_event_id
+    --       AND visitor_id = p_visitor_id
+    -- ) THEN
+    --     RAISE EXCEPTION 'visitor did not attend this event';
+    -- END IF;
 
     UPDATE visitor
     SET strike_count = strike_count + 1,
@@ -838,8 +836,9 @@ BEGIN
 END;
 $$;
 
+
+
 CREATE OR REPLACE FUNCTION reset_blacklist(
-    p_admin_id int,
     p_visitor_id int
 )
 RETURNS void
@@ -848,9 +847,9 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF NOT is_admin(p_admin_id) THEN
-        RAISE EXCEPTION 'admin only';
-    END IF;
+    -- IF NOT is_admin(p_admin_id) THEN
+    --     RAISE EXCEPTION 'admin only';
+    -- END IF;
 
     UPDATE visitor
     SET strike_count = 0,
