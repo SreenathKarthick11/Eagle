@@ -11,3 +11,8 @@ export interface Visitor {
 export interface UserSession {
   user_id: string | number;
 }
+
+export interface CampusItem {
+  campud_id: string | number;
+  campus_name: string
+}
