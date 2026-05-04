@@ -12,22 +12,9 @@ import type { MdDialog } from "@material/web/dialog/dialog.js";
 
 import { CustomDialog } from "../components/customDialog";
 import type { DialogHandle } from "../components/customDialog";
+import type { EventItem, Visitor, UserSession } from "../interfaces"
 
 import "./styles/BlackList.css";
-
-interface EventItem {
-  event_id: string | number;
-  title: string
-}
-
-interface Visitor {
-  user_id: string | number;
-  username: string
-}
-
-interface UserSession {
-  user_id: string | number;
-}
 
 export const BlackList = () => {
   const [events, setEvents] = useState<EventItem[]>([]);
