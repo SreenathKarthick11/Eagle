@@ -29,7 +29,7 @@ export const AdminBlackList = () => {
   useEffect(() => {
     const loadBlacklistedUsers = async () => {
       try {
-        const res = await fetch("https://localhost:8000/api/blacklisted"); // TODO Replace with api rul
+        const res = await fetch("http://localhost:8000/api/blacklisted"); // TODO Replace with api rul
         const data: Visitor[] = await res.json();
         setVisitors(data);
       } catch {
@@ -45,7 +45,7 @@ export const AdminBlackList = () => {
     if (!selectedVisitor) return;
 
     try {
-      const res = await fetch("https://localhost:8000/api/whitelist", { // TODO Replace with api url
+      const res = await fetch("http://localhost:8000/api/whitelist", { // TODO Replace with api url
         method: "POST",
         headers: {
           "Content-Type": "application/json",

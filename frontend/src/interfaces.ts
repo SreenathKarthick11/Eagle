@@ -13,6 +13,6 @@ export interface UserSession {
 }
 
 export interface CampusItem {
-  campud_id: string | number;
+  campus_id: string | number;
   campus_name: string
 }

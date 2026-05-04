@@ -694,9 +694,9 @@ BEGIN
     END IF;
 
 
-    INSERT INTO editor(editor_id)
-    VALUES (p_visitor_id)
-    ON CONFLICT DO NOTHING;
+    -- INSERT INTO editor(editor_id)
+    -- VALUES (p_visitor_id)
+    -- ON CONFLICT DO NOTHING;
 
     INSERT INTO editor_of(event_id, editor_id)
     VALUES (p_event_id, p_visitor_id)

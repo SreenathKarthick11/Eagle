@@ -36,15 +36,16 @@ export const AdminCampus = () => {
   useEffect(() => {
     const loadCampuses = async () => {
       try {
-        const res = await fetch("https://localhost:8000/campuses/");
+        const res = await fetch("http://localhost:8000/campuses/");
         const data: CampusItem[] = await res.json();
+        console.log(data);
         setCampusList(data);
       } catch {
         showError("Server Error");
       }
     };
     loadCampuses();
-  });
+  }, []);
 
   const openConfirmAddDialog = (campus: string) => {
     if (campus === "") return;
@@ -66,13 +67,13 @@ export const AdminCampus = () => {
     if (!selectedCampus) return;
 
     try {
-      const res = await fetch("https://localhost:8000/api/delete_campus", {
+      const res = await fetch("http://localhost:8000/api/delete_campus", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          campud_id: selectedCampus.campud_id,
+          campus_id: selectedCampus.campus_id,
         }),
       });
 
@@ -85,7 +86,7 @@ export const AdminCampus = () => {
       }
 
       setCampusList((prev) =>
-        prev.filter((v) => v.campud_id !== selectedCampus.campud_id),
+        prev.filter((v) => v.campus_id !== selectedCampus.campus_id),
       );
 
       console.log("Removed campus:", selectedCampus?.campus_name);
