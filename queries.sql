@@ -1367,20 +1367,12 @@ GRANT EXECUTE ON FUNCTION get_locations(int) TO admin_role;
 GRANT EXECUTE ON FUNCTION get_venues(int) TO admin_role;
 GRANT EXECUTE ON FUNCTION get_tags() TO admin_role;
 
-GRANT EXECUTE ON FUNCTION register_for_event(int, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION cancel_registration(int, int) TO admin_role;
 GRANT EXECUTE ON FUNCTION get_user_profile(int) TO admin_role;
 GRANT EXECUTE ON FUNCTION update_user_details(int, text, text) TO admin_role;
 GRANT EXECUTE ON FUNCTION is_user_registered(int, int) TO admin_role;
 GRANT EXECUTE ON FUNCTION edit_event_text_fields(int, int, text, text) TO admin_role;
-GRANT EXECUTE ON FUNCTION create_event(
-    int, text, timestamp, timestamp, int, int[], int, text[], text
-) TO admin_role;
 GRANT EXECUTE ON FUNCTION delete_event(int, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION add_editor_to_event(int, int, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION add_tag_to_event(int, int, text) TO admin_role;
 GRANT EXECUTE ON FUNCTION get_event_participants(int) TO admin_role;
-GRANT EXECUTE ON FUNCTION blacklist_visitor(int, int, int) TO admin_role;
 
 -- Admin-only functions
 GRANT EXECUTE ON FUNCTION reset_blacklist(int) TO admin_role;
