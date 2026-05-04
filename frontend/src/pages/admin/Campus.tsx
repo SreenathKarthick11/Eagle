@@ -10,7 +10,7 @@ import "@material/web/icon/icon.js";
 
 import type { MdDialog } from "@material/web/dialog/dialog.js";
 import type { MdOutlinedTextField } from "@material/web/textfield/outlined-text-field.js";
-import type { CampusItem } from "../../interfaces";
+import type { CampusItem, UserInfoItem } from "../../interfaces";
 import type { DialogHandle } from "../../components/customDialog";
 
 import "../styles/admin/Campus.css";
@@ -53,9 +53,35 @@ export const AdminCampus = () => {
     dialogAddRef.current?.show();
   };
 
-  const confirmAdd = () => {
-    console.log("Added campus:", newCampus);
-    dialogAddRef.current?.close();
+  const confirmAdd = async () => {
+    try {
+      const role: UserInfoItem = JSON.parse(
+        localStorage.getItem("user") || "{}",
+      );
+      const url = `http://localhost:8000/campuses?role=${role}`;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          campus_name: newCampus,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.detail || "Failed to create campus");
+        return;
+      }
+
+      console.log("Added campus:", newCampus);
+      dialogAddRef.current?.close();
+    } catch {
+      showError("Server Error");
+    }
   };
 
   const openConfirmRemoveDialog = (campus: CampusItem) => {
