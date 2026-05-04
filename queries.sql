@@ -868,8 +868,6 @@ BEGIN
         RAISE EXCEPTION 'user is not a visitor';
     END IF;
 
-    DELETE FROM visitor_of WHERE visitor_id = p_user_id;
-    DELETE FROM editor_of WHERE editor_id = p_user_id;
     DELETE FROM editor WHERE editor_id = p_user_id;
     DELETE FROM visitor WHERE visitor_id = p_user_id;
 
@@ -892,8 +890,6 @@ BEGIN
         RAISE EXCEPTION 'user is not a visitor';
     END IF;
 
-    DELETE FROM visitor_of WHERE visitor_id = p_user_id;
-    DELETE FROM editor_of WHERE editor_id = p_user_id;
     DELETE FROM editor WHERE editor_id = p_user_id;
     DELETE FROM visitor WHERE visitor_id = p_user_id;
     DELETE FROM organizer WHERE organizer_id = p_user_id;
@@ -917,8 +913,6 @@ BEGIN
         RAISE EXCEPTION 'user is not an organizer';
     END IF;
 
-    DELETE FROM visitor_of WHERE visitor_id = p_user_id;
-    DELETE FROM editor_of WHERE editor_id = p_user_id;
     DELETE FROM editor WHERE editor_id = p_user_id;
     DELETE FROM visitor WHERE visitor_id = p_user_id;
     DELETE FROM organizer WHERE organizer_id = p_user_id;
