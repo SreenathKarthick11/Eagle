@@ -1431,59 +1431,139 @@ $$;
    GRANTS
    ========================================================= */
 
--- Onboarding
+-- 1. app_user (unauthenticated) – signup, signin, browse events, view single event
 GRANT EXECUTE ON FUNCTION signup_user(text, text, text, text, text) TO app_user;
 GRANT EXECUTE ON FUNCTION signin_user(text, text) TO app_user;
 
--- Browsing
-GRANT SELECT ON event_catalog TO app_user, visitor_role, editor_role, organizer_role, admin_role;
-GRANT SELECT ON event_full_details TO visitor_role, editor_role, organizer_role, admin_role;
-GRANT SELECT ON event_participation_stats TO organizer_role, editor_role, admin_role;
-GRANT SELECT ON user_profile TO admin_role;
-GRANT SELECT ON user_roles TO admin_role;
-
-GRANT EXECUTE ON FUNCTION search_events(
+GRANT SELECT ON event_catalog TO app_user;
+GRANT EXECUTE ON FUNCTION search_event_items(
     text, text, text, text, timestamp, timestamp, text[], boolean, boolean, text, text
-) TO app_user, visitor_role, editor_role, organizer_role, admin_role;
+) TO app_user;
+GRANT EXECUTE ON FUNCTION get_event_details(int) TO app_user;
+GRANT EXECUTE ON FUNCTION get_campuses() TO app_user;
+GRANT EXECUTE ON FUNCTION get_locations(int) TO app_user;
+GRANT EXECUTE ON FUNCTION get_venues(int) TO app_user;
+GRANT EXECUTE ON FUNCTION get_tags() TO app_user;
 
-GRANT EXECUTE ON FUNCTION get_campuses() TO app_user, visitor_role, editor_role, organizer_role, admin_role;
-GRANT EXECUTE ON FUNCTION get_locations(int) TO app_user, visitor_role, editor_role, organizer_role, admin_role;
-GRANT EXECUTE ON FUNCTION get_venues(int) TO app_user, visitor_role, editor_role, organizer_role, admin_role;
-GRANT EXECUTE ON FUNCTION get_tags() TO app_user, visitor_role, editor_role, organizer_role, admin_role;
+-- 2. visitor_role – logged‑in regular user
+GRANT SELECT ON event_catalog TO visitor_role;
+GRANT SELECT ON event_full_details TO visitor_role;
+GRANT EXECUTE ON FUNCTION search_event_items(
+    text, text, text, text, timestamp, timestamp, text[], boolean, boolean, text, text
+) TO visitor_role;
+GRANT EXECUTE ON FUNCTION get_event_details(int) TO visitor_role;
+GRANT EXECUTE ON FUNCTION get_campuses() TO visitor_role;
+GRANT EXECUTE ON FUNCTION get_locations(int) TO visitor_role;
+GRANT EXECUTE ON FUNCTION get_venues(int) TO visitor_role;
+GRANT EXECUTE ON FUNCTION get_tags() TO visitor_role;
 
-
--- Visitor actions
 GRANT EXECUTE ON FUNCTION register_for_event(int, int) TO visitor_role;
 GRANT EXECUTE ON FUNCTION cancel_registration(int, int) TO visitor_role;
+GRANT EXECUTE ON FUNCTION get_user_profile(int) TO visitor_role;
+GRANT EXECUTE ON FUNCTION update_user_details(int, text, text) TO visitor_role;
+GRANT EXECUTE ON FUNCTION is_user_registered(int, int) TO visitor_role;
 
--- Editor actions
-GRANT EXECUTE ON FUNCTION edit_event_text_fields(int, int, text, text)
-TO editor_role, organizer_role, admin_role;
+-- 3. editor_role – visitor + can edit event text fields
+GRANT SELECT ON event_catalog TO editor_role;
+GRANT SELECT ON event_full_details TO editor_role;
+GRANT EXECUTE ON FUNCTION search_event_items(
+    text, text, text, text, timestamp, timestamp, text[], boolean, boolean, text, text
+) TO editor_role;
+GRANT EXECUTE ON FUNCTION get_event_details(int) TO editor_role;
+GRANT EXECUTE ON FUNCTION get_campuses() TO editor_role;
+GRANT EXECUTE ON FUNCTION get_locations(int) TO editor_role;
+GRANT EXECUTE ON FUNCTION get_venues(int) TO editor_role;
+GRANT EXECUTE ON FUNCTION get_tags() TO editor_role;
 
--- Organizer actions
-GRANT EXECUTE ON FUNCTION create_event(int, text, timestamp, timestamp, int, int[], int, text[], text)
-TO organizer_role, admin_role;
-GRANT EXECUTE ON FUNCTION delete_event(int) TO organizer_role, admin_role;
-GRANT EXECUTE ON FUNCTION add_editor_to_event(int, int, int) TO organizer_role, admin_role;
-GRANT EXECUTE ON FUNCTION add_tag_to_event(int, int, text) TO organizer_role, admin_role;
-GRANT EXECUTE ON FUNCTION remove_tag_from_event(int, int, text) TO organizer_role, admin_role;
-GRANT EXECUTE ON FUNCTION get_event_participants(int, int) TO organizer_role, admin_role;
-GRANT EXECUTE ON FUNCTION blacklist_visitor(int, int, int) TO organizer_role, admin_role;
+GRANT EXECUTE ON FUNCTION register_for_event(int, int) TO editor_role;
+GRANT EXECUTE ON FUNCTION cancel_registration(int, int) TO editor_role;
+GRANT EXECUTE ON FUNCTION get_user_profile(int) TO editor_role;
+GRANT EXECUTE ON FUNCTION update_user_details(int, text, text) TO editor_role;
+GRANT EXECUTE ON FUNCTION is_user_registered(int, int) TO editor_role;
 
--- Admin actions
-GRANT EXECUTE ON FUNCTION reset_blacklist(int, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION create_location(int, text, text, point, int) TO admin_role;
--- GRANT EXECUTE ON FUNCTION create_venue(int, text, int, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION promote_visitor_to_editor(int, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION promote_visitor_to_organizer(int, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION promote_visitor_to_admin(int, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION promote_organizer_to_admin(int, int) TO admin_role;
+-- Editor-specific
+GRANT EXECUTE ON FUNCTION edit_event_text_fields(int, int, text, text) TO editor_role;
 
+-- 4. organizer_role – full event management
+GRANT SELECT ON event_catalog TO organizer_role;
+GRANT SELECT ON event_full_details TO organizer_role;
+GRANT SELECT ON event_participation_stats TO organizer_role;
+GRANT EXECUTE ON FUNCTION search_event_items(
+    text, text, text, text, timestamp, timestamp, text[], boolean, boolean, text, text
+) TO organizer_role;
+GRANT EXECUTE ON FUNCTION get_event_details(int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION get_campuses() TO organizer_role;
+GRANT EXECUTE ON FUNCTION get_locations(int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION get_venues(int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION get_tags() TO organizer_role;
+
+-- Additional browsing needed for event creation: see list of possible secondary organizers
+GRANT EXECUTE ON FUNCTION get_organizers() TO organizer_role;
+
+GRANT EXECUTE ON FUNCTION register_for_event(int, int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION cancel_registration(int, int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION get_user_profile(int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION update_user_details(int, text, text) TO organizer_role;
+GRANT EXECUTE ON FUNCTION is_user_registered(int, int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION edit_event_text_fields(int, int, text, text) TO organizer_role;
+
+-- Organizer-specific event management
+GRANT EXECUTE ON FUNCTION create_event(
+    int, text, timestamp, timestamp, int, int[], int, text[], text
+) TO organizer_role;
+GRANT EXECUTE ON FUNCTION delete_event(int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION add_editor_to_event(int, int, int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION add_tag_to_event(int, text) TO organizer_role;
+GRANT EXECUTE ON FUNCTION get_event_participants(int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION blacklist_visitor(int, int, int) TO organizer_role;
+
+-- 5. admin_role – superuser (everything above plus admin-only functions)
+GRANT SELECT ON event_catalog TO admin_role;
+GRANT SELECT ON event_full_details TO admin_role;
+GRANT SELECT ON event_participation_stats TO admin_role;
+GRANT SELECT ON user_profile TO admin_role;
+GRANT SELECT ON user_roles TO admin_role;
+GRANT EXECUTE ON FUNCTION search_event_items(
+    text, text, text, text, timestamp, timestamp, text[], boolean, boolean, text, text
+) TO admin_role;
+GRANT EXECUTE ON FUNCTION get_event_details(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION get_campuses() TO admin_role;
+GRANT EXECUTE ON FUNCTION get_locations(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION get_venues(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION get_tags() TO admin_role;
+
+GRANT EXECUTE ON FUNCTION register_for_event(int, int) TO admin_role;
+GRANT EXECUTE ON FUNCTION cancel_registration(int, int) TO admin_role;
+GRANT EXECUTE ON FUNCTION get_user_profile(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION update_user_details(int, text, text) TO admin_role;
+GRANT EXECUTE ON FUNCTION is_user_registered(int, int) TO admin_role;
+GRANT EXECUTE ON FUNCTION edit_event_text_fields(int, int, text, text) TO admin_role;
+GRANT EXECUTE ON FUNCTION create_event(
+    int, text, timestamp, timestamp, int, int[], int, text[], text
+) TO admin_role;
+GRANT EXECUTE ON FUNCTION delete_event(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION add_editor_to_event(int, int, int) TO admin_role;
+GRANT EXECUTE ON FUNCTION add_tag_to_event(int, text) TO admin_role;
+GRANT EXECUTE ON FUNCTION get_event_participants(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION blacklist_visitor(int, int, int) TO admin_role;
+
+-- Admin-only functions
+GRANT EXECUTE ON FUNCTION reset_blacklist(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION promote_visitor_to_editor(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION promote_visitor_to_organizer(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION promote_visitor_to_admin(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION promote_organizer_to_admin(int) TO admin_role;
 GRANT EXECUTE ON FUNCTION create_campus(text) TO admin_role;
 GRANT EXECUTE ON FUNCTION create_location(text, text, text, text, int) TO admin_role;
 GRANT EXECUTE ON FUNCTION create_venue(text, int, int) TO admin_role;
+GRANT EXECUTE ON FUNCTION delete_campus(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION delete_location(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION delete_venue(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION get_visitors() TO admin_role;
+GRANT EXECUTE ON FUNCTION get_organizers() TO admin_role;
+GRANT EXECUTE ON FUNCTION get_blacklists() TO admin_role;
 
--- Admin direct table access
+-- Full table access for admin (back‑end maintenance)
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin_role;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO admin_role;
 
