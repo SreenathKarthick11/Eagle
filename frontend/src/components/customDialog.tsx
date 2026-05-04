@@ -3,12 +3,14 @@ import { forwardRef, useImperativeHandle, useRef } from "react";
 import '@material/web/dialog/dialog.js';
 import '@material/web/button/filled-button.js';
 
+import type { MdDialog } from "@material/web/dialog/dialog.js";
+
 export interface DialogHandle {
   open: (title: string, message: string) => void;
 }
 
 export const CustomDialog = forwardRef<DialogHandle>((_, ref) => {
-  const dialogRef = useRef<any>(null);
+  const dialogRef = useRef<MdDialog>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const messageRef = useRef<HTMLParagraphElement>(null);
 
@@ -23,10 +25,10 @@ export const CustomDialog = forwardRef<DialogHandle>((_, ref) => {
 
   return (
     <md-dialog ref={dialogRef}>
-      <h4 slot="headline" ref={titleRef}>Title</h4>
+      <div slot="headline" ref={titleRef}>Title</div>
 
       <div slot="content">
-        <p ref={messageRef}>Message</p>
+        <div ref={messageRef}>Message</div>
       </div>
 
       <div slot="actions">
