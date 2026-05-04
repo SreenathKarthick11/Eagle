@@ -410,6 +410,16 @@ AS $$
         );
 $$;
 
+CREATE OR REPLACE FUNCTION get_event_details(p_event_id INT)
+RETURNS SETOF event_catalog
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT *
+    FROM event_catalog ec
+    WHERE ec.event_id = p_event_id;
+$$;
+
 
 /* =========================================================
    APPLICATION FUNCTIONS
@@ -516,6 +526,48 @@ BEGIN
     ORDER BY ec.start_time, ec.event_id;
 END;
 $$;
+
+
+CREATE OR REPLACE FUNCTION search_event_items(
+    p_campus_name text DEFAULT NULL,
+    p_venue_name text DEFAULT NULL,
+    p_location_name text DEFAULT NULL,
+    p_organizer_username text DEFAULT NULL,
+    p_start_after timestamp DEFAULT NULL,
+    p_finish_before timestamp DEFAULT NULL,
+    p_tags text[] DEFAULT NULL,
+    p_require_all_tags boolean DEFAULT false,
+    p_is_full boolean DEFAULT NULL,
+    p_title_substring text DEFAULT NULL,
+    p_description_substring text DEFAULT NULL
+)
+RETURNS TABLE(event_id int, event_name text)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT ec.event_id, ec.event_name
+    FROM event_catalog ec
+    WHERE (p_campus_name IS NULL OR ec.campus_name = p_campus_name)
+      AND (p_venue_name IS NULL OR ec.venue_name = p_venue_name)
+      AND (p_location_name IS NULL OR ec.location_name = p_location_name)
+      AND (p_organizer_username IS NULL OR ec.primary_organizer = p_organizer_username)
+      AND (p_start_after IS NULL OR ec.start_time >= p_start_after)
+      AND (p_finish_before IS NULL OR ec.finish_time <= p_finish_before)
+      AND (
+            p_tags IS NULL
+            OR (p_require_all_tags AND ec.tags @> p_tags)
+            OR (NOT p_require_all_tags AND ec.tags && p_tags)
+          )
+      AND (p_is_full IS NULL OR ec.is_full = p_is_full)
+      AND (p_title_substring IS NULL OR lower(ec.event_name) LIKE '%' || lower(p_title_substring) || '%')
+      AND (p_description_substring IS NULL OR lower(ec.description) LIKE '%' || lower(p_description_substring) || '%')
+    ORDER BY ec.start_time, ec.event_id;
+END;
+$$;
+
 
 CREATE OR REPLACE FUNCTION register_for_event(
     p_visitor_id int,
@@ -1041,6 +1093,190 @@ END;
 $$;
 
 
+
+
+-- CREATE OR REPLACE FUNCTION filter_values()
+-- RETURNS TABLE (
+--     campus_ids INT[],
+--     campus_names TEXT[],
+--     location_ids INT[],
+--     location_names TEXT[],
+--     venue_ids INT[],
+--     venue_names TEXT[],
+--     organizer_usernames TEXT[],
+--     tags TEXT[]
+-- )
+-- LANGUAGE sql
+-- AS $$
+--     SELECT
+--         -- campus
+--         ARRAY_AGG(DISTINCT c.campus_id) FILTER (WHERE c.campus_id IS NOT NULL),
+--         ARRAY_AGG(DISTINCT c.name) FILTER (WHERE c.name IS NOT NULL),
+
+--         -- location
+--         ARRAY_AGG(DISTINCT l.location_id) FILTER (WHERE l.location_id IS NOT NULL),
+--         ARRAY_AGG(DISTINCT l.name) FILTER (WHERE l.name IS NOT NULL),
+
+--         -- venue
+--         ARRAY_AGG(DISTINCT v.venue_id) FILTER (WHERE v.venue_id IS NOT NULL),
+--         ARRAY_AGG(DISTINCT v.name) FILTER (WHERE v.name IS NOT NULL),
+
+--         -- organizer usernames
+--         ARRAY_AGG(DISTINCT u.username) FILTER (WHERE u.username IS NOT NULL),
+
+--         -- tags
+--         ARRAY_AGG(DISTINCT t.tag_name) FILTER (WHERE t.tag_name IS NOT NULL)
+
+--     FROM event e
+--     LEFT JOIN venue v ON e.venue_id = v.venue_id
+--     LEFT JOIN location l ON v.location_id = l.location_id
+--     LEFT JOIN campus c ON l.campus_id = c.campus_id
+--     LEFT JOIN organizer o ON e.organizer_id = o.organizer_id
+--     LEFT JOIN user_info u ON o.organizer_id = u.user_id
+--     LEFT JOIN tagged_with tw ON e.event_id = tw.event_id
+--     LEFT JOIN tag t ON tw.tag_name = t.tag_name;
+-- $$;
+
+
+CREATE OR REPLACE FUNCTION public.get_campuses()
+RETURNS TABLE (
+    campus_id INT,
+    campus_name TEXT
+)
+LANGUAGE sql
+AS $$
+    SELECT
+        c.campus_id,
+        c.name AS campus_name
+    FROM campus c
+    ORDER BY c.name;
+$$;
+
+CREATE OR REPLACE FUNCTION public.get_locations(p_campus_id INT DEFAULT NULL)
+RETURNS TABLE (
+    location_id INT,
+    location_name TEXT
+)
+LANGUAGE sql
+AS $$
+    SELECT
+        l.location_id,
+        l.name AS location_name
+    FROM location l
+    WHERE p_campus_id IS NULL OR l.campus_id = p_campus_id
+    ORDER BY l.name;
+$$;
+
+CREATE OR REPLACE FUNCTION public.get_venues(p_location_id INT DEFAULT NULL)
+RETURNS TABLE (
+    venue_id INT,
+    venue_name TEXT
+)
+LANGUAGE sql
+AS $$
+    SELECT
+        v.venue_id,
+        v.name AS venue_name
+    FROM venue v
+    WHERE p_location_id IS NULL OR v.location_id = p_location_id
+    ORDER BY v.name;
+$$;
+
+CREATE OR REPLACE FUNCTION public.get_tags()
+RETURNS TABLE (
+    tag_name TEXT
+)
+LANGUAGE sql
+AS $$
+    SELECT
+        t.tag_name
+    FROM tag t
+    ORDER BY t.tag_name;
+$$;
+
+
+CREATE OR REPLACE FUNCTION get_user_profile(p_user_id INT)
+RETURNS TABLE (
+    user_id INT,
+    username TEXT,
+    name TEXT,
+    active_role TEXT,
+    is_admin BOOLEAN,
+    is_organizer BOOLEAN,
+    is_editor BOOLEAN,
+    is_visitor BOOLEAN,
+    blacklist_count INT,
+    last_blacklisted_at TIMESTAMP
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT
+        up.user_id,
+        up.username,
+        up.name,
+        up.active_role,
+        up.is_admin,
+        up.is_organizer,
+        up.is_editor,
+        up.is_visitor,
+        up.blacklist_count,
+        up.last_blacklisted_at
+    FROM user_profile up
+    WHERE up.user_id = p_user_id;
+$$;
+
+
+CREATE OR REPLACE FUNCTION update_user_details(
+    p_user_id int,
+    p_name text,
+    p_phone_no text
+)
+RETURNS int
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_user_id int;
+    v_constraint text;
+BEGIN
+    UPDATE user_info
+    SET
+        name = p_name,
+        phone_no = p_phone_no
+    WHERE user_id = p_user_id
+    RETURNING user_id INTO v_user_id;
+
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'update failed: user not found';
+    END IF;
+
+    RETURN v_user_id;
+
+EXCEPTION
+    WHEN unique_violation OR check_violation THEN
+        GET STACKED DIAGNOSTICS v_constraint = CONSTRAINT_NAME;
+        RAISE EXCEPTION 'update failed: %', v_constraint;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION is_user_registered(
+    p_user_id INT,
+    p_event_id INT
+)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT EXISTS (
+        SELECT 1
+        FROM visitor_of vo
+        WHERE vo.event_id = p_event_id
+          AND vo.visitor_id = p_user_id
+    );
+$$;
+
 /* =========================================================
    GRANTS
    ========================================================= */
@@ -1059,6 +1295,12 @@ GRANT SELECT ON user_roles TO admin_role;
 GRANT EXECUTE ON FUNCTION search_events(
     text, text, text, text, timestamp, timestamp, text[], boolean, boolean, text, text
 ) TO app_user, visitor_role, editor_role, organizer_role, admin_role;
+
+GRANT EXECUTE ON FUNCTION get_campuses() TO app_user, visitor_role, editor_role, organizer_role, admin_role;
+GRANT EXECUTE ON FUNCTION get_locations(int) TO app_user, visitor_role, editor_role, organizer_role, admin_role;
+GRANT EXECUTE ON FUNCTION get_venues(int) TO app_user, visitor_role, editor_role, organizer_role, admin_role;
+GRANT EXECUTE ON FUNCTION get_tags() TO app_user, visitor_role, editor_role, organizer_role, admin_role;
+
 
 -- Visitor actions
 GRANT EXECUTE ON FUNCTION register_for_event(int, int) TO visitor_role;

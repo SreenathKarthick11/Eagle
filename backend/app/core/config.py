@@ -2,8 +2,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql_url"
-    DATABASE_NAME: str = "postgresql://app_user:brrs__app_user@localhost:5432/eagle"
-    
+    DATABASE_NAME: str = "postgresql://postgres:postgres@/eagle_db"
     class Config:
         env_file = ".env"
     
