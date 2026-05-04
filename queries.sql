@@ -1334,8 +1334,6 @@ GRANT EXECUTE ON FUNCTION get_tags() TO organizer_role;
 -- Additional browsing needed for event creation: see list of possible secondary organizers
 GRANT EXECUTE ON FUNCTION get_organizers() TO organizer_role;
 
-GRANT EXECUTE ON FUNCTION register_for_event(int, int) TO organizer_role;
-GRANT EXECUTE ON FUNCTION cancel_registration(int, int) TO organizer_role;
 GRANT EXECUTE ON FUNCTION get_user_profile(int) TO organizer_role;
 GRANT EXECUTE ON FUNCTION update_user_details(int, text, text) TO organizer_role;
 GRANT EXECUTE ON FUNCTION is_user_registered(int, int) TO organizer_role;
