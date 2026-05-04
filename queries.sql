@@ -1351,11 +1351,14 @@ GRANT EXECUTE ON FUNCTION edit_event_text_fields(int, int, text, text) TO organi
 GRANT EXECUTE ON FUNCTION create_event(
     int, text, timestamp, timestamp, int, int[], int, text[], text
 ) TO organizer_role;
-GRANT EXECUTE ON FUNCTION delete_event(int) TO organizer_role;
+GRANT EXECUTE ON FUNCTION delete_event(int, int) TO organizer_role;  -- signature updated
 GRANT EXECUTE ON FUNCTION add_editor_to_event(int, int, int) TO organizer_role;
-GRANT EXECUTE ON FUNCTION add_tag_to_event(int, text) TO organizer_role;
+GRANT EXECUTE ON FUNCTION add_tag_to_event(int, int, text) TO organizer_role;  -- signature updated
 GRANT EXECUTE ON FUNCTION get_event_participants(int) TO organizer_role;
 GRANT EXECUTE ON FUNCTION blacklist_visitor(int, int, int) TO organizer_role;
+
+-- NEW: Allow organizers to see events they are primary organizer of
+GRANT EXECUTE ON FUNCTION get_events_of_organizer(int) TO organizer_role;
 
 -- 5. admin_role – superuser (everything above plus admin-only functions)
 GRANT SELECT ON event_catalog TO admin_role;
@@ -1381,9 +1384,9 @@ GRANT EXECUTE ON FUNCTION edit_event_text_fields(int, int, text, text) TO admin_
 GRANT EXECUTE ON FUNCTION create_event(
     int, text, timestamp, timestamp, int, int[], int, text[], text
 ) TO admin_role;
-GRANT EXECUTE ON FUNCTION delete_event(int) TO admin_role;
+GRANT EXECUTE ON FUNCTION delete_event(int, int) TO admin_role;  -- signature updated
 GRANT EXECUTE ON FUNCTION add_editor_to_event(int, int, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION add_tag_to_event(int, text) TO admin_role;
+GRANT EXECUTE ON FUNCTION add_tag_to_event(int, int, text) TO admin_role;  -- signature updated
 GRANT EXECUTE ON FUNCTION get_event_participants(int) TO admin_role;
 GRANT EXECUTE ON FUNCTION blacklist_visitor(int, int, int) TO admin_role;
 
