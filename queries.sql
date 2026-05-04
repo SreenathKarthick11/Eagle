@@ -610,8 +610,10 @@ CREATE OR REPLACE FUNCTION create_event(
     p_start_time timestamp,
     p_finish_time timestamp,
     p_venue_id int,
-    p_description text DEFAULT NULL,
-    p_capacity int DEFAULT NULL
+    p_secondary_organizer_ids int[] DEFAULT NULL,
+    p_capacity int DEFAULT NULL,
+    p_tags text[] DEFAULT NULL,
+    p_description text DEFAULT NULL
 )
 RETURNS int
 LANGUAGE plpgsql
@@ -621,23 +623,31 @@ AS $$
 DECLARE
     v_event_id int;
 BEGIN
+    -- Insert the main event record.
+    INSERT INTO event (name, start_time, finish_time, description, capacity, venue_id, organizer_id)
+    VALUES (p_name, p_start_time, p_finish_time, p_description, p_capacity, p_venue_id, p_organizer_id)
+    RETURNING event_id INTO v_event_id;
 
-    
-    IF NOT EXISTS (SELECT 1 FROM venue WHERE venue_id = p_venue_id) THEN
-        RAISE EXCEPTION 'venue does not exist';
+    -- Insert secondary organizers, excluding the primary organizer if accidentally included.
+    IF p_secondary_organizer_ids IS NOT NULL THEN
+        INSERT INTO secondary_organizers (event_id, organizer_id)
+        SELECT v_event_id, unnest(p_secondary_organizer_ids)
+        WHERE unnest(p_secondary_organizer_ids) <> p_organizer_id
+        ON CONFLICT (event_id, organizer_id) DO NOTHING;
     END IF;
 
-    INSERT INTO event (name, start_time, finish_time, description, capacity, venue_id, organizer_id)
-    VALUES (
-        p_name,
-        p_start_time,
-        p_finish_time,
-        p_description,
-        p_capacity,
-        p_venue_id,
-        p_organizer_id
-    )
-    RETURNING event_id INTO v_event_id;
+    -- Ensure all tags exist in the tag table, then link them to the event.
+    IF p_tags IS NOT NULL THEN
+        -- Insert missing tags (ignores existing ones).
+        INSERT INTO tag (tag_name)
+        SELECT unnest(p_tags)
+        ON CONFLICT (tag_name) DO NOTHING;
+
+        -- Link tags with the newly created event.
+        INSERT INTO tagged_with (event_id, tag_name)
+        SELECT v_event_id, unnest(p_tags)
+        ON CONFLICT (event_id, tag_name) DO NOTHING;
+    END IF;
 
     RETURN v_event_id;
 END;
@@ -1401,7 +1411,7 @@ GRANT EXECUTE ON FUNCTION edit_event_text_fields(int, int, text, text)
 TO editor_role, organizer_role, admin_role;
 
 -- Organizer actions
-GRANT EXECUTE ON FUNCTION create_event(int, text, timestamp, timestamp, int, text, int)
+GRANT EXECUTE ON FUNCTION create_event(int, text, timestamp, timestamp, int, int[], int, text[], text)
 TO organizer_role, admin_role;
 GRANT EXECUTE ON FUNCTION delete_event(int) TO organizer_role, admin_role;
 GRANT EXECUTE ON FUNCTION add_editor_to_event(int, int, int) TO organizer_role, admin_role;
