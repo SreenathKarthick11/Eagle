@@ -16,6 +16,9 @@ from app.models import (
     IsRegistered,
     EventCatalog,
     EditEvent,
+    CreateCampus,
+    CreateLocation,
+    CreateVenue,
 )
 import psycopg
 from app.db import db
@@ -77,6 +80,24 @@ def get_campuses():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/campuses")
+def create_campus(request: CreateCampus, role: str):
+    try:
+        db.create_campus(**request.model_dump(), role=role)
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/campuses")
+def delete_campus(campus_id: int, role: str):
+    try:
+        db.delete_campus(campus_id, role=role)
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/locations")
 def get_locations(campus_id: Optional[int] = None):
     try:
@@ -87,12 +108,48 @@ def get_locations(campus_id: Optional[int] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/locations")
+def create_location(request: CreateLocation, role: str):
+    try:
+        db.create_location(**request.model_dump(), role=role)
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/locations")
+def delete_location(location_id, role: str):
+    try:
+        db.delete_location(location_id, role=role)
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/venues")
 def get_venues(location_id: Optional[int] = None):
     try:
         result = db.get_venues(location_id)
         result = list(map(lambda x: VenueItem(**x), result))
         return result
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/venues")
+def create_venue(request: CreateVenue, role: str):
+    try:
+        db.create_venue(**request.model_dump(), role=role)
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/venues")
+def delete_venue(venue_id, role: str):
+    try:
+        db.delete_venue(venue_id, role=role)
+        return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -121,7 +178,7 @@ def search_events(request: SearchEventsRequest):
 @app.get("/profile")
 def get_profile(user_id: int):
     try:
-        result = db.get_profile_details(user_id)
+        result = db.get_user_profile(user_id)
         print(result)
         return ProfileDetails(**result)
     except psycopg.Error as e:
@@ -184,8 +241,6 @@ def cancel_registration(user_id: int, event_id: int):
     except psycopg.Error as e:
         # return SuccessResponse(success=False)
         raise HTTPException(status_code=500, detail=str(e))
-
-
 
     # try:
     #     pass

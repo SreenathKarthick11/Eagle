@@ -676,9 +676,9 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    -- IF NOT can_manage_event(p_actor_id, p_event_id) THEN
-    --     RAISE EXCEPTION 'not authorized for this event';
-    -- END IF;
+    IF NOT can_manage_event(p_actor_id, p_event_id) THEN
+        RAISE EXCEPTION 'not authorized for this event';
+    END IF;
 
     -- IF is_blacklisted(p_visitor_id) THEN
     --     RAISE EXCEPTION 'user is blacklisted';
@@ -687,6 +687,12 @@ BEGIN
     -- IF NOT EXISTS (SELECT 1 FROM visitor WHERE visitor_id = p_visitor_id) THEN
     --     RAISE EXCEPTION 'user is not a visitor';
     -- END IF;
+
+
+    IF NOT EXISTS (SELECT 1 FROM editor WHERE editor_id = p_visitor_id) THEN
+        RAISE EXCEPTION 'user is not an editor';
+    END IF;
+
 
     INSERT INTO editor(editor_id)
     VALUES (p_visitor_id)
@@ -812,14 +818,14 @@ BEGIN
         RAISE EXCEPTION 'not authorized for this event';
     END IF;
 
-    -- IF NOT EXISTS (
-    --     SELECT 1
-    --     FROM visitor_of
-    --     WHERE event_id = p_event_id
-    --       AND visitor_id = p_visitor_id
-    -- ) THEN
-    --     RAISE EXCEPTION 'visitor did not attend this event';
-    -- END IF;
+    IF NOT EXISTS (
+        SELECT 1
+        FROM visitor_of
+        WHERE event_id = p_event_id
+          AND visitor_id = p_visitor_id
+    ) THEN
+        RAISE EXCEPTION 'visitor did not attend this event';
+    END IF;
 
     UPDATE visitor
     SET strike_count = strike_count + 1,
@@ -916,7 +922,6 @@ $$;
 -- $$;
 
 CREATE OR REPLACE FUNCTION promote_visitor_to_editor(
-    p_admin_id int,
     p_user_id int
 )
 RETURNS void
@@ -925,13 +930,13 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF NOT is_admin(p_admin_id) THEN
-        RAISE EXCEPTION 'admin only';
-    END IF;
+    -- IF NOT is_admin(p_admin_id) THEN
+    --     RAISE EXCEPTION 'admin only';
+    -- END IF;
 
-    IF is_blacklisted(p_user_id) THEN
-        RAISE EXCEPTION 'cannot promote blacklisted user';
-    END IF;
+    -- IF is_blacklisted(p_user_id) THEN
+    --     RAISE EXCEPTION 'cannot promote blacklisted user';
+    -- END IF;
 
     IF NOT EXISTS (SELECT 1 FROM visitor WHERE visitor_id = p_user_id) THEN
         RAISE EXCEPTION 'user is not a visitor';
@@ -949,7 +954,6 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION promote_visitor_to_organizer(
-    p_admin_id int,
     p_user_id int
 )
 RETURNS void
@@ -958,13 +962,13 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF NOT is_admin(p_admin_id) THEN
-        RAISE EXCEPTION 'admin only';
-    END IF;
+    -- IF NOT is_admin(p_admin_id) THEN
+    --     RAISE EXCEPTION 'admin only';
+    -- END IF;
 
-    IF is_blacklisted(p_user_id) THEN
-        RAISE EXCEPTION 'cannot promote blacklisted user';
-    END IF;
+    -- IF is_blacklisted(p_user_id) THEN
+    --     RAISE EXCEPTION 'cannot promote blacklisted user';
+    -- END IF;
 
     IF NOT EXISTS (SELECT 1 FROM visitor WHERE visitor_id = p_user_id) THEN
         RAISE EXCEPTION 'user is not a visitor';
@@ -982,7 +986,6 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION promote_visitor_to_admin(
-    p_admin_id int,
     p_user_id int
 )
 RETURNS void
@@ -991,13 +994,13 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF NOT is_admin(p_admin_id) THEN
-        RAISE EXCEPTION 'admin only';
-    END IF;
+    -- IF NOT is_admin(p_admin_id) THEN
+    --     RAISE EXCEPTION 'admin only';
+    -- END IF;
 
-    IF is_blacklisted(p_user_id) THEN
-        RAISE EXCEPTION 'cannot promote blacklisted user';
-    END IF;
+    -- IF is_blacklisted(p_user_id) THEN
+    --     RAISE EXCEPTION 'cannot promote blacklisted user';
+    -- END IF;
 
     IF NOT EXISTS (SELECT 1 FROM visitor WHERE visitor_id = p_user_id) THEN
         RAISE EXCEPTION 'user is not a visitor';
@@ -1016,7 +1019,6 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION promote_organizer_to_admin(
-    p_admin_id int,
     p_user_id int
 )
 RETURNS void
@@ -1025,13 +1027,13 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF NOT is_admin(p_admin_id) THEN
-        RAISE EXCEPTION 'admin only';
-    END IF;
+    -- IF NOT is_admin(p_admin_id) THEN
+    --     RAISE EXCEPTION 'admin only';
+    -- END IF;
 
-    IF is_blacklisted(p_user_id) THEN
-        RAISE EXCEPTION 'cannot promote blacklisted user';
-    END IF;
+    -- IF is_blacklisted(p_user_id) THEN
+    --     RAISE EXCEPTION 'cannot promote blacklisted user';
+    -- END IF;
 
     IF NOT EXISTS (SELECT 1 FROM organizer WHERE organizer_id = p_user_id) THEN
         RAISE EXCEPTION 'user is not an organizer';
