@@ -1374,7 +1374,57 @@ END;
 $$;
 
 
+CREATE OR REPLACE FUNCTION get_visitors()
+RETURNS TABLE (
+    user_id int,
+    username text
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+    SELECT
+        u.user_id,
+        u.username
+    FROM visitor v
+    JOIN user_info u ON v.visitor_id = u.user_id
+    ORDER BY u.username;
+$$;
 
+CREATE OR REPLACE FUNCTION get_organizers()
+RETURNS TABLE (
+    user_id int,
+    username text
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+    SELECT
+        u.user_id,
+        u.username
+    FROM organizer o
+    JOIN user_info u ON o.organizer_id = u.user_id
+    ORDER BY u.username;
+$$;
+
+CREATE OR REPLACE FUNCTION get_blacklists()
+RETURNS TABLE (
+    user_id int,
+    username text
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+    SELECT
+        u.user_id,
+        u.username
+    FROM visitor v
+    JOIN user_info u ON v.visitor_id = u.user_id
+    WHERE v.strike_count >= 5
+    ORDER BY u.username;
+$$;
 
 
 /* =========================================================
