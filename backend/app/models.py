@@ -4,13 +4,16 @@ from datetime import datetime
 
 
 # Auth
+# /signin
 class SignInRequest(BaseModel):
     username: str
     password: str
 
 
 class SignInResponse(BaseModel):
-    access_token: str
+    user_id: int
+    role: str
+    # access_token: str
     """Check this model again"""
 
 
@@ -23,18 +26,27 @@ class SignUpRequest(BaseModel):
 
 
 class SuccessResponse(BaseModel):
-    sucess: bool
+    success: bool
 
 
-class ProfileGetResponse(BaseModel):
+class ProfileDetails(BaseModel):
     user_id: int
     name: str
     username: str
-    role: str
-    # These are not in user_profile view directly, but we can fetch them from user_info
-    email_id: Optional[str] = None
-    phone_no: Optional[str] = None
+    email_id: str 
+    phone_no: str 
 
+
+class UpdateProfile(BaseModel):
+    user_id: int
+    name: str
+    phone_no: str
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
+class IsRegistered(BaseModel):
+    user_id: int
+    event_id: int
 
 class ChangePasswordRequest(BaseModel):
     current_password: str
@@ -64,7 +76,7 @@ class GetHomeEventFiltersResponse(BaseModel):
 
 
 # POST /home with the following request body to get response in the fomat PostSearchEventsResponse
-class PostSearchEventsRequest(BaseModel):
+class SearchEventsRequest(BaseModel):
     campus_name: Optional[str] = None
     venue_name: Optional[str] = None
     location_name: Optional[str] = None
@@ -72,7 +84,7 @@ class PostSearchEventsRequest(BaseModel):
     start_after: Optional[datetime] = None
     finish_before: Optional[datetime] = None
     tags: Optional[List[str]] = None
-    require_all_tags: bool = False
+    require_all_tags: Optional[bool] = False
     is_full: Optional[bool] = None
     title_substring: Optional[str] = None
     description_substring: Optional[str] = None
@@ -128,9 +140,9 @@ class UpdateEventTextRequest(BaseModel):
 
 
 # GET /event/{event_id}, then we get the following response
-class EventDetailResponse(BaseModel):
+class EventCatalog(BaseModel):
     event_id: int
-    name: str
+    event_name: str
     start_time: datetime
     finish_time: datetime
     description: Optional[str]
@@ -141,9 +153,14 @@ class EventDetailResponse(BaseModel):
     primary_organizer: str
     secondary_organizers: List[str]
     tags: List[str]
-    registered_coutn: int
+    registered_count: int
     is_full: bool
 
+class EditEvent(BaseModel):
+    user_id: int
+    event_id: int
+    name: Optional[str] = None
+    description: Optional[str] = None
 
 # PUT /event/{event_id}, to modify the details of an event
 class EditEventFields(BaseModel):
@@ -178,6 +195,10 @@ class VenueItem(BaseModel):
 class EventItem(BaseModel):
     event_id: int
     event_name: str
+
+
+class TagItem(BaseModel):
+    tag: str
 
 
 # GET /admin/blacklist
@@ -227,18 +248,22 @@ class AdminDeleteLocation(BaseModel):
 class AdminVenues(BaseModel):
     item: List[VenueItem]
 
+
 # POST /admin/venues
 class AdminCreateVenue(BaseModel):
     venue_name: str
     capacity: int
 
+
 # DELETE /admin/venues
 class AdminDeleteVenue(BaseModel):
     venue_id: int
 
+
 # GET /admin/users
 class AdminUsers(BaseModel):
     items: List[UserItem]
+
 
 # POST /admin/users
 class AdminPromoteUser(BaseModel):
@@ -246,6 +271,8 @@ class AdminPromoteUser(BaseModel):
     role: str
 
 
+# class campuses(BaseModel):
+#     items: List[campuses]
 
 # # Home
 # class LocationItem(BaseModel):

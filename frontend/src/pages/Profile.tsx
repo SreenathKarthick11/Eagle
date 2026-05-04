@@ -24,8 +24,8 @@ export const Profile = () => {
   const [userData, setUserData] = useState({
     name: "",
     username: "",
-    email: "",
-    phone: "",
+    email_id: "",
+    phone_no: "",
   });
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export const Profile = () => {
         const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
         const user_id = storedUser.user_id;
 
-        const res = await fetch(`http://localhost:8000/api/profile/${user_id}`); // TODO: update with actual url
+        const res = await fetch(`http://localhost:8000/profile?user_id=${user_id}`); 
         let data: any = {};
         try {
           data = await res.json();
@@ -80,15 +80,15 @@ export const Profile = () => {
         }
       }
 
-      const res = await fetch("http://localhost:8000/api/profile/modify", { // TODO: update with actual url
-        method: "POST",
+      const res = await fetch("http://localhost:8000/profile/", { // TODO: update with actual url
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           user_id: storedUser.user_id,
           name: userData.name,
-          phone: userData.phone,
+          phone: userData.phone_no,
           current_password: current || null,
           new_password: newPass || null,
         }),
@@ -162,7 +162,7 @@ export const Profile = () => {
 
           <md-outlined-text-field
             label="Email"
-            value={userData.email}
+            value={userData.email_id}
             readOnly
             disabled
           />
@@ -170,10 +170,10 @@ export const Profile = () => {
           <md-outlined-text-field
             label="Phone"
             type="number"
-            value={userData.phone}
+            value={userData.phone_no}
             onInput={(e: React.InputEvent<MdOutlinedTextField>) => {
               const target = e.target as MdOutlinedTextField;
-              setUserData({ ...userData, phone: target.value });
+              setUserData({ ...userData, phone_no: target.value });
             }}
           />
 
