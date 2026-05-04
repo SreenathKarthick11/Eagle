@@ -1370,7 +1370,6 @@ GRANT EXECUTE ON FUNCTION get_tags() TO admin_role;
 GRANT EXECUTE ON FUNCTION get_user_profile(int) TO admin_role;
 GRANT EXECUTE ON FUNCTION update_user_details(int, text, text) TO admin_role;
 GRANT EXECUTE ON FUNCTION is_user_registered(int, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION edit_event_text_fields(int, int, text, text) TO admin_role;
 GRANT EXECUTE ON FUNCTION delete_event(int, int) TO admin_role;
 GRANT EXECUTE ON FUNCTION get_event_participants(int) TO admin_role;
 
