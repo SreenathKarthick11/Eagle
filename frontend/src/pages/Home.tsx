@@ -125,9 +125,9 @@ export const Home = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          campus: campus || null,
-          location: location || null,
-          venue: venue || null,
+          campus_name: campus || null,
+          location_name: location || null,
+          venue_name: venue || null,
           tags: tags.length ? tags : null,
           title_substring: title || null,
           start_after: startTime || null,
@@ -273,8 +273,8 @@ export const Home = () => {
               type="button"
               onClick={() => navigate(`/event/${event.event_id}`)}
             >
-              <div slot="headline">{event.title}</div>
-              <div slot="supporting-text">{event.organizer}</div>
+              <div slot="headline">{event.event_name}</div>
+              {/* <div slot="supporting-text">{event.organizer}</div> */}
             </md-list-item>
           ))}
         </md-list>
