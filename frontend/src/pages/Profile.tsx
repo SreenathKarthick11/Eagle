@@ -178,7 +178,7 @@ export const Profile = () => {
           />
 
           <div className="profile-footer">
-            <md-outlined-button onClick={handlePasswordChangeOpen}> Change Password</md-outlined-button>
+            {/*<md-outlined-button onClick={handlePasswordChangeOpen}> Change Password</md-outlined-button>*/}
 
             <md-filled-button onClick={handleSave}>Save Changes</md-filled-button>
           </div>
@@ -198,6 +198,7 @@ export const Profile = () => {
           <md-filled-button onClick={handlePasswordChange}>Update</md-filled-button>
         </div>
       </md-dialog>
+      
 
       {/* SUCCESS DIALOG */}
       <md-dialog ref={dialogSaveChangesRef}>
