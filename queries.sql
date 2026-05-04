@@ -1572,35 +1572,47 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO admin_role;
    INDEXES
    ========================================================= */
 
-CREATE INDEX IF NOT EXISTS idx_event_venue_time
-    ON event (venue_id, start_time, finish_time);
+-- 1. event table
+-- GiST index for fast time‑clash detection (trigger: prevent_event_time_clash)
+CREATE INDEX IF NOT EXISTS idx_event_venue_time_range
+    ON event USING gist (venue_id, tsrange(start_time, finish_time, '[)'));
 
-CREATE INDEX IF NOT EXISTS idx_event_start_time
-    ON event (start_time);
+-- B‑tree indexes for common filters and joins
+CREATE INDEX IF NOT EXISTS idx_event_organizer ON event (organizer_id);
+CREATE INDEX IF NOT EXISTS idx_event_start_time ON event (start_time);
+CREATE INDEX IF NOT EXISTS idx_event_venue_id ON event (venue_id);   -- supports join + FK
 
-CREATE INDEX IF NOT EXISTS idx_event_organizer
-    ON event (organizer_id);
-
-CREATE INDEX IF NOT EXISTS idx_venue_location
-    ON venue (location_id);
-
-CREATE INDEX IF NOT EXISTS idx_location_campus
-    ON location (campus_id);
-
-CREATE INDEX IF NOT EXISTS idx_visitor_strike_count
-    ON visitor (strike_count);
-
-CREATE INDEX IF NOT EXISTS idx_visitor_of_event
-    ON visitor_of (event_id);
-
-CREATE INDEX IF NOT EXISTS idx_visitor_of_visitor
-    ON visitor_of (visitor_id);
-
-CREATE INDEX IF NOT EXISTS idx_tagged_with_tag_event
-    ON tagged_with (tag_name, event_id);
-
+-- GIN trigram indexes for substring search on name and description
 CREATE INDEX IF NOT EXISTS idx_event_name_trgm
     ON event USING gin (lower(name) gin_trgm_ops);
-
 CREATE INDEX IF NOT EXISTS idx_event_description_trgm
     ON event USING gin (lower(description) gin_trgm_ops);
+
+-- 2. venue table
+CREATE INDEX IF NOT EXISTS idx_venue_location ON venue (location_id);
+
+-- 3. location table
+CREATE INDEX IF NOT EXISTS idx_location_campus ON location (campus_id);
+
+-- 4. visitor table
+CREATE INDEX IF NOT EXISTS idx_visitor_strike_count ON visitor (strike_count);
+
+-- 5. visitor_of table (junction)
+CREATE INDEX IF NOT EXISTS idx_visitor_of_event ON visitor_of (event_id);
+CREATE INDEX IF NOT EXISTS idx_visitor_of_visitor ON visitor_of (visitor_id);
+
+-- 6. secondary_organizers table (junction)
+-- primary key (event_id, organizer_id) already provides an index, but we also add reverse for lookups by organizer
+CREATE INDEX IF NOT EXISTS idx_secondary_organizers_organizer ON secondary_organizers (organizer_id);
+
+-- 7. editor_of table (junction)
+CREATE INDEX IF NOT EXISTS idx_editor_of_editor ON editor_of (editor_id);
+
+-- 8. tagged_with table (junction)
+-- primary key (event_id, tag_name) covers event_id lookups; add index for tag-based reverse lookups
+CREATE INDEX IF NOT EXISTS idx_tagged_with_tag ON tagged_with (tag_name);
+
+-- 9. tag table – no extra indexes needed (primary key)
+
+-- 10. user_info – username already has unique index, other columns not heavily filtered
+-- 11. role tables (admin, organizer, editor, visitor) – primary keys are sufficient
