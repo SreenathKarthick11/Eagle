@@ -9,25 +9,69 @@ import "@material/web/iconbutton/filled-tonal-icon-button.js";
 import "@material/web/icon/icon.js";
 
 import type { MdDialog } from "@material/web/dialog/dialog.js";
+import type { DialogHandle } from "../../components/customDialog";
+import type { Visitor } from "../../interfaces";
 
 import "../styles/admin/BlackList.css";
 
 export const AdminBlackList = () => {
-  const [selectedVisitor, setSelectedVisitor] = useState<string | null>(null);
+  const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
+  const [visitors, setVisitors] = useState<Visitor[]>([]);
 
   const dialogRef = useRef<MdDialog>(null);
+  const fetchErrorDialogRef = useRef<DialogHandle>(null);
 
-  const visitors = [
-    "Alan Turing",
-    "Ada Lovelace",
-    "Grace Hopper",
-    "Donald Knuth",
-    "John von Neumann",
-    "Claude Shannon",
-    "Ken Thompson",
-    "Dennis Ritchie",
-    "Barbara Liskov",
-  ];
+  const showError = (msg: string) => {
+    fetchErrorDialogRef.current?.open("Error", msg);
+  };
+
+  // Fetch Blacklisted users
+  useEffect(() => {
+    const loadBlacklistedUsers = async () => {
+      try {
+        const res = await fetch("httpps://localhost:8000/api/blacklisted"); // TODO Replace with api rul
+        const data: Visitor[] = await res.json();
+        setVisitors(data);
+      } catch {
+        showError("Failed to load blacklisted events");
+      }
+    };
+
+    loadBlacklistedUsers();
+  }, []);
+
+  // Whitelist a person
+  const confirmWhiteList = async () => {
+    if (!selectedVisitor) return;
+
+    try {
+      const res = await fetch("https://localhost:8000/api/whitelist", { // TODO Replace with api url
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: selectedVisitor.user_id,
+        }),
+      });
+
+      let data: { detail?: string } = {};
+      data = await res.json();
+
+      if (!res.ok) {
+        showError(data.detail || "Failed to whitelist");
+        return;
+      }
+
+      setVisitors((prev) =>
+        prev.filter((v) => v.user_id !== selectedVisitor.user_id),
+      );
+
+      dialogRef.current?.close();
+    } catch {
+      showError("Server Error");
+    }
+  };
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -47,14 +91,9 @@ export const AdminBlackList = () => {
     };
   }, []);
 
-  const openConfirmDialog = (visitor: string) => {
+  const openConfirmDialog = (visitor: Visitor) => {
     setSelectedVisitor(visitor);
     dialogRef.current?.show();
-  };
-
-  const confirmBlacklist = () => {
-    console.log("Blacklisted: ", selectedVisitor);
-    dialogRef.current?.close();
   };
 
   return (
@@ -64,7 +103,7 @@ export const AdminBlackList = () => {
       <md-list className="userlist">
         {visitors.map((visitor, index) => (
           <md-list-item key={index}>
-            <div slot="headline">{visitor}</div>
+            <div slot="headline">{visitor.username}</div>
             <md-filled-tonal-icon-button
               slot="end"
               onClick={() => openConfirmDialog(visitor)}
@@ -77,13 +116,13 @@ export const AdminBlackList = () => {
 
       <md-dialog ref={dialogRef}>
         <div slot="headline">
-          Whitelist <b>{selectedVisitor}?</b>
+          Whitelist <b>{selectedVisitor?.username}?</b>
         </div>
         <div slot="actions">
           <md-text-button onClick={() => dialogRef.current?.close()}>
             No
           </md-text-button>
-          <md-filled-button onClick={confirmBlacklist}>Yes</md-filled-button>
+          <md-filled-button onClick={confirmWhiteList}>Yes</md-filled-button>
         </div>
       </md-dialog>
     </div>
