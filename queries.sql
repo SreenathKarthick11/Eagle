@@ -41,6 +41,7 @@ GRANT USAGE ON SCHEMA public TO app_user, visitor_role, editor_role, organizer_r
    VIEWS
    ========================================================= */
 
+/* View containing user IDs and their roles. */
 CREATE OR REPLACE VIEW user_roles AS
 SELECT
     u.user_id,
@@ -57,16 +58,15 @@ LEFT JOIN organizer o ON o.organizer_id = u.user_id
 LEFT JOIN editor e    ON e.editor_id = u.user_id
 LEFT JOIN visitor v   ON v.visitor_id = u.user_id;
 
+/* View containing a user's profile info. */
 CREATE OR REPLACE VIEW user_profile AS
 SELECT
     u.user_id,
     u.username,
     u.name,
+    u.email_id,
+    u.phone_no,
     ur.role AS active_role,
-    (a.admin_id IS NOT NULL)     AS is_admin,
-    (o.organizer_id IS NOT NULL) AS is_organizer,
-    (e.editor_id IS NOT NULL)    AS is_editor,
-    (v.visitor_id IS NOT NULL)   AS is_visitor,
     COALESCE(v.strike_count, 0)   AS blacklist_count,
     v.latest_timestamp            AS last_blacklisted_at
 FROM user_info u
@@ -76,6 +76,7 @@ LEFT JOIN organizer o ON o.organizer_id = u.user_id
 LEFT JOIN editor e    ON e.editor_id = u.user_id
 LEFT JOIN visitor v   ON v.visitor_id = u.user_id;
 
+/* View with event IDs, capacity, and number of registered visitors. */
 CREATE OR REPLACE VIEW event_participation_stats AS
 SELECT
     e.event_id,
@@ -88,6 +89,7 @@ LEFT JOIN (
     GROUP BY event_id
 ) ev USING (event_id);
 
+/* View with all relevant details of an event. */
 CREATE OR REPLACE VIEW event_full_details AS
 WITH secondary_orgs AS (
     SELECT
@@ -116,6 +118,7 @@ JOIN campus c  ON c.campus_id = l.campus_id
 JOIN user_info u ON u.user_id = e.organizer_id
 LEFT JOIN secondary_orgs s ON s.event_id = e.event_id;
 
+/* View with ALL details of an event. */
 CREATE OR REPLACE VIEW event_catalog AS
 WITH secondary_orgs AS (
     SELECT
@@ -166,6 +169,7 @@ LEFT JOIN participation p ON p.event_id = e.event_id;
    TRIGGER FUNCTIONS + TRIGGERS
    ========================================================= */
 
+/* Whenever a new user signs up, they are inserted into visitors. */
 CREATE OR REPLACE FUNCTION tgr_insert_into_visitor()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -177,6 +181,8 @@ BEGIN
 END;
 $$;
 
+/* Ensure that event capacity is <= venue capacity, and if not specified, it is
+* set to the venue capacity. */
 CREATE OR REPLACE FUNCTION enforce_event_capacity()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -201,6 +207,7 @@ BEGIN
 END;
 $$;
 
+/* Ensures that a new event does not clash with any of the existing events. */
 CREATE OR REPLACE FUNCTION prevent_event_time_clash()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -210,7 +217,7 @@ BEGIN
         SELECT 1
         FROM event e
         WHERE e.venue_id = NEW.venue_id
-          AND e.event_id <> COALESCE(NEW.event_id, -1)
+          AND e.event_id <> NEW.event_id
           AND tsrange(e.start_time, e.finish_time, '[)') &&
               tsrange(NEW.start_time, NEW.finish_time, '[)')
     ) THEN
@@ -221,25 +228,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION prevent_venue_capacity_violation()
-RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    IF EXISTS (
-        SELECT 1
-        FROM event e
-        WHERE e.venue_id = NEW.venue_id
-          AND e.capacity IS NOT NULL
-          AND e.capacity > NEW.capacity
-    ) THEN
-        RAISE EXCEPTION 'venue capacity cannot be reduced below existing event capacity';
-    END IF;
-
-    RETURN NEW;
-END;
-$$;
-
+/* Ensures valid registrations, satisfying all constraints. */
 CREATE OR REPLACE FUNCTION prevent_bad_registration()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -262,25 +251,10 @@ BEGIN
         RAISE EXCEPTION 'user is blacklisted';
     END IF;
 
-    IF EXISTS (
-        SELECT 1
-        FROM visitor_of
-        WHERE event_id = NEW.event_id
-          AND visitor_id = NEW.visitor_id
-    ) THEN
-        RAISE EXCEPTION 'user is already registered for this event';
-    END IF;
-
-    SELECT e.capacity, COUNT(vo.visitor_id)::int
+    SELECT eps.capacity, eps.n_visitors
     INTO v_capacity, v_count
-    FROM event e
-    LEFT JOIN visitor_of vo ON vo.event_id = e.event_id
-    WHERE e.event_id = NEW.event_id
-    GROUP BY e.capacity;
-
-    IF v_capacity IS NULL THEN
-        RAISE EXCEPTION 'event does not exist';
-    END IF;
+    FROM event_participation_stats eps
+    WHERE eps.event_id = NEW.event_id;
 
     IF v_count >= v_capacity THEN
         RAISE EXCEPTION 'event is full';
@@ -307,12 +281,6 @@ CREATE TRIGGER trg_event_time_clash
 BEFORE INSERT OR UPDATE ON event
 FOR EACH ROW
 EXECUTE FUNCTION prevent_event_time_clash();
-
-DROP TRIGGER IF EXISTS trg_venue_capacity_violation ON venue;
-CREATE TRIGGER trg_venue_capacity_violation
-BEFORE UPDATE OF capacity ON venue
-FOR EACH ROW
-EXECUTE FUNCTION prevent_venue_capacity_violation();
 
 DROP TRIGGER IF EXISTS trg_prevent_bad_registration ON visitor_of;
 CREATE TRIGGER trg_prevent_bad_registration
@@ -362,6 +330,32 @@ AS $$
     SELECT EXISTS (SELECT 1 FROM admin WHERE admin_id = p_user_id);
 $$;
 
+
+/* Is a user a primary or a secondary organizer of an event? */
+CREATE OR REPLACE FUNCTION is_organizer_of_event(p_actor_id int, p_event_id int)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT
+        (
+        EXISTS (
+            SELECT 1
+            FROM event e
+            WHERE e.event_id = p_event_id
+              AND e.organizer_id = p_actor_id)
+        )
+        OR (
+            EXISTS (
+                SELECT 1
+                FROM secondary_organizers so
+                WHERE so.event_id = p_event_id
+                  AND so.organizer_id = p_actor_id
+            )
+        );
+$$
+
+/* Users who can manage an event: admins, primary and secondary organizers. */
 CREATE OR REPLACE FUNCTION can_manage_event(p_actor_id int, p_event_id int)
 RETURNS boolean
 LANGUAGE sql
@@ -369,16 +363,7 @@ STABLE
 AS $$
     SELECT
         is_admin(p_actor_id)
-        OR (
-            is_organizer(p_actor_id)
-            AND NOT is_blacklisted(p_actor_id)
-            AND EXISTS (
-                SELECT 1
-                FROM event e
-                WHERE e.event_id = p_event_id
-                  AND e.organizer_id = p_actor_id
-            )
-        );
+        OR is_organizer_of_event(p_actor_id, p_event_id)
 $$;
 
 CREATE OR REPLACE FUNCTION can_edit_event(p_actor_id int, p_event_id int)
@@ -387,21 +372,9 @@ LANGUAGE sql
 STABLE
 AS $$
     SELECT
-        is_admin(p_actor_id)
+        can_manage_event(p_actor_id, p_event_id)
         OR (
-            is_organizer(p_actor_id)
-            AND NOT is_blacklisted(p_actor_id)
-            AND EXISTS (
-                SELECT 1
-                FROM event e
-                WHERE e.event_id = p_event_id
-                  AND e.organizer_id = p_actor_id
-            )
-        )
-        OR (
-            is_editor(p_actor_id)
-            AND NOT is_blacklisted(p_actor_id)
-            AND EXISTS (
+            EXISTS (
                 SELECT 1
                 FROM editor_of eo
                 WHERE eo.event_id = p_event_id
@@ -579,10 +552,6 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF is_blacklisted(p_visitor_id) THEN
-        RAISE EXCEPTION 'user is blacklisted';
-    END IF;
-
     INSERT INTO visitor_of (event_id, visitor_id)
     VALUES (p_event_id, p_visitor_id);
 END;
@@ -598,10 +567,6 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF is_blacklisted(p_visitor_id) THEN
-        RAISE EXCEPTION 'user is blacklisted';
-    END IF;
-
     DELETE FROM visitor_of
     WHERE event_id = p_event_id
       AND visitor_id = p_visitor_id;
