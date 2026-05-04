@@ -17,30 +17,30 @@ create table location (
     name text not null check (name ~ '^[A-Za-z][A-Za-z0-9 -]*$'),
     landmark text check (length(landmark) > 0),
     coordinates point not null,
-    campus_id int references campus(campus_id)
+    campus_id int references campus(campus_id) on delete cascade
 );
 
 create table venue (
     venue_id int generated always as identity (start with 0 minvalue 0) primary key,
     name text not null check (name ~ '^[A-Za-z][A-Za-z0-9 -]*$'),
     capacity int not null,
-    location_id int references location(location_id)
+    location_id int references location(location_id) on delete cascade
 );
 
 create table organizer (
-    organizer_id int references user_info(user_id) primary key
+    organizer_id int references user_info(user_id) on delete cascade primary key
 );
 
 create table admin (
-    admin_id int references user_info(user_id) primary key
+    admin_id int references user_info(user_id) on delete cascade primary key
 );
 
 create table editor (
-    editor_id int references user_info(user_id) primary key
+    editor_id int references user_info(user_id) on delete cascade primary key
 );
 
 create table visitor (
-    visitor_id int references user_info(user_id) primary key,
+    visitor_id int references user_info(user_id) on delete cascade primary key,
     strike_count int not null default 0 check (strike_count between 0 and 5),
     latest_timestamp timestamp
 );
@@ -57,30 +57,30 @@ create table event (
     finish_time timestamp not null check (finish_time > start_time),
     description text check (length(description) > 0),
     capacity int check (capacity > 0),
-    venue_id int references venue(venue_id),
-    organizer_id int references organizer(organizer_id)
+    venue_id int references venue(venue_id) on delete cascade,
+    organizer_id int references organizer(organizer_id) on delete cascade
 );
 
 create table secondary_organizers (
-    event_id int references event(event_id),
-    organizer_id int references organizer(organizer_id),
+    event_id int references event(event_id) on delete cascade,
+    organizer_id int references organizer(organizer_id) on delete cascade,
     primary key (event_id, organizer_id)
 );
 
 create table editor_of (
-    event_id int references event(event_id),
-    editor_id int references editor(editor_id),
+    event_id int references event(event_id) on delete cascade,
+    editor_id int references editor(editor_id) on delete cascade,
     primary key (event_id, editor_id)
 );
 
 create table visitor_of (
-    event_id int references event(event_id),
-    visitor_id int references visitor(visitor_id),
+    event_id int references event(event_id) on delete cascade,
+    visitor_id int references visitor(visitor_id) on delete cascade,
     primary key (event_id, visitor_id)
 );
 
 create table tagged_with (
-    event_id int references event(event_id),
-    tag_name text references tag(tag_name),
+    event_id int references event(event_id) on delete cascade,
+    tag_name text references tag(tag_name) on delete cascade,
     primary key (event_id, tag_name)
 )
