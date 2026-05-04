@@ -31,7 +31,7 @@ export const Login = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/login", { //TODO: Update the backend URL as needed
+      const response = await fetch("http://localhost:8000/signin", { 
         method: "POST",
         headers: {
           "Content-Type": "application/json",

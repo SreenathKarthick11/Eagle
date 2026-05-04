@@ -31,9 +31,13 @@ export const Home = () => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
-  const [campuses, setCampuses] = useState<string[]>([]);
-  const [locations, setLocations] = useState<string[]>([]);
-  const [venues, setVenues] = useState<string[]>([]);
+  type CampusItem = { campus_id: number; campus_name: string };
+  type LocationItem = { location_id: number; location_name: string };
+  type VenueItem = { venue_id: number; venue_name: string };
+
+  const [campuses, setCampuses] = useState<CampusItem[]>([]);
+  const [locations, setLocations] = useState<LocationItem[]>([]);
+  const [venues, setVenues] = useState<VenueItem[]>([]);
   const [allTags, setAllTags] = useState<string[]>([]);
   const [events, setEvents] = useState<any[]>([]);
 
@@ -46,8 +50,8 @@ export const Home = () => {
     const loadInitial = async () => {
       try {
         const [cRes, tRes] = await Promise.all([
-          fetch("http://localhost:8000/api/campuses"),  // TODO: update with actual url
-          fetch("http://localhost:8000/api/tags"),      // TODO: update with actual url
+          fetch("http://localhost:8000/campuses"),  
+          fetch("http://localhost:8000/tags"),      
         ]);
 
         setCampuses(await cRes.json());
@@ -67,8 +71,8 @@ export const Home = () => {
     const loadLocations = async () => {
       try {
         const url = campus
-          ? `http://localhost:8000/api/locations?campus=${campus}`  // TODO: update with actual url
-          : `http://localhost:8000/api/locations`;                  // TODO: update with actual url
+          ? `http://localhost:8000/locations?campus_id=${campus}`  
+          : `http://localhost:8000/locations`;                  
 
         const res = await fetch(url);
         setLocations(await res.json());
@@ -90,8 +94,8 @@ export const Home = () => {
     const loadVenues = async () => {
       try {
         const url = location
-          ? `http://localhost:8000/api/venues?location=${location}`   // TODO: update with actual url
-          : `http://localhost:8000/api/venues`;                       // TODO: update with actual url
+          ? `http://localhost:8000/venues?location_id=${location}`   
+          : `http://localhost:8000/venues`;                       
 
         const res = await fetch(url);
         setVenues(await res.json());
@@ -115,7 +119,7 @@ export const Home = () => {
   // ---------------- FILTER ----------------
   const handleFilter = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/events/search", {     // TODO: update with actual url
+      const res = await fetch("http://localhost:8000/search", {     // TODO: update with actual url
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,8 +191,8 @@ export const Home = () => {
             }
           >
             {campuses.map((c) => (
-              <md-select-option key={c} value={c}>
-                <div slot="headline">{c}</div>
+              <md-select-option key={c.campus_id} value={String(c.campus_id)}>
+                <div slot="headline">{c.campus_name}</div>
               </md-select-option>
             ))}
           </md-filled-select>
@@ -202,8 +206,8 @@ export const Home = () => {
             }
           >
             {locations.map((l) => (
-              <md-select-option key={l} value={l}>
-                <div slot="headline">{l}</div>
+              <md-select-option key={l.location_id} value={String(l.location_id)}>
+                <div slot="headline">{l.location_name}</div>
               </md-select-option>
             ))}
           </md-filled-select>
@@ -217,8 +221,8 @@ export const Home = () => {
             }
           >
             {venues.map((v) => (
-              <md-select-option key={v} value={v}>
-                <div slot="headline">{v}</div>
+              <md-select-option key={v.venue_id} value={String(v.venue_id)}>
+                <div slot="headline">{v.venue_name}</div>
               </md-select-option>
             ))}
           </md-filled-select>
