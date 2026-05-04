@@ -33,22 +33,16 @@ class ProfileDetails(BaseModel):
     user_id: int
     name: str
     username: str
-    active_role: str
-    is_admin: bool
-    is_organizer: bool
-    is_editor: bool
-    is_visitor: bool
-    blacklist_count: int
-    last_blacklisted_at: Optional[datetime] = None
-    # These are not in user_profile view directly, but we can fetch them from user_info
-    email_id: Optional[str] = None
-    phone_no: Optional[str] = None
+    email_id: str 
+    phone_no: str 
 
 
 class UpdateProfile(BaseModel):
     user_id: int
     name: str
     phone_no: str
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
 
 class IsRegistered(BaseModel):
     user_id: int

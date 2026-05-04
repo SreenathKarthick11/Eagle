@@ -122,6 +122,7 @@ def search_events(request: SearchEventsRequest):
 def get_profile(user_id: int):
     try:
         result = db.get_profile_details(user_id)
+        print(result)
         return ProfileDetails(**result)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -183,6 +184,7 @@ def cancel_registration(user_id: int, event_id: int):
     except psycopg.Error as e:
         # return SuccessResponse(success=False)
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
     # try:

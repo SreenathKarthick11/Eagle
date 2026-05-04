@@ -239,9 +239,9 @@ class PGConnect:
         )
 
     def get_profile_details(self, user_id):
-        return self.call_function_one("get_user_profile", user_id)
+        return self.call_function_one("get_profile_details", user_id)
 
-    def update_user_details(self, user_id, name, phone_no):
+    def update_user_details(self, user_id, name, phone_no,current_password, new_password):
         return self.call_function_one("update_user_details", user_id, name, phone_no)
 
     def is_user_regsitered(self, user_id, event_id):
