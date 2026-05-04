@@ -353,7 +353,7 @@ AS $$
                   AND so.organizer_id = p_actor_id
             )
         );
-$$
+$$;
 
 /* Users who can manage an event: admins, primary and secondary organizers. */
 CREATE OR REPLACE FUNCTION can_manage_event(p_actor_id int, p_event_id int)
@@ -460,45 +460,45 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION search_events(
-    p_campus_name text DEFAULT NULL,
-    p_venue_name text DEFAULT NULL,
-    p_location_name text DEFAULT NULL,
-    p_organizer_username text DEFAULT NULL,
-    p_start_after timestamp DEFAULT NULL,
-    p_finish_before timestamp DEFAULT NULL,
-    p_tags text[] DEFAULT NULL,
-    p_require_all_tags boolean DEFAULT false,
-    p_is_full boolean DEFAULT NULL,
-    p_title_substring text DEFAULT NULL,
-    p_description_substring text DEFAULT NULL
-)
-RETURNS SETOF event_catalog
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT *
-    FROM event_catalog ec
-    WHERE (p_campus_name IS NULL OR ec.campus_name = p_campus_name)
-      AND (p_venue_name IS NULL OR ec.venue_name = p_venue_name)
-      AND (p_location_name IS NULL OR ec.location_name = p_location_name)
-      AND (p_organizer_username IS NULL OR ec.primary_organizer = p_organizer_username)
-      AND (p_start_after IS NULL OR ec.start_time >= p_start_after)
-      AND (p_finish_before IS NULL OR ec.finish_time <= p_finish_before)
-      AND (
-            p_tags IS NULL
-            OR (p_require_all_tags AND ec.tags @> p_tags)
-            OR (NOT p_require_all_tags AND ec.tags && p_tags)
-          )
-      AND (p_is_full IS NULL OR ec.is_full = p_is_full)
-      AND (p_title_substring IS NULL OR lower(ec.event_name) LIKE '%' || lower(p_title_substring) || '%')
-      AND (p_description_substring IS NULL OR lower(ec.description) LIKE '%' || lower(p_description_substring) || '%')
-    ORDER BY ec.start_time, ec.event_id;
-END;
-$$;
+-- CREATE OR REPLACE FUNCTION search_events(
+--     p_campus_name text DEFAULT NULL,
+--     p_venue_name text DEFAULT NULL,
+--     p_location_name text DEFAULT NULL,
+--     p_organizer_username text DEFAULT NULL,
+--     p_start_after timestamp DEFAULT NULL,
+--     p_finish_before timestamp DEFAULT NULL,
+--     p_tags text[] DEFAULT NULL,
+--     p_require_all_tags boolean DEFAULT false,
+--     p_is_full boolean DEFAULT NULL,
+--     p_title_substring text DEFAULT NULL,
+--     p_description_substring text DEFAULT NULL
+-- )
+-- RETURNS SETOF event_catalog
+-- LANGUAGE plpgsql
+-- SECURITY DEFINER
+-- SET search_path = public
+-- AS $$
+-- BEGIN
+--     RETURN QUERY
+--     SELECT *
+--     FROM event_catalog ec
+--     WHERE (p_campus_name IS NULL OR ec.campus_name = p_campus_name)
+--       AND (p_venue_name IS NULL OR ec.venue_name = p_venue_name)
+--       AND (p_location_name IS NULL OR ec.location_name = p_location_name)
+--       AND (p_organizer_username IS NULL OR ec.primary_organizer = p_organizer_username)
+--       AND (p_start_after IS NULL OR ec.start_time >= p_start_after)
+--       AND (p_finish_before IS NULL OR ec.finish_time <= p_finish_before)
+--       AND (
+--             p_tags IS NULL
+--             OR (p_require_all_tags AND ec.tags @> p_tags)
+--             OR (NOT p_require_all_tags AND ec.tags && p_tags)
+--           )
+--       AND (p_is_full IS NULL OR ec.is_full = p_is_full)
+--       AND (p_title_substring IS NULL OR lower(ec.event_name) LIKE '%' || lower(p_title_substring) || '%')
+--       AND (p_description_substring IS NULL OR lower(ec.description) LIKE '%' || lower(p_description_substring) || '%')
+--     ORDER BY ec.start_time, ec.event_id;
+-- END;
+-- $$;
 
 
 CREATE OR REPLACE FUNCTION search_event_items(
@@ -621,14 +621,8 @@ AS $$
 DECLARE
     v_event_id int;
 BEGIN
-    IF is_blacklisted(p_organizer_id) THEN
-        RAISE EXCEPTION 'user is blacklisted';
-    END IF;
 
-    IF NOT is_organizer(p_organizer_id) AND NOT is_admin(p_organizer_id) THEN
-        RAISE EXCEPTION 'not authorized to create events';
-    END IF;
-
+    
     IF NOT EXISTS (SELECT 1 FROM venue WHERE venue_id = p_venue_id) THEN
         RAISE EXCEPTION 'venue does not exist';
     END IF;
@@ -650,7 +644,6 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION delete_event(
-    p_actor_id int,
     p_event_id int
 )
 RETURNS void
@@ -659,9 +652,9 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF NOT can_manage_event(p_actor_id, p_event_id) THEN
-        RAISE EXCEPTION 'not authorized to delete this event';
-    END IF;
+    -- IF NOT can_manage_event(p_actor_id, p_event_id) THEN
+    --     RAISE EXCEPTION 'not authorized to delete this event';
+    -- END IF;
 
     DELETE FROM event
     WHERE event_id = p_event_id;
@@ -683,17 +676,17 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    IF NOT can_manage_event(p_actor_id, p_event_id) THEN
-        RAISE EXCEPTION 'not authorized for this event';
-    END IF;
+    -- IF NOT can_manage_event(p_actor_id, p_event_id) THEN
+    --     RAISE EXCEPTION 'not authorized for this event';
+    -- END IF;
 
-    IF is_blacklisted(p_visitor_id) THEN
-        RAISE EXCEPTION 'user is blacklisted';
-    END IF;
+    -- IF is_blacklisted(p_visitor_id) THEN
+    --     RAISE EXCEPTION 'user is blacklisted';
+    -- END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM visitor WHERE visitor_id = p_visitor_id) THEN
-        RAISE EXCEPTION 'user is not a visitor';
-    END IF;
+    -- IF NOT EXISTS (SELECT 1 FROM visitor WHERE visitor_id = p_visitor_id) THEN
+    --     RAISE EXCEPTION 'user is not a visitor';
+    -- END IF;
 
     INSERT INTO editor(editor_id)
     VALUES (p_visitor_id)
@@ -870,58 +863,58 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION create_location(
-    p_admin_id int,
-    p_name text,
-    p_landmark text,
-    p_coordinates point,
-    p_campus_id int
-)
-RETURNS int
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
-    v_location_id int;
-BEGIN
-    IF NOT is_admin(p_admin_id) THEN
-        RAISE EXCEPTION 'admin only';
-    END IF;
+-- CREATE OR REPLACE FUNCTION create_location(
+--     p_admin_id int,
+--     p_name text,
+--     p_landmark text,
+--     p_coordinates point,
+--     p_campus_id int
+-- )
+-- RETURNS int
+-- LANGUAGE plpgsql
+-- SECURITY DEFINER
+-- SET search_path = public
+-- AS $$
+-- DECLARE
+--     v_location_id int;
+-- BEGIN
+--     IF NOT is_admin(p_admin_id) THEN
+--         RAISE EXCEPTION 'admin only';
+--     END IF;
 
-    INSERT INTO location(name, landmark, coordinates, campus_id)
-    VALUES (p_name, p_landmark, p_coordinates, p_campus_id)
-    RETURNING location_id INTO v_location_id;
+--     INSERT INTO location(name, landmark, coordinates, campus_id)
+--     VALUES (p_name, p_landmark, p_coordinates, p_campus_id)
+--     RETURNING location_id INTO v_location_id;
 
-    RETURN v_location_id;
-END;
-$$;
+--     RETURN v_location_id;
+-- END;
+-- $$;
 
-CREATE OR REPLACE FUNCTION create_venue(
-    p_admin_id int,
-    p_name text,
-    p_capacity int,
-    p_location_id int
-)
-RETURNS int
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
-    v_venue_id int;
-BEGIN
-    IF NOT is_admin(p_admin_id) THEN
-        RAISE EXCEPTION 'admin only';
-    END IF;
+-- CREATE OR REPLACE FUNCTION create_venue(
+--     p_admin_id int,
+--     p_name text,
+--     p_capacity int,
+--     p_location_id int
+-- )
+-- RETURNS int
+-- LANGUAGE plpgsql
+-- SECURITY DEFINER
+-- SET search_path = public
+-- AS $$
+-- DECLARE
+--     v_venue_id int;
+-- BEGIN
+--     IF NOT is_admin(p_admin_id) THEN
+--         RAISE EXCEPTION 'admin only';
+--     END IF;
 
-    INSERT INTO venue(name, capacity, location_id)
-    VALUES (p_name, p_capacity, p_location_id)
-    RETURNING venue_id INTO v_venue_id;
+--     INSERT INTO venue(name, capacity, location_id)
+--     VALUES (p_name, p_capacity, p_location_id)
+--     RETURNING venue_id INTO v_venue_id;
 
-    RETURN v_venue_id;
-END;
-$$;
+--     RETURN v_venue_id;
+-- END;
+-- $$;
 
 CREATE OR REPLACE FUNCTION promote_visitor_to_editor(
     p_admin_id int,
@@ -1103,12 +1096,14 @@ $$;
 -- $$;
 
 
-CREATE OR REPLACE FUNCTION public.get_campuses()
+CREATE OR REPLACE FUNCTION get_campuses()
 RETURNS TABLE (
     campus_id INT,
     campus_name TEXT
 )
 LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
 AS $$
     SELECT
         c.campus_id,
@@ -1117,12 +1112,14 @@ AS $$
     ORDER BY c.name;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_locations(p_campus_id INT DEFAULT NULL)
+CREATE OR REPLACE FUNCTION get_locations(p_campus_id INT DEFAULT NULL)
 RETURNS TABLE (
     location_id INT,
     location_name TEXT
 )
 LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
 AS $$
     SELECT
         l.location_id,
@@ -1132,12 +1129,14 @@ AS $$
     ORDER BY l.name;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_venues(p_location_id INT DEFAULT NULL)
+CREATE OR REPLACE FUNCTION get_venues(p_location_id INT DEFAULT NULL)
 RETURNS TABLE (
     venue_id INT,
     venue_name TEXT
 )
 LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
 AS $$
     SELECT
         v.venue_id,
@@ -1147,11 +1146,13 @@ AS $$
     ORDER BY v.name;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_tags()
+CREATE OR REPLACE FUNCTION get_tags()
 RETURNS TABLE (
     tag_name TEXT
 )
 LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
 AS $$
     SELECT
         t.tag_name
@@ -1159,37 +1160,16 @@ AS $$
     ORDER BY t.tag_name;
 $$;
 
-
 CREATE OR REPLACE FUNCTION get_user_profile(p_user_id INT)
-RETURNS TABLE (
-    user_id INT,
-    username TEXT,
-    name TEXT,
-    active_role TEXT,
-    is_admin BOOLEAN,
-    is_organizer BOOLEAN,
-    is_editor BOOLEAN,
-    is_visitor BOOLEAN,
-    blacklist_count INT,
-    last_blacklisted_at TIMESTAMP
-)
+RETURNS SETOF user_profile
 LANGUAGE sql
-STABLE
+SECURITY DEFINER
+SET search_path = public
 AS $$
-    SELECT
-        up.user_id,
-        up.username,
-        up.name,
-        up.active_role,
-        up.is_admin,
-        up.is_organizer,
-        up.is_editor,
-        up.is_visitor,
-        up.blacklist_count,
-        up.last_blacklisted_at
-    FROM user_profile up
+    SELECT * FROM user_profile up
     WHERE up.user_id = p_user_id;
 $$;
+
 
 
 CREATE OR REPLACE FUNCTION update_user_details(
@@ -1232,7 +1212,8 @@ CREATE OR REPLACE FUNCTION is_user_registered(
 )
 RETURNS BOOLEAN
 LANGUAGE sql
-STABLE
+SECURITY DEFINER
+SET search_path = public
 AS $$
     SELECT EXISTS (
         SELECT 1
@@ -1241,6 +1222,149 @@ AS $$
           AND vo.visitor_id = p_user_id
     );
 $$;
+
+CREATE OR REPLACE FUNCTION create_campus(
+    p_campus_name text
+)
+RETURNS int
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_campus_id int;
+BEGIN
+    INSERT INTO campus(name)
+    VALUES (p_campus_name)
+    RETURNING campus_id INTO v_campus_id;
+
+    RETURN v_campus_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION create_location(
+    p_location_name text,
+    p_landmark text,
+    p_latitude text,
+    p_longitude text,
+    p_campus_id int
+)
+RETURNS int
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_location_id int;
+BEGIN
+    INSERT INTO location(name, landmark, coordinates, campus_id)
+    VALUES (
+        p_location_name, 
+        p_landmark, 
+        point(p_longitude::double precision, p_latitude::double precision), 
+        p_campus_id
+    )
+    RETURNING location_id INTO v_location_id;
+
+    RETURN v_location_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION create_venue(
+    p_venue_name text,
+    p_capacity int,
+    p_location_id int
+)
+RETURNS int
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_venue_id int;
+BEGIN
+    INSERT INTO venue(name, capacity, location_id)
+    VALUES (p_venue_name, p_capacity, p_location_id)
+    RETURNING venue_id INTO v_venue_id;
+
+    RETURN v_venue_id;
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION delete_campus(
+    p_campus_id int
+)
+RETURNS int
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_deleted_id int;
+BEGIN
+    DELETE FROM campus
+    WHERE campus_id = p_campus_id
+    RETURNING campus_id INTO v_deleted_id;
+
+    IF v_deleted_id IS NULL THEN
+        RAISE EXCEPTION 'campus not found';
+    END IF;
+
+    RETURN v_deleted_id;
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION delete_location(
+    p_location_id int
+)
+RETURNS int
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_deleted_id int;
+BEGIN
+    DELETE FROM location
+    WHERE location_id = p_location_id
+    RETURNING location_id INTO v_deleted_id;
+
+    IF v_deleted_id IS NULL THEN
+        RAISE EXCEPTION 'location not found';
+    END IF;
+
+    RETURN v_deleted_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION delete_venue(
+    p_venue_id int
+)
+RETURNS int
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_deleted_id int;
+BEGIN
+    DELETE FROM venue
+    WHERE venue_id = p_venue_id
+    RETURNING venue_id INTO v_deleted_id;
+
+    IF v_deleted_id IS NULL THEN
+        RAISE EXCEPTION 'venue not found';
+    END IF;
+
+    RETURN v_deleted_id;
+END;
+$$;
+
+
+
+
 
 /* =========================================================
    GRANTS
@@ -1278,7 +1402,7 @@ TO editor_role, organizer_role, admin_role;
 -- Organizer actions
 GRANT EXECUTE ON FUNCTION create_event(int, text, timestamp, timestamp, int, text, int)
 TO organizer_role, admin_role;
-GRANT EXECUTE ON FUNCTION delete_event(int, int) TO organizer_role, admin_role;
+GRANT EXECUTE ON FUNCTION delete_event(int) TO organizer_role, admin_role;
 GRANT EXECUTE ON FUNCTION add_editor_to_event(int, int, int) TO organizer_role, admin_role;
 GRANT EXECUTE ON FUNCTION add_tag_to_event(int, int, text) TO organizer_role, admin_role;
 GRANT EXECUTE ON FUNCTION remove_tag_from_event(int, int, text) TO organizer_role, admin_role;
@@ -1288,11 +1412,15 @@ GRANT EXECUTE ON FUNCTION blacklist_visitor(int, int, int) TO organizer_role, ad
 -- Admin actions
 GRANT EXECUTE ON FUNCTION reset_blacklist(int, int) TO admin_role;
 GRANT EXECUTE ON FUNCTION create_location(int, text, text, point, int) TO admin_role;
-GRANT EXECUTE ON FUNCTION create_venue(int, text, int, int) TO admin_role;
+-- GRANT EXECUTE ON FUNCTION create_venue(int, text, int, int) TO admin_role;
 GRANT EXECUTE ON FUNCTION promote_visitor_to_editor(int, int) TO admin_role;
 GRANT EXECUTE ON FUNCTION promote_visitor_to_organizer(int, int) TO admin_role;
 GRANT EXECUTE ON FUNCTION promote_visitor_to_admin(int, int) TO admin_role;
 GRANT EXECUTE ON FUNCTION promote_organizer_to_admin(int, int) TO admin_role;
+
+GRANT EXECUTE ON FUNCTION create_campus(text) TO admin_role;
+GRANT EXECUTE ON FUNCTION create_location(text, text, text, text, int) TO admin_role;
+GRANT EXECUTE ON FUNCTION create_venue(text, int, int) TO admin_role;
 
 -- Admin direct table access
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin_role;
