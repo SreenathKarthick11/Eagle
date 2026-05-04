@@ -15,11 +15,25 @@ import type { DialogHandle } from "../components/customDialog";
 
 import "./styles/BlackList.css";
 
+interface EventItem {
+  event_id: string | number;
+  title: string
+}
+
+interface Visitor {
+  user_id: string | number;
+  username: string
+}
+
+interface UserSession {
+  user_id: string | number;
+}
+
 export const BlackList = () => {
-  const [events, setEvents] = useState<any[]>([]);
-  const [visitors, setVisitors] = useState<any[]>([]);
-  const [selectedVisitor, setSelectedVisitor] = useState<any>(null);
-  const [selectedEvent, setSelectedEvent] = useState("");
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [visitors, setVisitors] = useState<Visitor[]>([]);
+  const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<string>("");
 
   const dialogRef = useRef<MdDialog>(null);
   const customDialogRef = useRef<DialogHandle>(null);
@@ -32,10 +46,10 @@ export const BlackList = () => {
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        const user: UserSession = JSON.parse(localStorage.getItem("user") || "{}");
 
         const res = await fetch(`http://localhost:8000/api/events/${user.user_id}`);  // TODO: update with actual url
-        const data = await res.json();
+        const data: EventItem[] = await res.json();
 
         setEvents(data);
       } catch {
@@ -56,7 +70,7 @@ export const BlackList = () => {
           `http://localhost:8000/api/events/${selectedEvent}/visitors`     // TODO: update with actual url
         );
 
-        const data = await res.json();
+        const data: Visitor[] = await res.json();
         setVisitors(data);
       } catch {
         showError("Failed to load visitors");
@@ -67,13 +81,15 @@ export const BlackList = () => {
   }, [selectedEvent]);
 
   // ---------------- OPEN DIALOG ----------------
-  const openConfirmDialog = (visitor: any) => {
+  const openConfirmDialog = (visitor: Visitor) => {
     setSelectedVisitor(visitor);
     dialogRef.current?.show();
   };
 
   // ---------------- BLACKLIST ----------------
   const confirmBlacklist = async () => {
+    if (!selectedVisitor) return;
+
     try {
       const res = await fetch("http://localhost:8000/api/events/blacklist", {  // TODO: update the url
         method: "POST",
@@ -86,10 +102,8 @@ export const BlackList = () => {
         }),
       });
 
-      let data: any = {};
-      try {
-        data = await res.json();
-      } catch {}
+      let data: { detail?: string } = {};
+      data = await res.json();
 
       if (!res.ok) {
         showError(data.detail || "Failed to blacklist");
@@ -123,7 +137,7 @@ export const BlackList = () => {
             }}
           >
             {events.map((event) => (
-              <md-select-option key={event.event_id} value={event.event_id}>
+              <md-select-option key={event.event_id} value={String(event.event_id)}>
                 <div slot="headline">{event.title}</div>
               </md-select-option>
             ))}
