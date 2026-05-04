@@ -1250,6 +1250,23 @@ AS $$
 $$;
 
 
+CREATE OR REPLACE FUNCTION get_events_of_organizer(p_organizer_id int)
+RETURNS TABLE (
+    event_id int,
+    event_name text
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+    SELECT
+        e.event_id,
+        e.name as event_name
+    FROM event e
+    WHERE e.organizer_id = p_organizer_id;
+$$;
+
+
 /* =========================================================
    GRANTS
    ========================================================= */
