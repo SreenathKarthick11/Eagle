@@ -16,3 +16,9 @@ export interface CampusItem {
   campus_id: string | number;
   campus_name: string
 }
+
+export interface UserInfoItem {
+  user_id: string | number;
+  role: string;
+  username: string
+}
