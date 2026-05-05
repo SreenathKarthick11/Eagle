@@ -361,6 +361,15 @@ def blacklist_user(user_id: int, visitor_id: int, event_id: int):
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/reset_blacklist")
+def reset_blacklist(user_id: int):
+    try:
+        db.reset_blacklist(user_id)
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
     # try:
     #     pass
     # except psycopg.Error as e:

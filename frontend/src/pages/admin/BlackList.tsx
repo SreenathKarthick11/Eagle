@@ -45,7 +45,7 @@ export const AdminBlackList = () => {
     if (!selectedVisitor) return;
 
     try {
-      const res = await fetch("http://localhost:8000/api/whitelist", { // TODO Replace with api url
+      const res = await fetch(`http://localhost:8000/reset_blacklist?user_id=${selectedVisitor.user_id}`, { 
         method: "POST", // TODO Update method
         headers: {
           "Content-Type": "application/json",
