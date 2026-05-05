@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { hashText } from "./hash";
+
 import "@material/web/textfield/outlined-text-field.js";
 import "@material/web/button/filled-button.js";
 
@@ -42,6 +44,8 @@ export const SignUp = () => {
       return;
     }
 
+    const hashed_password = await hashText(password);
+
     try {
       const response = await fetch("http://localhost:8000/signup", { //TODO: update the backend URL
         method: "POST",
@@ -52,7 +56,7 @@ export const SignUp = () => {
           name: name,
           username: username,
           email_id: email,
-          password: password,
+          password: hashed_password,
           phone_no: phone,
         }),
       });
