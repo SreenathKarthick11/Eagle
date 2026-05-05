@@ -75,19 +75,6 @@ export const AdminBlackList = () => {
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-
-    const handleOpened = () => console.log("Dialog animation finished: Open");
-    const handleClosed = () => {
-      console.log("Dialog animation finished: Closed");
-    };
-
-    dialog.addEventListener("opened", handleOpened);
-    dialog.addEventListener("closed", handleClosed);
-
-    return () => {
-      dialog.removeEventListener("opened", handleOpened);
-      dialog.removeEventListener("closed", handleClosed);
-    };
   }, []);
 
   const openConfirmDialog = (visitor: Visitor) => {
