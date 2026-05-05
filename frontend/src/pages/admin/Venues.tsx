@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
@@ -17,6 +18,8 @@ import "../styles/admin/Venue.css";
 import type { MdFilledSelect } from "@material/web/select/filled-select";
 
 export const AdminVenue = () => {
+  const navigate = useNavigate();
+
   const [selectedVenue, setSelectedVenue] = useState<VenueItem | null>(null);
   const [venueList, setVenueList] = useState<VenueItem[]>([]);
   const [newVenue, setNewVenue] = useState<string>("");
@@ -115,6 +118,7 @@ export const AdminVenue = () => {
       setCapacity("");
       console.log("Added venue:", selectedVenue);
       dialogAddRef.current?.close();
+      navigate(0);
     } catch {
       showError("server Error");
     }

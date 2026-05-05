@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
@@ -18,6 +19,7 @@ import "../styles/admin/Location.css";
 import type { MdFilledSelect } from "@material/web/select/filled-select";
 
 export const AdminLocation = () => {
+  const navigate = useNavigate();
   const [selectedLocation, setSelectedLocation] = useState<LocationItem | null>(
     null,
   );
@@ -122,6 +124,7 @@ export const AdminLocation = () => {
       setLongitude("");
       console.log("Added location:", selectedLocation);
       dialogAddRef.current?.close();
+      navigate(0);
     } catch {
       showError("Server Error");
     }
@@ -161,6 +164,7 @@ export const AdminLocation = () => {
 
       console.log("Removed location:", selectedLocation?.location_name);
       dialogRemoveRef.current?.close();
+      navigate(0);
     } catch {
       showError("Server Error");
     }

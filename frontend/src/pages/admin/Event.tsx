@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import type { UserInfoItem } from "../../interfaces";
+import { useNavigate } from "react-router-dom";
 
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
@@ -12,10 +12,12 @@ import "@material/web/icon/icon.js";
 import type { MdDialog } from "@material/web/dialog/dialog.js";
 import type { EventItem } from "../../interfaces";
 import type { DialogHandle } from "../../components/customDialog";
+import type { UserInfoItem } from "../../interfaces";
 
 import "../styles/admin/Event.css";
 
 export const AdminEvent = () => {
+  const navigate = useNavigate();
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [eventList, setEventList] = useState<EventItem[]>([]);
 
@@ -91,6 +93,7 @@ export const AdminEvent = () => {
       );
       console.log("Deleted event: ", selectedEvent);
       dialogRef.current?.close();
+      navigate(0);
     } catch {
       showError("Server Error");
     }

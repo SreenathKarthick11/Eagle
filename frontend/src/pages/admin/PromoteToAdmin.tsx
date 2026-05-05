@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
@@ -15,6 +16,8 @@ import type { DialogHandle } from "../../components/customDialog";
 import "../styles/admin/User.css";
 
 export const AdminPromoteToAdmin = () => {
+  const navigate = useNavigate();
+
   const [selectedOrganiser, setSelectedOrganiser] = useState<Visitor | null>(null);
   const [organiserList, setOrganiserList] = useState<Visitor[]>([]);
 
@@ -37,7 +40,7 @@ export const AdminPromoteToAdmin = () => {
         const user: UserInfoItem = JSON.parse(
           localStorage.getItem("user") || "{}",
         );
-        const res = await fetch(`http://localhost:8000/organizers?role=${user.role}`); 
+        const res = await fetch(`http://localhost:8000/organizers?role=${user.role}`);
         const data: Visitor[] = await res.json();
         setOrganiserList(data);
       } catch {
@@ -84,6 +87,7 @@ export const AdminPromoteToAdmin = () => {
 
       console.log("Promoted to admin: ", selectedOrganiser);
       dialogRef.current?.close();
+      navigate(0);
     } catch {
       showError("Server Error");
     }

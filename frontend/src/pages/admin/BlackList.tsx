@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import type { UserInfoItem } from "../../interfaces";
+import { useNavigate } from "react-router-dom";
 
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
@@ -12,10 +12,13 @@ import "@material/web/icon/icon.js";
 import type { MdDialog } from "@material/web/dialog/dialog.js";
 import type { DialogHandle } from "../../components/customDialog";
 import type { Visitor } from "../../interfaces";
+import type { UserInfoItem } from "../../interfaces";
 
 import "../styles/admin/BlackList.css";
 
 export const AdminBlackList = () => {
+  const navigate = useNavigate();
+
   const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
   const [visitors, setVisitors] = useState<Visitor[]>([]);
 
@@ -69,6 +72,7 @@ export const AdminBlackList = () => {
       );
 
       dialogRef.current?.close();
+      navigate(0);
     } catch {
       showError("Server Error");
     }

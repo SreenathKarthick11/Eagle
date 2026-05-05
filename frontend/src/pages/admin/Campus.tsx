@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
@@ -15,6 +16,7 @@ import type { DialogHandle } from "../../components/customDialog";
 import "../styles/admin/Campus.css";
 
 export const AdminCampus = () => {
+  const navigate = useNavigate();
   const [selectedCampus, setSelectedCampus] = useState<CampusItem | null>(null);
   const [campusList, setCampusList] = useState<CampusItem[]>([]);
   const [newCampus, setNewCampus] = useState<string>("");
@@ -78,6 +80,7 @@ export const AdminCampus = () => {
 
       console.log("Added campus:", newCampus);
       dialogAddRef.current?.close();
+      navigate(0);
     } catch {
       showError("Server Error");
     }
@@ -116,6 +119,7 @@ export const AdminCampus = () => {
 
       console.log("Removed campus:", selectedCampus?.campus_name);
       dialogRemoveRef.current?.close();
+      navigate(0);
     } catch {
       showError("Server Error");
     }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
@@ -15,6 +16,8 @@ import type { DialogHandle } from "../../components/customDialog";
 import "../styles/admin/User.css";
 
 export const AdminPromoteToOrg = () => {
+  const navigate = useNavigate();
+
   const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
   const [visitorList, setVisitorList] = useState<Visitor[]>([]);
 
@@ -84,6 +87,7 @@ export const AdminPromoteToOrg = () => {
 
       console.log("Promoted to organiser: ", selectedVisitor);
       dialogRef.current?.close();
+      navigate(0);
     } catch {
       showError("Server Error");
     }
