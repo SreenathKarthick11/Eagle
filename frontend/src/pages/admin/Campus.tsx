@@ -55,10 +55,10 @@ export const AdminCampus = () => {
 
   const confirmAdd = async () => {
     try {
-      const role: UserInfoItem = JSON.parse(
+      const user: UserInfoItem = JSON.parse(
         localStorage.getItem("user") || "{}",
       );
-      const url = `http://localhost:8000/campuses?role=${role}`;
+      const url = `http://localhost:8000/campuses?role=${user.role}`;
 
       const res = await fetch(url, {
         method: "POST",
