@@ -1,0 +1,75 @@
+/* Event.css */
+
+.event-page {
+  max-width: 700px;
+  margin: 88px auto 0; /* space for navbar */
+  padding: 0 24px;
+}
+
+.page-header {
+  color: #1e1e2f;
+  font-size: 26px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 12px;
+}
+
+/* ===== EVENT INFO ===== */
+
+.event-page p {
+  margin: 8px 0;
+  color: #444;
+  font-size: 15px;
+}
+
+/* ===== TAGS ===== */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 24px;
+}
+
+.tag {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+}
+
+/* ===== EDIT SECTION (organiser/editor) ===== */
+
+.edit-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.edit-section md-filled-button {
+  align-self: flex-end;
+  margin-top: 8px;
+}
+
+/* ===== ACTION SECTION (user) ===== */
+
+.action-section {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  align-items: center;
+}
+
+.action-section p {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+/* ===== MATERIAL INPUTS ===== */
+
+md-outlined-text-field {
+  width: 100%;
+}
+
