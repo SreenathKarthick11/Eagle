@@ -68,7 +68,7 @@ export const AdminPromoteToOrg = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        showError(data.detail || "Failed to promote user");
+        showError(data.detail || "Failed to promote visitor");
         return;
       }
 
@@ -76,7 +76,7 @@ export const AdminPromoteToOrg = () => {
         prev.filter((v) => v.user_id !== selectedVisitor.user_id),
       );
 
-      console.log("Promoted to admin: ", selectedVisitor);
+      console.log("Promoted to organiser: ", selectedVisitor);
       dialogRef.current?.close();
     } catch {
       showError("Server Error");
