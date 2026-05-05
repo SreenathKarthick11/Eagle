@@ -44,6 +44,7 @@ class PGConnect:
     def _role_connection(self, role: str = "postgres"):
         with self.pool.connection() as conn:
             conn.autocommit = True
+            print("Logging in as role:",role)
             with conn.cursor() as cur:
                 cur.execute(sql.SQL("SET ROLE {}").format(sql.Identifier(role)))
             try:

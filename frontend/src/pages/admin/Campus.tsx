@@ -12,7 +12,6 @@ import type { MdDialog } from "@material/web/dialog/dialog.js";
 import type { MdOutlinedTextField } from "@material/web/textfield/outlined-text-field.js";
 import type { CampusItem, UserInfoItem } from "../../interfaces";
 import type { DialogHandle } from "../../components/customDialog";
-
 import "../styles/admin/Campus.css";
 
 export const AdminCampus = () => {
@@ -23,7 +22,9 @@ export const AdminCampus = () => {
   const dialogAddRef = useRef<MdDialog>(null);
   const dialogRemoveRef = useRef<MdDialog>(null);
   const fetchErrorDialogReg = useRef<DialogHandle>(null);
-
+  const user: UserInfoItem = JSON.parse(
+    localStorage.getItem("user") || "{}",
+  );
   const showError = (msg: string) => {
     fetchErrorDialogReg.current?.open("Error", msg);
   };
@@ -36,7 +37,7 @@ export const AdminCampus = () => {
   useEffect(() => {
     const loadCampuses = async () => {
       try {
-        const res = await fetch("http://localhost:8000/campuses/");
+        const res = await fetch(`http://localhost:8000/campuses?role=${user.role}`);
         const data: CampusItem[] = await res.json();
         console.log(data);
         setCampusList(data);
@@ -55,10 +56,8 @@ export const AdminCampus = () => {
 
   const confirmAdd = async () => {
     try {
-      const user: UserInfoItem = JSON.parse(
-        localStorage.getItem("user") || "{}",
-      );
-      const url = `http://localhost:8000/campuses`; // TODO: Add role as query parameter to the url
+
+      const url = `http://localhost:8000/campuses?role=${user.role}`; // TODO: Add role as query parameter to the url
 
       const res = await fetch(url, {
         method: "POST",
@@ -93,7 +92,7 @@ export const AdminCampus = () => {
     if (!selectedCampus) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/campuses?campus_id=${selectedCampus.campus_id}`, {
+      const res = await fetch(`http://localhost:8000/campuses?campus_id=${selectedCampus.campus_id}&role=${user.role}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import type { UserInfoItem } from "../../interfaces";
 
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
@@ -20,7 +21,9 @@ export const AdminEvent = () => {
 
   const dialogRef = useRef<MdDialog>(null);
   const fetchErrorDialogRef = useRef<DialogHandle>(null);
-
+  const user: UserInfoItem = JSON.parse(
+    localStorage.getItem("user") || "{}",
+  );
   const showError = (msg: string) => {
     fetchErrorDialogRef.current?.open("Error", msg);
   };
@@ -33,7 +36,7 @@ export const AdminEvent = () => {
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/search`, {
+        const res = await fetch(`http://localhost:8000/search?role=${user.role}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -65,7 +68,7 @@ export const AdminEvent = () => {
     if (!selectedEvent) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/event/${selectedEvent.event_id}`, {
+      const res = await fetch(`http://localhost:8000/event/${selectedEvent.event_id}?role=${user.role}`, {
         // TODO Replace with api url
         method: "DELETE", // TODO Update Method
         headers: {

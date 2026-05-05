@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import type { UserInfoItem } from "../../interfaces";
 
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
@@ -24,12 +25,13 @@ export const AdminBlackList = () => {
   const showError = (msg: string) => {
     fetchErrorDialogRef.current?.open("Error", msg);
   };
+  const user: UserInfoItem = JSON.parse(localStorage.getItem("user") || "{}");
 
   // Fetch Blacklisted users
   useEffect(() => {
     const loadBlacklistedUsers = async () => {
       try {
-        const res = await fetch("http://localhost:8000/blacklists"); // TODO Replace with api rul
+        const res = await fetch(`http://localhost:8000/blacklists?role=${user.role}`); // TODO Replace with api rul
         const data: Visitor[] = await res.json();
         setVisitors(data);
       } catch {
@@ -45,7 +47,7 @@ export const AdminBlackList = () => {
     if (!selectedVisitor) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/reset_blacklist?user_id=${selectedVisitor.user_id}`, { 
+      const res = await fetch(`http://localhost:8000/reset_blacklist?user_id=${selectedVisitor.user_id}&role=${user.role}`, {
         method: "POST", // TODO Update method
         headers: {
           "Content-Type": "application/json",

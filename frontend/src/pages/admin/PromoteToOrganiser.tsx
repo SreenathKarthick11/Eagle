@@ -9,7 +9,7 @@ import "@material/web/iconbutton/filled-tonal-icon-button.js";
 import "@material/web/icon/icon.js";
 
 import type { MdDialog } from "@material/web/dialog/dialog.js";
-import type { Visitor } from "../../interfaces";
+import type { UserInfoItem, Visitor } from "../../interfaces";
 import type { DialogHandle } from "../../components/customDialog";
 
 import "../styles/admin/User.css";
@@ -34,7 +34,10 @@ export const AdminPromoteToOrg = () => {
   useEffect(() => {
     const loadVisitorList = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/visitors`); // TODO Replace with api url
+        const user: UserInfoItem = JSON.parse(
+          localStorage.getItem("user") || "{}",
+        );
+        const res = await fetch(`http://localhost:8000/visitors?role=${user.role}`); // TODO Replace with api url
         const data: Visitor[] = await res.json();
         setVisitorList(data);
       } catch {
@@ -54,7 +57,10 @@ export const AdminPromoteToOrg = () => {
     if (!selectedVisitor) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/promote_visitor_to_organizer?user_id=${selectedVisitor.user_id}`, {
+      const user: UserInfoItem = JSON.parse(
+        localStorage.getItem("user") || "{}",
+      );
+      const res = await fetch(`http://localhost:8000/promote_visitor_to_organizer?user_id=${selectedVisitor.user_id}&role=${user.role}`, {
         // TODO Replace with api url
         method: "POST", // TODO Replace with actual method
         headers: {

@@ -45,7 +45,10 @@ export const AdminLocation = () => {
   useEffect(() => {
     const loadLocations = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/locations`);
+        const user: UserInfoItem = JSON.parse(
+          localStorage.getItem("user") || "{}",
+        );
+        const res = await fetch(`http://localhost:8000/locations?role=${user.role}`);
         const data: LocationItem[] = await res.json();
         setLocationList(data);
       } catch {
@@ -59,7 +62,10 @@ export const AdminLocation = () => {
   useEffect(() => {
     const loadCampuses = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/campuses`);
+        const user: UserInfoItem = JSON.parse(
+          localStorage.getItem("user") || "{}",
+        );
+        const res = await fetch(`http://localhost:8000/campuses?role=${user.role}`);
         const data: CampusItem[] = await res.json();
         setCampusList(data);
       } catch {
@@ -84,12 +90,12 @@ export const AdminLocation = () => {
     if (!selectedCampus) {
       return;
     }
-
+    const user: UserInfoItem = JSON.parse(
+      localStorage.getItem("user") || "{}",
+    );
     try {
-      const user: UserInfoItem = JSON.parse(
-        localStorage.getItem("user") || "{}",
-      );
-      const url = `http://localhost:8000/locations`;
+
+      const url = `http://localhost:8000/locations?role=${user.role}`;
 
       const res = await fetch(url, {
         method: "POST",
@@ -133,7 +139,7 @@ export const AdminLocation = () => {
       const user: UserInfoItem = JSON.parse(
         localStorage.getItem("user") || "{}",
       );
-      const url = `http://localhost:8000/locations?location_id=${selectedLocation.location_id}`;
+      const url = `http://localhost:8000/locations?location_id=${selectedLocation.location_id}&role=${user.role}`;
 
       const res = await fetch(url, {
         method: "DELETE",

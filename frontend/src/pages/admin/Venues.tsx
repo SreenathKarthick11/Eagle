@@ -42,7 +42,10 @@ export const AdminVenue = () => {
   useEffect(() => {
     const loadVenues = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/venues`);
+        const user: UserInfoItem = JSON.parse(
+          localStorage.getItem("user") || "{}",
+        );
+        const res = await fetch(`http://localhost:8000/venues?role=${user.role}`);
         const data: VenueItem[] = await res.json();
         setVenueList(data);
       } catch {
@@ -56,7 +59,10 @@ export const AdminVenue = () => {
   useEffect(() => {
     const loadLocations = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/locations`);
+        const user: UserInfoItem = JSON.parse(
+          localStorage.getItem("user") || "{}",
+        );
+        const res = await fetch(`http://localhost:8000/locations?role=${user.role}`);
         const data: LocationItem[] = await res.json();
         setLocationList(data);
       } catch {
@@ -86,7 +92,7 @@ export const AdminVenue = () => {
       const user: UserInfoItem = JSON.parse(
         localStorage.getItem("user") || "{}",
       );
-      const url = `http://localhost:8000/venues`;
+      const url = `http://localhost:8000/venues?role=${user.role}`;
 
       const res = await fetch(url, {
         method: "POST",
@@ -126,7 +132,7 @@ export const AdminVenue = () => {
       const user: UserInfoItem = JSON.parse(
         localStorage.getItem("user") || "{}",
       );
-      const url = `http://localhost:8000/venues?venue_id=${selectedVenue.venue_id}`;
+      const url = `http://localhost:8000/venues?venue_id=${selectedVenue.venue_id}&role=${user.role}`;
 
       const res = await fetch(url, {
         method: "DELETE",
