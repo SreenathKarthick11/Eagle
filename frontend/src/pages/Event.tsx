@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./styles/Event.css";
-
+import type { UserInfoItem } from "../interfaces";
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/button/filled-button.js';
 import '@material/web/button/outlined-button.js';
@@ -46,7 +46,8 @@ export const EventPage = () => {
   const user_id = storedUser?.user_id;
   const role = storedUser?.role;
 
-  const isEditor = role === "organiser_role" || role === "editor_role";
+  const isEditor = role === "organizer_role" || role === "editor_role";
+  const user: UserInfoItem = JSON.parse(localStorage.getItem("user") || "{}");
 
   const showError = (msg: string) => {
     customDialogRef.current?.open("Error", msg);
@@ -56,7 +57,7 @@ export const EventPage = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/event/${id}`);
+        const res = await fetch(`http://localhost:8000/event/${id}?role=${user.role}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -73,7 +74,7 @@ export const EventPage = () => {
     const checkRegistration = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8000/is_user_registered?user_id=${user_id}&event_id=${id}`
+          `http://localhost:8000/is_user_registered?user_id=${user_id}&event_id=${id}&role=${user.role}`
         );
         const data = await res.json();
         setIsRegistered(data.success);
@@ -89,13 +90,13 @@ export const EventPage = () => {
   // 2. UPDATE EVENT (organiser/editor)
   const handleUpdate = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/event/${id}`, {
+      const res = await fetch(`http://localhost:8000/event/${id}?role=${user.role}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id,
-          id,
-          title: nameRef.current?.value,
+          user_id: user_id,
+          event_id: id,
+          name: nameRef.current?.value,
           description: descRef.current?.value,
         }),
       });
@@ -117,7 +118,7 @@ export const EventPage = () => {
   const handleRegister = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/event/${id}/register?user_id=${user_id}&event_id=${id}`,
+        `http://localhost:8000/event/${id}/register?user_id=${user_id}&event_id=${id}&role=${user.role}`,
         { method: "POST" }
       );
 
@@ -138,7 +139,7 @@ export const EventPage = () => {
   const handleWithdraw = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/event/${id}/withdraw?user_id=${user_id}&event_id=${id}`,
+        `http://localhost:8000/event/${id}/withdraw?user_id=${user_id}&event_id=${id}&role=${user.role}`,
         { method: "POST" }
       );
 
