@@ -20,9 +20,9 @@ class SignInResponse(BaseModel):
 class SignUpRequest(BaseModel):
     name: str
     username: str
-    email: str
+    email_id: str
     password: str
-    phone: str
+    phone_no: str
 
 
 class SuccessResponse(BaseModel):

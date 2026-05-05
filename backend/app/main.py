@@ -21,6 +21,7 @@ from app.models import (
     CreateVenue,
     UserItem,
     CreateEvent,
+    SignUpRequest
 )
 import psycopg
 from app.db import db
@@ -60,7 +61,13 @@ def signin(request: SignInRequest):
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
+@app.post("/signup")
+def signup(request: SignUpRequest):
+    try:
+        db.signup_user(**request.model_dump())
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
 # @app.get("/home")
 # def gethome(request: None):
 #     pass

@@ -43,17 +43,17 @@ export const SignUp = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/signup", { //TODO: update the backend URL
+      const response = await fetch("http://localhost:8000/signup", { //TODO: update the backend URL
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
-          username,
-          email,
-          password,
-          phone,
+          name: name,
+          username: username,
+          email_id: email,
+          password: password,
+          phone_no: phone,
         }),
       });
 
