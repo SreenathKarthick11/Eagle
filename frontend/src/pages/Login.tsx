@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { hashText } from "./hash";
+
 import type { MdOutlinedTextField } from "@material/web/textfield/outlined-text-field.js";
 
 import "@material/web/textfield/outlined-text-field.js";
@@ -30,19 +32,21 @@ export const Login = () => {
       return;
     }
 
+    const hashed_password = await hashText(password);
+
     try {
-      const response = await fetch("http://localhost:8000/signin", { 
+      const response = await fetch("http://localhost:8000/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: username, password: hashed_password }),
       });
 
       let data: any = {};
       try {
         data = await response.json();
-      } catch {}
+      } catch { }
 
       if (response.ok) {
         const userData = {
