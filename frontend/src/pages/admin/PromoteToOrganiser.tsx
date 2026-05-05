@@ -14,7 +14,7 @@ import type { DialogHandle } from "../../components/customDialog";
 
 import "../styles/admin/User.css";
 
-export const AdminUser = () => {
+export const AdminPromoteToOrg = () => {
   const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
   const [visitorList, setVisitorList] = useState<Visitor[]>([]);
 
