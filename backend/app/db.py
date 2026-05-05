@@ -308,6 +308,12 @@ class PGConnect:
     def get_visitors(self, role="postgres"):
         return self.call_function_rows("get_visitors", role=role)
 
+    def get_editors(self, event_id:Optional[int] = None, role="postgres"):
+        return self.call_function_rows("get_editors", event_id, role=role)
+
+    def add_editor(self, user_id, editor_id, event_id, role="postgres"):
+        return self.call_function_one("add_editor", user_id, editor_id, event_id, role=role)
+    
     def get_blacklists(self, role="postgres"):
         return self.call_function_rows("get_blacklists", role=role)
 
@@ -332,7 +338,7 @@ class PGConnect:
         description,
         role="postgres",
     ):
-        self.call_function_one(
+        self.call_scalar_function(
             "create_event",
             user_id,
             name,
@@ -346,8 +352,8 @@ class PGConnect:
             role=role,
         )
 
-    def delete_event(self, event_id, role="postgres"):
-        return self.call_function_one("delete_event", event_id, role=role)
+    def delete_event(self, user_id, event_id, role="postgres"):
+        return self.call_function_one("delete_event", user_id, event_id, role=role)
 
     def get_events_of_organizer(self, organizer_id, role="postgres"):
         return self.call_function_rows("get_events_of_organizer", organizer_id, role=role)

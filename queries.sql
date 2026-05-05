@@ -1230,6 +1230,25 @@ AS $$
     ORDER BY u.username;
 $$;
 
+CREATE OR REPLACE FUNCTION get_editors(p_event_id int DEFAULT NULL)
+RETURNS TABLE (
+    user_id int,
+    username text
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+    SELECT DISTINCT
+        u.user_id,
+        u.username
+    FROM editor e
+    JOIN user_info u ON e.editor_id = u.user_id
+    LEFT JOIN editor_of eo ON e.editor_id = eo.editor_id
+    WHERE p_event_id IS NULL OR eo.event_id = p_event_id
+    ORDER BY u.username;
+$$;
+
 CREATE OR REPLACE FUNCTION get_blacklists()
 RETURNS TABLE (
     user_id int,
@@ -1335,7 +1354,7 @@ GRANT EXECUTE ON FUNCTION get_campuses() TO organizer_role;
 GRANT EXECUTE ON FUNCTION get_locations(int) TO organizer_role;
 GRANT EXECUTE ON FUNCTION get_venues(int) TO organizer_role;
 GRANT EXECUTE ON FUNCTION get_tags() TO organizer_role;
-
+GRANT EXECUTE ON FUNCTION get_editors() TO organizer_role;
 -- Additional browsing needed for event creation: see list of possible secondary organizers
 GRANT EXECUTE ON FUNCTION get_organizers() TO organizer_role;
 
@@ -1392,6 +1411,7 @@ GRANT EXECUTE ON FUNCTION delete_location(int) TO admin_role;
 GRANT EXECUTE ON FUNCTION delete_venue(int) TO admin_role;
 GRANT EXECUTE ON FUNCTION get_visitors() TO admin_role;
 GRANT EXECUTE ON FUNCTION get_organizers() TO admin_role;
+GRANT EXECUTE ON FUNCTION get_editors() TO admin_role;
 GRANT EXECUTE ON FUNCTION get_blacklists() TO admin_role;
 
 -- Full table access for admin (back‑end maintenance)

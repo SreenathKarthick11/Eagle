@@ -21,7 +21,7 @@ from app.models import (
     CreateVenue,
     UserItem,
     CreateEvent,
-    SignUpRequest
+    SignUpRequest,
 )
 import psycopg
 from app.db import db
@@ -61,6 +61,7 @@ def signin(request: SignInRequest):
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/signup")
 def signup(request: SignUpRequest):
     try:
@@ -68,6 +69,8 @@ def signup(request: SignUpRequest):
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
 # @app.get("/home")
 # def gethome(request: None):
 #     pass
@@ -171,7 +174,7 @@ def get_tags(role: Optional[str] = "postgres"):
 
 
 @app.post("/search")
-def search_events(request: SearchEventsRequest,role: Optional[str] = "postgres"):
+def search_events(request: SearchEventsRequest, role: Optional[str] = "postgres"):
     try:
         print(request.model_dump())
         result = db.search_event_items(**request.model_dump(), role=role)
@@ -182,7 +185,7 @@ def search_events(request: SearchEventsRequest,role: Optional[str] = "postgres")
 
 
 @app.get("/profile")
-def get_profile(user_id: int,role: Optional[str] = "postgres"):
+def get_profile(user_id: int, role: Optional[str] = "postgres"):
     try:
         result = db.get_user_profile(user_id, role=role)
         print(result)
@@ -222,18 +225,20 @@ def update_event_details(request: EditEvent, role: Optional[str] = "postgres"):
 @app.post("/event")
 def create_event(request: CreateEvent, role: Optional[str] = "postgres"):
     try:
-        db.create_event(**request.model_dump(), role=role)
-        # result = list(map(lambda x: EventCatalog(**x), result))
-        return SuccessResponse(success=True)
+        result = db.create_event(**request.model_dump(), role=role)
+        print("the resulte we got:",result)
+        result = {"event_id": result}
+        return result
+        # return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.delete("/event/{event_id}")
-def delete_event(event_id: int, role: Optional[str] = "postgres"):
+def delete_event(event_id: int, user_id: int, role: Optional[str] = "postgres"):
     try:
         # print(request.model_dump())
-        db.delete_event(event_id=event_id, role=role)
+        db.delete_event(user_id=user_id, event_id=event_id, role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -290,6 +295,28 @@ def get_visitors(role: Optional[str] = "postgres"):
         return HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/editors")
+def get_editors(event_id:Optional[int] = None, role: Optional[str] = "postgres"):
+    try:
+        result = db.get_editors(event_id=event_id, role=role)
+        result = list(map(lambda x: UserItem(**x), result))
+        return result
+    except psycopg.Error as e:
+        return HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/add_editor")
+def add_editor(
+    user_id: int, editor_id: int, event_id: int, role: Optional[str] = "postgres"
+):
+    try:
+        result = db.add_editor(user_id, editor_id, event_id, role=role)
+        return result
+        # return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        return HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/blacklists")
 def get_blacklists(role: Optional[str] = "postgres"):
     try:
@@ -337,7 +364,9 @@ def promote_organizer_to_admin(user_id, role: Optional[str] = "postgres"):
 
 
 @app.get("/events")
-def get_events_by_organizer(organizer_id: Optional[int] = None, role: Optional[str] = "postgres"):
+def get_events_by_organizer(
+    organizer_id: Optional[int] = None, role: Optional[str] = "postgres"
+):
     try:
         result = db.get_events_of_organizer(organizer_id, role=role)
         result = list(map(lambda x: EventItem(**x), result))
@@ -362,7 +391,9 @@ def event_participants(event_id, role: Optional[str] = "postgres"):
 
 
 @app.post("/blacklist/{event_id}")
-def blacklist_user(user_id: int, visitor_id: int, event_id: int, role: Optional[str] = "postgres"):
+def blacklist_user(
+    user_id: int, visitor_id: int, event_id: int, role: Optional[str] = "postgres"
+):
     try:
         db.blacklist_visitor(user_id, visitor_id, event_id, role=role)
         return SuccessResponse(success=True)
