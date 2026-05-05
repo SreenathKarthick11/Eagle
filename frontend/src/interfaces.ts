@@ -8,9 +8,9 @@ export interface Visitor {
   username: string
 }
 
-export interface UserSession {
-  user_id: string | number;
-}
+// export interface UserSession {
+//   user_id: string | number;
+// }
 
 export interface CampusItem {
   campus_id: string | number;

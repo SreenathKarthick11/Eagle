@@ -46,7 +46,7 @@ export const EventPage = () => {
   const user_id = storedUser?.user_id;
   const role = storedUser?.role;
 
-  const isEditor = role === "organiser" || role === "editor";
+  const isEditor = role === "organiser_role" || role === "editor_role";
 
   const showError = (msg: string) => {
     customDialogRef.current?.open("Error", msg);

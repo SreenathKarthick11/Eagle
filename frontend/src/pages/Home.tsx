@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import type { UserInfoItem } from "../interfaces";
 
 import "@material/web/textfield/outlined-text-field.js";
 import "@material/web/textfield/filled-text-field.js";
@@ -17,6 +18,8 @@ import type { DialogHandle } from "../components/customDialog";
 import "./styles/Home.css";
 
 export const Home = () => {
+  const user: UserInfoItem = JSON.parse(localStorage.getItem("user") || "{}");
+
   const navigate = useNavigate();
   const customDialogRef = useRef<DialogHandle>(null);
 
@@ -50,8 +53,8 @@ export const Home = () => {
     const loadInitial = async () => {
       try {
         const [cRes, tRes] = await Promise.all([
-          fetch("http://localhost:8000/campuses"),  
-          fetch("http://localhost:8000/tags"),      
+          fetch(`http://localhost:8000/campuses?role=${user.role}`),
+          fetch(`http://localhost:8000/tags?role=${user.role}`),
         ]);
 
         setCampuses(await cRes.json());
@@ -71,8 +74,8 @@ export const Home = () => {
     const loadLocations = async () => {
       try {
         const url = campus
-          ? `http://localhost:8000/locations?campus_id=${campus}`  
-          : `http://localhost:8000/locations`;                  
+          ? `http://localhost:8000/locations?campus_id=${campus}&role=${user.role}`
+          : `http://localhost:8000/locations?role=${user.role}`;
 
         const res = await fetch(url);
         setLocations(await res.json());
@@ -94,8 +97,8 @@ export const Home = () => {
     const loadVenues = async () => {
       try {
         const url = location
-          ? `http://localhost:8000/venues?location_id=${location}`   
-          : `http://localhost:8000/venues`;                       
+          ? `http://localhost:8000/venues?location_id=${location}&role=${user.role}`
+          : `http://localhost:8000/venues?role=${user.role}`;
 
         const res = await fetch(url);
         setVenues(await res.json());
@@ -119,7 +122,7 @@ export const Home = () => {
   // ---------------- FILTER ----------------
   const handleFilter = async () => {
     try {
-      const res = await fetch("http://localhost:8000/search", {     
+      const res = await fetch(`http://localhost:8000/search?role=${user.role}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -12,7 +12,7 @@ import type { MdDialog } from "@material/web/dialog/dialog.js";
 
 import { CustomDialog } from "../components/customDialog";
 import type { DialogHandle } from "../components/customDialog";
-import type { EventItem, Visitor, UserSession } from "../interfaces"
+import type { EventItem, Visitor, UserInfoItem } from "../interfaces"
 
 import "./styles/BlackList.css";
 
@@ -29,7 +29,7 @@ export const BlackList = () => {
     customDialogRef.current?.open("Error", msg);
   };
 
-  const user: UserSession = JSON.parse(localStorage.getItem("user") || "{}");
+  const user: UserInfoItem = JSON.parse(localStorage.getItem("user") || "{}");
 
   // ---------------- LOAD EVENTS ----------------
   useEffect(() => {
@@ -37,7 +37,7 @@ export const BlackList = () => {
       try {
 
 
-        const res = await fetch(`http://localhost:8000/events?organizer_id=${user.user_id}`);
+        const res = await fetch(`http://localhost:8000/events?organizer_id=${user.user_id}&role=${user.role}`);
         const data: EventItem[] = await res.json();
 
         setEvents(data);
@@ -56,7 +56,7 @@ export const BlackList = () => {
     const loadVisitors = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8000/event_participants?event_id=${selectedEvent}`
+          `http://localhost:8000/event_participants?event_id=${selectedEvent}&role=${user.role}`
         );
 
         const data: Visitor[] = await res.json();
@@ -80,7 +80,7 @@ export const BlackList = () => {
     if (!selectedVisitor) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/blacklist/${selectedEvent}?user_id=${user.user_id}&visitor_id=${selectedVisitor.user_id}`, {  
+      const res = await fetch(`http://localhost:8000/blacklist/${selectedEvent}?user_id=${user.user_id}&visitor_id=${selectedVisitor.user_id}&role=${user.role}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

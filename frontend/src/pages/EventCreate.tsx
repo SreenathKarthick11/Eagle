@@ -10,7 +10,7 @@ import "@material/web/dialog/dialog.js";
 
 import type { MdOutlinedTextField } from "@material/web/textfield/outlined-text-field.js";
 import type { MdOutlinedSelect } from "@material/web/select/outlined-select.js";
-import type { UserSession, Visitor } from "../interfaces";
+import type { UserInfoItem, Visitor } from "../interfaces";
 import type { DialogHandle } from "../components/customDialog";
 import type { MdDialog } from "@material/web/dialog/dialog.js";
 
@@ -39,7 +39,7 @@ export const EventCreate = () => {
 
   const [venues, setVenues] = useState<VenueItem[]>([]);
 
-  const user: UserSession = JSON.parse(localStorage.getItem("user") || "{}");
+  const user: UserInfoItem = JSON.parse(localStorage.getItem("user") || "{}");
 
   const showError = (msg: string) => {
     customDialogRef.current?.open("Error", msg);
@@ -49,7 +49,7 @@ export const EventCreate = () => {
   useEffect(() => {
     const loadOrganisers = async () => {
       try {
-        const res = await fetch("http://localhost:8000/organizers");
+        const res = await fetch(`http://localhost:8000/organizers?role=${user.role}`);
         const data: Visitor[] = await res.json();
         setOrganisers(data);
         // setOrganisers(data.map((o) => o.username));
@@ -67,8 +67,8 @@ export const EventCreate = () => {
     const loadVenues = async (location?: string) => {
       try {
         const url = location
-          ? `http://localhost:8000/venues?location_id=${location}`
-          : "http://localhost:8000/venues";
+          ? `http://localhost:8000/venues?location_id=${location}&role=${user.role}`
+          : `http://localhost:8000/venues?role=${user.role}`;
 
         const res = await fetch(url);
         const data = await res.json();
@@ -119,7 +119,7 @@ export const EventCreate = () => {
 
       const tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()) : [];
 
-      const res = await fetch("http://localhost:8000/event", {
+      const res = await fetch(`http://localhost:8000/event?role=${user.role}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

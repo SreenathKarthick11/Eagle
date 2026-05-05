@@ -70,9 +70,9 @@ def signin(request: SignInRequest):
 
 
 @app.get("/campuses")
-def get_campuses():
+def get_campuses(role: str = "postgres"):
     try:
-        result = db.get_campuses()
+        result = db.get_campuses(role=role)
         result = list(map(lambda x: CampusItem(**x), result))
         return result
     except psycopg.Error as e:
@@ -80,7 +80,7 @@ def get_campuses():
 
 
 @app.post("/campuses")
-def create_campus(request: CreateCampus, role: str= "postgres"):
+def create_campus(request: CreateCampus, role: str = "postgres"):
     try:
         db.create_campus(**request.model_dump(), role=role)
         return SuccessResponse(success=True)
@@ -98,9 +98,9 @@ def delete_campus(campus_id: int, role: str = "postgres"):
 
 
 @app.get("/locations")
-def get_locations(campus_id: Optional[int] = None):
+def get_locations(campus_id: Optional[int] = None, role: str = "postgres"):
     try:
-        result = db.get_locations(campus_id)
+        result = db.get_locations(campus_id, role=role)
         result = list(map(lambda x: LocationItem(**x), result))
         return result
     except psycopg.Error as e:
@@ -126,9 +126,9 @@ def delete_location(location_id: int, role: Optional[str] = "postgres"):
 
 
 @app.get("/venues")
-def get_venues(location_id: Optional[int] = None):
+def get_venues(location_id: Optional[int] = None, role: Optional[str] = "postgres"):
     try:
-        result = db.get_venues(location_id)
+        result = db.get_venues(location_id, role=role)
         result = list(map(lambda x: VenueItem(**x), result))
         return result
     except psycopg.Error as e:
@@ -154,9 +154,9 @@ def delete_venue(venue_id: int, role: Optional[str] = "postgres"):
 
 
 @app.get("/tags")
-def get_tags():
+def get_tags(role: Optional[str] = "postgres"):
     try:
-        result = db.get_tags()
+        result = db.get_tags(role=role)
         result = list(map(lambda x: x["tag_name"], result))
         return result
     except psycopg.Error as e:
@@ -164,10 +164,10 @@ def get_tags():
 
 
 @app.post("/search")
-def search_events(request: SearchEventsRequest):
+def search_events(request: SearchEventsRequest,role: Optional[str] = "postgres"):
     try:
         print(request.model_dump())
-        result = db.search_event_items(**request.model_dump())
+        result = db.search_event_items(**request.model_dump(), role=role)
         result = list(map(lambda x: EventItem(**x), result))
         return result
     except psycopg.Error as e:
@@ -175,9 +175,9 @@ def search_events(request: SearchEventsRequest):
 
 
 @app.get("/profile")
-def get_profile(user_id: int):
+def get_profile(user_id: int,role: Optional[str] = "postgres"):
     try:
-        result = db.get_user_profile(user_id)
+        result = db.get_user_profile(user_id, role=role)
         print(result)
         return ProfileDetails(**result)
     except psycopg.Error as e:
@@ -185,25 +185,25 @@ def get_profile(user_id: int):
 
 
 @app.put("/profile")
-def update_profile(request: UpdateProfile):
+def update_profile(request: UpdateProfile, role: Optional[str] = "postgres"):
     try:
-        _ = db.update_user_details(**request.model_dump())
+        _ = db.update_user_details(**request.model_dump(), role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/event/{event_id}")
-def event_details(event_id: int):
+def event_details(event_id: int, role: Optional[str] = "postgres"):
     try:
-        result = db.get_event_details(event_id)
+        result = db.get_event_details(event_id, role=role)
         return EventCatalog(**result)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.put("/event/{event_id}")
-def update_event_details(request: EditEvent, role: str = "postgres"):
+def update_event_details(request: EditEvent, role: Optional[str] = "postgres"):
     try:
         # print(request.model_dump())
         db.edit_event_details(**request.model_dump(), role=role)
@@ -213,9 +213,9 @@ def update_event_details(request: EditEvent, role: str = "postgres"):
 
 
 @app.post("/event")
-def create_event(request: CreateEvent):
+def create_event(request: CreateEvent, role: Optional[str] = "postgres"):
     try:
-        db.create_event(**request.model_dump())
+        db.create_event(**request.model_dump(), role=role)
         # result = list(map(lambda x: EventCatalog(**x), result))
         return SuccessResponse(success=True)
     except psycopg.Error as e:
@@ -223,7 +223,7 @@ def create_event(request: CreateEvent):
 
 
 @app.delete("/event/{event_id}")
-def delete_event(event_id: int, role="postgres"):
+def delete_event(event_id: int, role: Optional[str] = "postgres"):
     try:
         # print(request.model_dump())
         db.delete_event(event_id=event_id, role=role)
@@ -233,9 +233,9 @@ def delete_event(event_id: int, role="postgres"):
 
 
 @app.get("/is_user_registered")
-def is_user_registered(user_id: int, event_id: int):
+def is_user_registered(user_id: int, event_id: int, role: Optional[str] = "postgres"):
     try:
-        result = db.is_user_regsitered(user_id, event_id)
+        result = db.is_user_regsitered(user_id, event_id, role=role)
         print("is user registered:", result)
         return SuccessResponse(success=result)
     except psycopg.Error as e:
@@ -243,9 +243,9 @@ def is_user_registered(user_id: int, event_id: int):
 
 
 @app.post("/event/{event_id}/register")
-def register_for_event(user_id: int, event_id: int):
+def register_for_event(user_id: int, event_id: int, role: Optional[str] = "postgres"):
     try:
-        db.register_for_event(user_id, event_id)
+        db.register_for_event(user_id, event_id, role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         # return SuccessResponse(success=False)
@@ -253,9 +253,9 @@ def register_for_event(user_id: int, event_id: int):
 
 
 @app.post("/event/{event_id}/withdraw")
-def cancel_registration(user_id: int, event_id: int):
+def cancel_registration(user_id: int, event_id: int, role: Optional[str] = "postgres"):
     try:
-        db.cancel_registration(user_id, event_id)
+        db.cancel_registration(user_id, event_id, role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         # return SuccessResponse(success=False)
@@ -263,9 +263,9 @@ def cancel_registration(user_id: int, event_id: int):
 
 
 @app.get("/organizers")
-def get_organizers():
+def get_organizers(role: Optional[str] = "postgres"):
     try:
-        result = db.get_organizers()
+        result = db.get_organizers(role=role)
         print("Organizers:", result)
         result = list(map(lambda x: UserItem(**x), result))
         return result
@@ -274,9 +274,9 @@ def get_organizers():
 
 
 @app.get("/visitors")
-def get_visitors():
+def get_visitors(role: Optional[str] = "postgres"):
     try:
-        result = db.get_visitors()
+        result = db.get_visitors(role=role)
         result = list(map(lambda x: UserItem(**x), result))
         return result
     except psycopg.Error as e:
@@ -284,9 +284,9 @@ def get_visitors():
 
 
 @app.get("/blacklists")
-def get_blacklists():
+def get_blacklists(role: Optional[str] = "postgres"):
     try:
-        result = db.get_blacklists()
+        result = db.get_blacklists(role=role)
         result = list(map(lambda x: UserItem(**x), result))
         return result
     except psycopg.Error as e:
@@ -294,45 +294,45 @@ def get_blacklists():
 
 
 @app.post("/promote_visitor_to_editor")
-def promote_visitor_to_editor(user_id):
+def promote_visitor_to_editor(user_id, role: Optional[str] = "postgres"):
     try:
-        db.promote_visitor_to_editor(user_id)
+        db.promote_visitor_to_editor(user_id, role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/promote_visitor_to_organizer")
-def promote_visitor_to_organizer(user_id):
+def promote_visitor_to_organizer(user_id, role: Optional[str] = "postgres"):
     try:
-        db.promote_visitor_to_organizer(user_id)
+        db.promote_visitor_to_organizer(user_id, role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/promote_visitor_to_admin")
-def promote_visitor_to_admin(user_id):
+def promote_visitor_to_admin(user_id, role: Optional[str] = "postgres"):
     try:
-        db.promote_visitor_to_admin(user_id)
+        db.promote_visitor_to_admin(user_id, role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/promote_organizer_to_admin")
-def promote_organizer_to_admin(user_id):
+def promote_organizer_to_admin(user_id, role: Optional[str] = "postgres"):
     try:
-        db.promote_organizer_to_admin(user_id)
+        db.promote_organizer_to_admin(user_id, role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/events")
-def get_events_by_organizer(organizer_id: Optional[int] = None):
+def get_events_by_organizer(organizer_id: Optional[int] = None, role: Optional[str] = "postgres"):
     try:
-        result = db.get_events_of_organizer(organizer_id)
+        result = db.get_events_of_organizer(organizer_id, role=role)
         result = list(map(lambda x: EventItem(**x), result))
         return result
     except psycopg.Error as e:
@@ -340,9 +340,9 @@ def get_events_by_organizer(organizer_id: Optional[int] = None):
 
 
 @app.get("/event_participants")
-def event_participants(event_id):
+def event_participants(event_id, role: Optional[str] = "postgres"):
     try:
-        result = db.get_event_participants(event_id)
+        result = db.get_event_participants(event_id, role=role)
         result = list(
             map(
                 lambda x: UserItem(user_id=x["visitor_id"], username=x["username"]),
@@ -355,17 +355,18 @@ def event_participants(event_id):
 
 
 @app.post("/blacklist/{event_id}")
-def blacklist_user(user_id: int, visitor_id: int, event_id: int):
+def blacklist_user(user_id: int, visitor_id: int, event_id: int, role: Optional[str] = "postgres"):
     try:
-        db.blacklist_visitor(user_id, visitor_id, event_id)
+        db.blacklist_visitor(user_id, visitor_id, event_id, role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/reset_blacklist")
-def reset_blacklist(user_id: int):
+def reset_blacklist(user_id: int, role: Optional[str] = "postgres"):
     try:
-        db.reset_blacklist(user_id)
+        db.reset_blacklist(user_id, role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
