@@ -9,50 +9,88 @@ import "@material/web/iconbutton/filled-tonal-icon-button.js";
 import "@material/web/icon/icon.js";
 
 import type { MdDialog } from "@material/web/dialog/dialog.js";
+import type { EventItem } from "../../interfaces";
+import type { DialogHandle } from "../../components/customDialog";
 
 import "../styles/admin/Event.css";
 
 export const AdminEvent = () => {
-  const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+  const [eventList, setEventList] = useState<EventItem[]>([]);
 
   const dialogRef = useRef<MdDialog>(null);
+  const fetchErrorDialogRef = useRef<DialogHandle>(null);
 
-  const visitors = [
-    "Math Quiz",
-    "Dual Boot",
-    "OCaml Workshop",
-    "Paper Bag Making",
-    "Rocket Launch Challange 100m",
-    "CSE Research Symposium",
-    "Astrophotography Workshop",
-  ];
+  const showError = (msg: string) => {
+    fetchErrorDialogRef.current?.open("Error", msg);
+  };
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-
-    const handleOpened = () => console.log("Dialog animation finished: Open");
-    const handleClosed = () => {
-      console.log("Dialog animation finished: Closed");
-    };
-
-    dialog.addEventListener("opened", handleOpened);
-    dialog.addEventListener("closed", handleClosed);
-
-    return () => {
-      dialog.removeEventListener("opened", handleOpened);
-      dialog.removeEventListener("closed", handleClosed);
-    };
   }, []);
 
-  const openConfirmDialog = (visitor: string) => {
-    setSelectedEvent(visitor);
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/search`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.detail || "Failed to fetch events");
+        }
+
+        setEventList(data);
+      } catch {
+        showError("Server Error");
+      }
+    };
+
+    loadEvents();
+  }, []);
+
+  const openConfirmDialog = (event: EventItem) => {
+    setSelectedEvent(event);
     dialogRef.current?.show();
   };
 
-  const confirmBlacklist = () => {
-    console.log("Deleted event: ", selectedEvent);
-    dialogRef.current?.close();
+  const confirmRemoveEvent = async () => {
+    if (!selectedEvent) return;
+
+    try {
+      const res = await fetch(`http://localhost:8000/api/delete_event`, {
+        // TODO Replace with api url
+        method: "POST", // TODO Update Method
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          event_id: selectedEvent.event_id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.detail || "Failed to delete event");
+        return;
+      }
+
+      setEventList((prev) =>
+        prev.filter((e) => e.event_id !== selectedEvent.event_id),
+      );
+      console.log("Deleted event: ", selectedEvent);
+      dialogRef.current?.close();
+    } catch {
+      showError("Server Error");
+    }
   };
 
   return (
@@ -60,9 +98,9 @@ export const AdminEvent = () => {
       <h1>Events</h1>
 
       <md-list className="event_list">
-        {visitors.map((event, index) => (
+        {eventList.map((event, index) => (
           <md-list-item key={index}>
-            <div slot="headline">{event}</div>
+            <div slot="headline">{event.title}</div>
             <md-filled-tonal-icon-button
               slot="end"
               onClick={() => openConfirmDialog(event)}
@@ -75,13 +113,13 @@ export const AdminEvent = () => {
 
       <md-dialog ref={dialogRef}>
         <div slot="headline">
-          Delete event <b>{selectedEvent}?</b>
+          Delete event <b>{selectedEvent?.title}?</b>
         </div>
         <div slot="actions">
           <md-text-button onClick={() => dialogRef.current?.close()}>
             No
           </md-text-button>
-          <md-filled-button onClick={confirmBlacklist}>Yes</md-filled-button>
+          <md-filled-button onClick={confirmRemoveEvent}>Yes</md-filled-button>
         </div>
       </md-dialog>
     </div>
