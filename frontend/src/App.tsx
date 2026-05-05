@@ -12,6 +12,7 @@ import { AdminLocation } from "./pages/admin/Location";
 import { AdminVenue } from "./pages/admin/Venues";
 import { AdminEvent } from "./pages/admin/Event";
 import { AdminPromoteToOrg } from "./pages/admin/PromoteToOrganiser";
+import { AdminPromoteToAdmin } from "./pages/admin/PromoteToAdmin";
 import { EventCreate } from "./pages/EventCreate";
 
 // import "./styles/light.css";
@@ -38,6 +39,7 @@ function App() {
             <Route path="venues" element={<AdminVenue />} />
             <Route path="events" element={<AdminEvent />} />
             <Route path="promote_org" element={<AdminPromoteToOrg />} />
+            <Route path="promote_admin" element={<AdminPromoteToAdmin />} />
           </Route>
         </Route>
 
