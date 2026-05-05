@@ -9,62 +9,88 @@ import "@material/web/iconbutton/filled-tonal-icon-button.js";
 import "@material/web/icon/icon.js";
 
 import type { MdDialog } from "@material/web/dialog/dialog.js";
+import type { Visitor } from "../../interfaces";
+import type { DialogHandle } from "../../components/customDialog";
 
 import "../styles/admin/User.css";
 
 export const AdminUser = () => {
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
+  const [visitorList, setVisitorList] = useState<Visitor[]>([]);
 
   const dialogRef = useRef<MdDialog>(null);
+  const fetchErrorDialogRef = useRef<DialogHandle>(null);
 
-  const users = [
-    "Alan Turing",
-    "Ada Lovelace",
-    "Grace Hopper",
-    "Donald Knuth",
-    "John von Neumann",
-    "Claude Shannon",
-    "Ken Thompson",
-    "Dennis Ritchie",
-    "Barbara Liskov",
-  ];
+  const showError = (msg: string) => {
+    fetchErrorDialogRef.current?.open("Error", msg);
+  };
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-
-    const handleOpened = () => console.log("Dialog animation finished: Open");
-    const handleClosed = () => {
-      console.log("Dialog animation finished: Closed");
-    };
-
-    dialog.addEventListener("opened", handleOpened);
-    dialog.addEventListener("closed", handleClosed);
-
-    return () => {
-      dialog.removeEventListener("opened", handleOpened);
-      dialog.removeEventListener("closed", handleClosed);
-    };
   }, []);
 
-  const openConfirmDialog = (visitor: string) => {
-    setSelectedUser(visitor);
+  // Fetch visitors list
+  useEffect(() => {
+    const loadVisitorList = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/get_visitors`); // TODO Replace with api url
+        const data: Visitor[] = await res.json();
+        setVisitorList(data);
+      } catch {
+        showError("Failed to load visitor list");
+      }
+    };
+
+    loadVisitorList();
+  }, []);
+
+  const openConfirmDialog = (visitor: Visitor) => {
+    setSelectedVisitor(visitor);
     dialogRef.current?.show();
   };
 
-  const confirmBlacklist = () => {
-    console.log("Promoted to admin: ", selectedUser);
-    dialogRef.current?.close();
+  const confirmPromoteVisitor = async () => {
+    if (!selectedVisitor) return;
+
+    try {
+      const res = await fetch(`http://localhost:8000/api/promote_to_org`, {
+        // TODO Replace with api url
+        method: "POST", // TODO Replace with actual method
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: selectedVisitor.user_id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.detail || "Failed to promote user");
+        return;
+      }
+
+      setVisitorList((prev) =>
+        prev.filter((v) => v.user_id !== selectedVisitor.user_id),
+      );
+
+      console.log("Promoted to admin: ", selectedVisitor);
+      dialogRef.current?.close();
+    } catch {
+      showError("Server Error");
+    }
   };
 
   return (
     <div className="user_panel">
-      <h1>Users</h1>
+      <h1>Promote to Organiser</h1>
 
       <md-list className="user_list">
-        {users.map((user, index) => (
+        {visitorList.map((user, index) => (
           <md-list-item key={index}>
-            <div slot="headline">{user}</div>
+            <div slot="headline">{user.username}</div>
             <md-filled-tonal-icon-button
               slot="end"
               onClick={() => openConfirmDialog(user)}
@@ -77,13 +103,15 @@ export const AdminUser = () => {
 
       <md-dialog ref={dialogRef}>
         <div slot="headline">
-          Promote <b>{selectedUser}</b> to admin?
+          Promote <b>{selectedVisitor?.username}</b> to organiser?
         </div>
         <div slot="actions">
           <md-text-button onClick={() => dialogRef.current?.close()}>
             No
           </md-text-button>
-          <md-filled-button onClick={confirmBlacklist}>Yes</md-filled-button>
+          <md-filled-button onClick={confirmPromoteVisitor}>
+            Yes
+          </md-filled-button>
         </div>
       </md-dialog>
     </div>
