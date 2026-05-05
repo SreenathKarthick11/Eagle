@@ -46,7 +46,7 @@ export const AdminBlackList = () => {
 
     try {
       const res = await fetch("http://localhost:8000/api/whitelist", { // TODO Replace with api url
-        method: "POST",
+        method: "POST", // TODO Update method
         headers: {
           "Content-Type": "application/json",
         },
@@ -55,8 +55,7 @@ export const AdminBlackList = () => {
         }),
       });
 
-      let data: { detail?: string } = {};
-      data = await res.json();
+      const data = await res.json();
 
       if (!res.ok) {
         showError(data.detail || "Failed to whitelist");
