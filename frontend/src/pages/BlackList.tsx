@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "@material/web/list/list.js";
 import "@material/web/list/list-item.js";
@@ -17,6 +18,8 @@ import type { EventItem, Visitor, UserInfoItem } from "../interfaces"
 import "./styles/BlackList.css";
 
 export const BlackList = () => {
+  const navigate = useNavigate();
+
   const [events, setEvents] = useState<EventItem[]>([]);
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
@@ -105,6 +108,7 @@ export const BlackList = () => {
       );
 
       dialogRef.current?.close();
+      navigate(0);
     } catch {
       showError("Server error");
     }
