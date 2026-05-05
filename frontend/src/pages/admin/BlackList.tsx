@@ -29,7 +29,7 @@ export const AdminBlackList = () => {
   useEffect(() => {
     const loadBlacklistedUsers = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/blacklisted"); // TODO Replace with api rul
+        const res = await fetch("http://localhost:8000/blacklists"); // TODO Replace with api rul
         const data: Visitor[] = await res.json();
         setVisitors(data);
       } catch {

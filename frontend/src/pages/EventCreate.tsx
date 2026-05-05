@@ -16,6 +16,8 @@ import type { DialogHandle } from "../components/customDialog";
 
 export const EventCreate = () => {
 
+    type VenueItem = { venue_id: number; venue_name: string };
+
     // ------------------ REFS ------------------
     const titleRef = useRef<MdOutlinedTextField>(null);
     const startRef = useRef<MdOutlinedTextField>(null);
@@ -34,8 +36,7 @@ export const EventCreate = () => {
     const [selectedOrganisers, setSelectedOrganisers] = useState<string[]>([]);
     const [search, setSearch] = useState("");
 
-    const [locations, setLocations] = useState<string[]>([]);
-    const [venues, setVenues] = useState<string[]>([]);
+    const [venues, setVenues] = useState<VenueItem[]>([]);
 
 
     const showError = (msg: string) => {
@@ -46,7 +47,7 @@ export const EventCreate = () => {
     useEffect(() => {
         const loadOrganisers = async () => {
             try {
-                const res = await fetch("http://localhost:8000/api/organisers");  // TODO: update with actual url
+                const res = await fetch("http://localhost:8000/organizers");  // TODO: update with actual url
                 const data = await res.json();
                 setOrganisers(data.map((o: any) => o.username));
             } catch {
@@ -57,27 +58,14 @@ export const EventCreate = () => {
         loadOrganisers();
     }, []);
 
-    // ------------------ LOAD LOCATIONS ------------------
-    useEffect(() => {
-        const loadLocations = async () => {
-            try {
-                const res = await fetch("http://localhost:8000/api/locations");  // TODO: update with actual url
-                const data = await res.json();
-                setLocations(data);
-            } catch {
-                showError("Failed to load locations");
-            }
-        };
 
-        loadLocations();
-    }, []);
 
     // ------------------ LOAD VENUES ------------------
     const loadVenues = async (location?: string) => {
         try {
             const url = location
-                ? `http://localhost:8000/api/venues?location=${location}` // TODO: update with actual url
-                : "http://localhost:8000/api/venues";
+                ? `http://localhost:8000/venues?location=${location}` 
+                : "http://localhost:8000/venues";
 
             const res = await fetch(url);
             const data = await res.json();
@@ -132,7 +120,7 @@ export const EventCreate = () => {
                 ? tagsRaw.split(",").map((t) => t.trim())
                 : [];
 
-            const res = await fetch("http://localhost:8000/api/events/create", {  // TODO: update with actual url
+            const res = await fetch("http://localhost:8000/events/create", {  // TODO: update
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -153,7 +141,7 @@ export const EventCreate = () => {
             let data: any = {};
             try {
                 data = await res.json();
-            } catch {}
+            } catch { }
 
             if (!res.ok) {
                 showError(data.detail || "Failed to create event");
@@ -181,33 +169,14 @@ export const EventCreate = () => {
 
                     <md-outlined-text-field ref={endRef} label="End Time" type="datetime-local" class="input" />
 
-                    {/* LOCATION */}
-                    <md-outlined-select
-                        ref={locationRef}
-                        label="Location"
-                        class="input"
-                        onInput={(e: any) => {
-                            const value = e.target.value;
-                            loadVenues(value);
 
-                            // reset venue
-                            if (venueRef.current) {
-                                venueRef.current.value = "";
-                            }
-                        }}
-                    >
-                        {locations.map((loc, index) => (
-                            <md-select-option key={index} value={loc}>
-                                <div slot="headline">{loc}</div>
-                            </md-select-option>
-                        ))}
-                    </md-outlined-select>
 
                     {/* VENUE */}
+                    {/* VENUE */}
                     <md-outlined-select ref={venueRef} label="Venue" class="input">
-                        {venues.map((venue, index) => (
-                            <md-select-option key={index} value={venue}>
-                                <div slot="headline">{venue}</div>
+                        {venues.map((v) => (
+                            <md-select-option key={v.venue_id} value={String(v.venue_id)}>
+                                <div slot="headline">{v.venue_name}</div>
                             </md-select-option>
                         ))}
                     </md-outlined-select>

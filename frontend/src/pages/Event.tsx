@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import "./styles/Event.css";
 
 import '@material/web/textfield/outlined-text-field.js';
@@ -12,7 +13,24 @@ import { MdDialog } from "@material/web/dialog/dialog.js";
 import { CustomDialog } from "../components/customDialog";
 import type { DialogHandle } from "../components/customDialog";
 
-export const EventPage = ({ event_id }: { event_id: number }) => {
+export const EventPage = () => {
+  // "id" here must match the name used in the Route path (path="/event/:id")
+  const { id } = useParams<{ id: string }>();
+  // const [event, setEvent] = useState<any>(null);
+
+  // useEffect(() => {
+  //   const fetchEventDetails = async () => {
+  //     try {
+  //       const res = await fetch(`http://localhost:8000/events/${id}`);
+  //       const data = await res.json();
+  //       setEvent(data);
+  //     } catch (error) {
+  //       console.error("Failed to fetch event", error);
+  //     }
+  //   };
+
+  //   if (id) fetchEventDetails();
+  // }, [id]);
   const customDialogRef = useRef<DialogHandle>(null);
   const successDialogRef = useRef<MdDialog>(null);
 
@@ -37,7 +55,7 @@ export const EventPage = ({ event_id }: { event_id: number }) => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/event/${event_id}`);
+        const res = await fetch(`http://localhost:8000/event/${id}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -54,7 +72,7 @@ export const EventPage = ({ event_id }: { event_id: number }) => {
     const checkRegistration = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8000/is_user_registered?user_id=${user_id}&event_id=${event_id}`
+          `http://localhost:8000/is_user_registered?user_id=${user_id}&event_id=${id}`
         );
         const data = await res.json();
         setIsRegistered(data.success);
@@ -65,17 +83,17 @@ export const EventPage = ({ event_id }: { event_id: number }) => {
 
     fetchEvent();
     if (user_id) checkRegistration();
-  }, [event_id]);
+  }, [id]);
 
   // 2. UPDATE EVENT (organiser/editor)
   const handleUpdate = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/event/${event_id}`, {
+      const res = await fetch(`http://localhost:8000/event/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id,
-          event_id,
+          id,
           title: nameRef.current?.value,
           description: descRef.current?.value,
         }),
@@ -98,7 +116,7 @@ export const EventPage = ({ event_id }: { event_id: number }) => {
   const handleRegister = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/event/${event_id}/register?user_id=${user_id}&event_id=${event_id}`,
+        `http://localhost:8000/event/${id}/register?user_id=${user_id}&event_id=${id}`,
         { method: "POST" }
       );
 
@@ -119,7 +137,7 @@ export const EventPage = ({ event_id }: { event_id: number }) => {
   const handleWithdraw = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/event/${event_id}/withdraw?user_id=${user_id}&event_id=${event_id}`,
+        `http://localhost:8000/event/${id}/withdraw?user_id=${user_id}&event_id=${id}`,
         { method: "POST" }
       );
 
