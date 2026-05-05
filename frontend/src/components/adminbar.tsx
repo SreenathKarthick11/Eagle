@@ -31,6 +31,10 @@ export const Adminbar = () => {
         Promote to Organiser
       </md-text-button>
 
+      <md-text-button className="admin_sidebar_button" onClick={() => navigate("/admin/promote_editor")}>
+        Promote to Editor
+      </md-text-button>
+
       <md-text-button className="admin_sidebar_button" onClick={() => navigate("/admin/promote_admin")}>
         Promote to Admin
       </md-text-button>

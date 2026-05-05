@@ -13,6 +13,7 @@ import { AdminVenue } from "./pages/admin/Venues";
 import { AdminEvent } from "./pages/admin/Event";
 import { AdminPromoteToOrg } from "./pages/admin/PromoteToOrganiser";
 import { AdminPromoteToAdmin } from "./pages/admin/PromoteToAdmin";
+import { VisitorPromoteToEditor } from "./pages/admin/PromoteToEditor";
 import { EventCreate } from "./pages/EventCreate";
 import { EventPage } from "./pages/Event";
 
@@ -42,6 +43,7 @@ function App() {
             <Route path="events" element={<AdminEvent />} />
             <Route path="promote_org" element={<AdminPromoteToOrg />} />
             <Route path="promote_admin" element={<AdminPromoteToAdmin />} />
+            <Route path="promote_editor" element={<VisitorPromoteToEditor />} />
           </Route>
         </Route>
 
