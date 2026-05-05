@@ -44,7 +44,7 @@ class PGConnect:
     def _role_connection(self, role: str = "postgres"):
         with self.pool.connection() as conn:
             conn.autocommit = True
-            print("Logging in as role:",role)
+            print("Logging in as role:", role)
             with conn.cursor() as cur:
                 cur.execute(sql.SQL("SET ROLE {}").format(sql.Identifier(role)))
             try:
@@ -171,15 +171,25 @@ class PGConnect:
     def get_tags(self, role="postgres"):
         return self.call_function_rows("get_tags", role=role)
 
-    def signup_user(self, name, username, password, email_id, phone_no, role="postgres"):
+    def signup_user(
+        self, name, username, password, email_id, phone_no, role="postgres"
+    ):
         hashed_password = password
         return self.call_function_one(
-            "signup_user", name, username, hashed_password, email_id, phone_no, role=role
+            "signup_user",
+            name,
+            username,
+            hashed_password,
+            email_id,
+            phone_no,
+            role=role,
         )
 
     def signin_user(self, username, password, role="postgres"):
         hashed_password = password
-        return self.call_function_one("signin_user", username, hashed_password, role=role)
+        return self.call_function_one(
+            "signin_user", username, hashed_password, role=role
+        )
 
     def search_events(
         self,
@@ -225,7 +235,7 @@ class PGConnect:
         is_full,
         title_substring,
         description_substring,
-        role="postgres"
+        role="postgres",
     ):
         return self.call_function_rows(
             "search_event_items",
@@ -240,7 +250,7 @@ class PGConnect:
             is_full,
             title_substring,
             description_substring,
-            role=role
+            role=role,
         )
 
     def get_user_profile(self, user_id, role="postgres"):
@@ -252,7 +262,9 @@ class PGConnect:
         )
 
     def is_user_regsitered(self, user_id, event_id, role="postgres"):
-        return self.call_scalar_function("is_user_registered", user_id, event_id, role=role)
+        return self.call_scalar_function(
+            "is_user_registered", user_id, event_id, role=role
+        )
 
     def register_for_event(self, user_id, event_id, role="postgres"):
         return self.call_function_one(
@@ -308,12 +320,14 @@ class PGConnect:
     def get_visitors(self, role="postgres"):
         return self.call_function_rows("get_visitors", role=role)
 
-    def get_editors(self, event_id:Optional[int] = None, role="postgres"):
+    def get_editors(self, event_id: Optional[int] = None, role="postgres"):
         return self.call_function_rows("get_editors", event_id, role=role)
 
     def add_editor(self, user_id, editor_id, event_id, role="postgres"):
-        return self.call_function_one("add_editor", user_id, editor_id, event_id, role=role)
-    
+        return self.call_function_one(
+            "add_editor_to_event", user_id, event_id, editor_id, role=role
+        )
+
     def get_blacklists(self, role="postgres"):
         return self.call_function_rows("get_blacklists", role=role)
 
@@ -356,7 +370,9 @@ class PGConnect:
         return self.call_function_one("delete_event", user_id, event_id, role=role)
 
     def get_events_of_organizer(self, organizer_id, role="postgres"):
-        return self.call_function_rows("get_events_of_organizer", organizer_id, role=role)
+        return self.call_function_rows(
+            "get_events_of_organizer", organizer_id, role=role
+        )
 
     def get_event_participants(self, event_id: Optional[int] = None, role="postgres"):
         return self.call_function_rows("get_event_participants", event_id, role=role)

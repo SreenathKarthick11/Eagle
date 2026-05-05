@@ -70,7 +70,7 @@ export const AdminEvent = () => {
     if (!selectedEvent) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/event/${selectedEvent.event_id}?role=${user.role}`, {
+      const res = await fetch(`http://localhost:8000/event/${selectedEvent.event_id}?user_id=${user.user_id}&role=${user.role}`, {
         // TODO Replace with api url
         method: "DELETE", // TODO Update Method
         headers: {

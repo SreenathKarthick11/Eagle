@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, isRouteErrorResponse } from "react-router-dom";
 import "./styles/Event.css";
-import type { UserInfoItem } from "../interfaces";
+import type { UserInfoItem, Visitor } from "../interfaces";
 import '@material/web/textfield/outlined-text-field.js';
 import '@material/web/button/filled-button.js';
 import '@material/web/button/outlined-button.js';
@@ -17,6 +17,11 @@ export const EventPage = () => {
   // "id" here must match the name used in the Route path (path="/event/:id")
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [selectedEditors, setSelectedEditors] = useState<Visitor[]>([]);
+  const [availableEditors, setAvailableEditors] = useState<Visitor[]>([]);
+  const [presentEditors, setPresentEditors] = useState<Visitor[]>([]);
+  const [allEditors, setAllEditors] = useState<Visitor[]>([]);
+  const [searchEditor, setSearchEditor] = useState("");
   // const [event, setEvent] = useState<any>(null);
 
   // useEffect(() => {
@@ -47,11 +52,84 @@ export const EventPage = () => {
   const role = storedUser?.role;
 
   const isEditor = role === "organizer_role" || role === "editor_role";
+  const isOgranizer = role == "organizer_role";
   const user: UserInfoItem = JSON.parse(localStorage.getItem("user") || "{}");
 
   const showError = (msg: string) => {
     customDialogRef.current?.open("Error", msg);
   };
+
+  // ---- LOAD ALL EDITORS ----
+  useEffect(() => {
+    const loadEditors = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/editors?role=${user.role}`);
+        const data: Visitor[] = await res.json();
+        setAllEditors(data);
+      } catch {
+        showError("Failed to load editors");
+      }
+    };
+
+    loadEditors();
+  }, []);
+
+  // ---- LOAD PRESENT EDITORS ----
+  useEffect(() => {
+    const loadAvailableEditors = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/editors?event_id=${id}&role=${user.role}`);
+        const data: Visitor[] = await res.json();
+        setPresentEditors(data);
+      } catch {
+        showError("Failed to load editors");
+      }
+    };
+
+    loadAvailableEditors();
+  }, [])
+
+  // ---- LOAD AVAILABLE EDITORS ----
+  useEffect(() => {
+    setAvailableEditors(allEditors.filter(e => !presentEditors.some(pe => pe.user_id === e.user_id)));
+
+  }, [allEditors, presentEditors])
+
+  // ---- TOGGLE EDITORS ----
+  const toggleEditor = (editor: Visitor) => {
+    setSelectedEditors((prev) =>
+      prev.includes(editor)
+        ? prev.filter((e) => e !== editor)
+        : [...prev, editor]
+    );
+  };
+
+  const filteredEditors = availableEditors.filter((e) =>
+    e.username.toLowerCase().includes(searchEditor.toLowerCase())
+  );
+
+  const addEditor = async (editor: Visitor) => {
+    try {
+      const res = await fetch(`http://localhost:8000/add_editor?user_id=${user.user_id}&editor_id=${editor.user_id}&event_id=${id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.detail || "Failed to create event");
+        return;
+      }
+    } catch {
+      showError("Failed to add editor");
+    }
+  }
+
+  // const handleAddEditors = () => {
 
   // 1. LOAD EVENT
   useEffect(() => {
@@ -107,6 +185,8 @@ export const EventPage = () => {
         showError(data.detail || "Update failed");
         return;
       }
+
+      selectedEditors.forEach((editor) => addEditor(editor));
 
       successDialogRef.current?.show();
     } catch {
@@ -196,6 +276,44 @@ export const EventPage = () => {
               value={eventData.description}
             />
 
+            {/* EDITORS */}
+            {isOgranizer && (< div className="multi-select">
+              <label className="multi-label">Editors</label>
+
+              <md-outlined-text-field
+                label="Search editors"
+                value={searchEditor}
+                onInput={(e: React.InputEvent<MdOutlinedTextField>) =>
+                  setSearchEditor((e.target as MdOutlinedTextField).value)
+                }
+              />
+
+              <div className="selected-chips">
+                {selectedEditors.map((editor, i) => (
+                  <span
+                    key={i}
+                    className="chip"
+                    onClick={() => toggleEditor(editor)}
+                  >
+                    {editor.username} ✕
+                  </span>
+                ))}
+              </div>
+
+              <div className="checkbox-list">
+                {filteredEditors.map((editor, index) => (
+                  <div key={index} className="checkbox-item">
+                    <md-checkbox
+                      checked={selectedEditors.includes(editor)}
+                      onChange={() => toggleEditor(editor)}
+                    />
+                    <span>{editor.username}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            )}
+
             <md-filled-button onClick={handleUpdate}>
               Save Changes
             </md-filled-button>
@@ -236,6 +354,6 @@ export const EventPage = () => {
       </md-dialog>
 
       <CustomDialog ref={customDialogRef} />
-    </div>
+    </div >
   );
 };
