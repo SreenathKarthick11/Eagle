@@ -1406,6 +1406,7 @@ CREATE INDEX IF NOT EXISTS idx_event_venue_time_range
 -- B‑tree indexes for common filters and joins
 CREATE INDEX IF NOT EXISTS idx_event_organizer ON event (organizer_id);
 CREATE INDEX IF NOT EXISTS idx_event_start_time ON event (start_time);
+CREATE INDEX IF NOT EXISTS idx_event_finish_time ON event (finish_time);
 CREATE INDEX IF NOT EXISTS idx_event_venue_id ON event (venue_id);   -- supports join + FK
 
 -- GIN trigram indexes for substring search on name and description
