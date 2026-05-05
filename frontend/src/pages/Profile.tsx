@@ -34,7 +34,7 @@ export const Profile = () => {
         const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
         const user_id = storedUser.user_id;
 
-        const res = await fetch(`http://localhost:8000/profile?user_id=${user_id}`); 
+        const res = await fetch(`http://localhost:8000/profile?user_id=${user_id}&role=${storedUser.role}`); 
         let data: any = {};
         try {
           data = await res.json();
@@ -80,7 +80,7 @@ export const Profile = () => {
         }
       }
 
-      const res = await fetch("http://localhost:8000/profile/", { // TODO: update with actual url
+      const res = await fetch(`http://localhost:8000/profile?role=${storedUser.role}`, { 
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -88,9 +88,7 @@ export const Profile = () => {
         body: JSON.stringify({
           user_id: storedUser.user_id,
           name: userData.name,
-          phone: userData.phone_no,
-          current_password: current || null,
-          new_password: newPass || null,
+          phone_no: userData.phone_no,
         }),
       });
 
