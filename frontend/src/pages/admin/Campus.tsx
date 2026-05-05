@@ -58,7 +58,7 @@ export const AdminCampus = () => {
       const user: UserInfoItem = JSON.parse(
         localStorage.getItem("user") || "{}",
       );
-      const url = `http://localhost:8000/campuses?role=${user.role}`;
+      const url = `http://localhost:8000/campuses`; // TODO: Add role as query parameter to the url
 
       const res = await fetch(url, {
         method: "POST",
@@ -93,8 +93,8 @@ export const AdminCampus = () => {
     if (!selectedCampus) return;
 
     try {
-      const res = await fetch("http://localhost:8000/api/delete_campus", {
-        method: "POST",
+      const res = await fetch(`http://localhost:8000/campuses?campus_id=${selectedCampus.campus_id}`, {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },

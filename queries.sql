@@ -604,6 +604,7 @@ BEGIN
 END;
 $$;
 
+
 CREATE OR REPLACE FUNCTION create_event(
     p_organizer_id int,
     p_name text,
@@ -628,30 +629,34 @@ BEGIN
     VALUES (p_name, p_start_time, p_finish_time, p_description, p_capacity, p_venue_id, p_organizer_id)
     RETURNING event_id INTO v_event_id;
 
-    -- Insert secondary organizers, excluding the primary organizer if accidentally included.
+    -- Insert secondary organizers (exclude primary organizer if present).
     IF p_secondary_organizer_ids IS NOT NULL THEN
         INSERT INTO secondary_organizers (event_id, organizer_id)
-        SELECT v_event_id, unnest(p_secondary_organizer_ids)
-        WHERE unnest(p_secondary_organizer_ids) <> p_organizer_id
+        SELECT v_event_id, org_id
+        FROM unnest(p_secondary_organizer_ids) AS org_id
+        WHERE org_id <> p_organizer_id
         ON CONFLICT (event_id, organizer_id) DO NOTHING;
     END IF;
 
-    -- Ensure all tags exist in the tag table, then link them to the event.
+    -- Handle tags
     IF p_tags IS NOT NULL THEN
-        -- Insert missing tags (ignores existing ones).
+        -- Insert missing tags
         INSERT INTO tag (tag_name)
-        SELECT unnest(p_tags)
+        SELECT tag_name
+        FROM unnest(p_tags) AS tag_name
         ON CONFLICT (tag_name) DO NOTHING;
 
-        -- Link tags with the newly created event.
+        -- Link tags to event
         INSERT INTO tagged_with (event_id, tag_name)
-        SELECT v_event_id, unnest(p_tags)
+        SELECT v_event_id, tag_name
+        FROM unnest(p_tags) AS tag_name
         ON CONFLICT (event_id, tag_name) DO NOTHING;
     END IF;
 
     RETURN v_event_id;
 END;
 $$;
+
 
 CREATE OR REPLACE FUNCTION delete_event(
     p_actor_id int,

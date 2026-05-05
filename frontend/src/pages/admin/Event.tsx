@@ -34,7 +34,7 @@ export const AdminEvent = () => {
     const loadEvents = async () => {
       try {
         const res = await fetch(`http://localhost:8000/search`, {
-          method: "GET",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -65,9 +65,9 @@ export const AdminEvent = () => {
     if (!selectedEvent) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/delete_event`, {
+      const res = await fetch(`http://localhost:8000/event/${selectedEvent.event_id}`, {
         // TODO Replace with api url
-        method: "POST", // TODO Update Method
+        method: "DELETE", // TODO Update Method
         headers: {
           "Content-Type": "application/json",
         },

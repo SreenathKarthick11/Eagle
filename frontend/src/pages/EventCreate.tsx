@@ -133,7 +133,7 @@ export const EventCreate = () => {
                     start_time: start_time,
                     finish_time: end_time,
                     // location,
-                    venue_id: venue,
+                    venue_id: Number(venue),
                     secondary_organizer_ids: selectedOrganisers,
                     capacity: capacity,
                     tags: tags,

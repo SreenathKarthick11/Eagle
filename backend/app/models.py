@@ -216,6 +216,7 @@ class AdminCreateLocation(BaseModel):
     landmark: Optional[str] = None
     latitude: float
     longitude: float
+    
 
 
 # DELETE /admin/locations
@@ -253,8 +254,8 @@ class AdminPromoteUser(BaseModel):
 class CreateEvent(BaseModel):
     user_id: int
     name: str
-    start_time: datetime
-    finish_time: datetime
+    start_time: str
+    finish_time: str
     venue_id: int
     secondary_organizer_ids: Optional[list[int]] = None
     capacity: Optional[int] = None
@@ -269,7 +270,7 @@ class CreateCampus(BaseModel):
 
 class CreateLocation(BaseModel):
     location_name: str
-    landmark: Optional[str] = None
+    landmark: str
     latitude: str
     longitude: str
     campus_id: int

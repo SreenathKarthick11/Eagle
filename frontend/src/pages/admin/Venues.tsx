@@ -86,7 +86,7 @@ export const AdminVenue = () => {
       const user: UserInfoItem = JSON.parse(
         localStorage.getItem("user") || "{}",
       );
-      const url = `hhtp://localhost:8000/venues?role=${user.role}`;
+      const url = `http://localhost:8000/venues`;
 
       const res = await fetch(url, {
         method: "POST",
@@ -126,7 +126,7 @@ export const AdminVenue = () => {
       const user: UserInfoItem = JSON.parse(
         localStorage.getItem("user") || "{}",
       );
-      const url = `http://localhost:8000/venues?venue_id=${selectedVenue.venue_id}&role=${user.role}`;
+      const url = `http://localhost:8000/venues?venue_id=${selectedVenue.venue_id}`;
 
       const res = await fetch(url, {
         method: "DELETE",

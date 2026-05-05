@@ -34,7 +34,7 @@ export const AdminPromoteToOrg = () => {
   useEffect(() => {
     const loadVisitorList = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/get_visitors`); // TODO Replace with api url
+        const res = await fetch(`http://localhost:8000/visitors`); // TODO Replace with api url
         const data: Visitor[] = await res.json();
         setVisitorList(data);
       } catch {
@@ -54,7 +54,7 @@ export const AdminPromoteToOrg = () => {
     if (!selectedVisitor) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/promote_to_org`, {
+      const res = await fetch(`http://localhost:8000/promote_visitor_to_organizer?user_id=${selectedVisitor.user_id}`, {
         // TODO Replace with api url
         method: "POST", // TODO Replace with actual method
         headers: {

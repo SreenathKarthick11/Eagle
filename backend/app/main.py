@@ -25,7 +25,7 @@ from app.models import (
 import psycopg
 from app.db import db
 from fastapi import HTTPException
-from typing import Optional
+from typing import Any, Optional
 
 # import jose
 # from jose import jwe
@@ -56,20 +56,17 @@ def read_root():
 def signin(request: SignInRequest):
     try:
         result = db.signin_user(**request.model_dump())
-        # print(result)
-        # print(type(result))
-        # return SignInResponse(**{"user_id": 1, "role": "dummy"})
         return SignInResponse(**result)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/home")
-def gethome(request: None):
-    pass
-    # try:
-    #     result = db.search_events()
-    # except psycopg.Error as e:
+# @app.get("/home")
+# def gethome(request: None):
+#     pass
+#     # try:
+#     #     result = db.search_events()
+#     # except psycopg.Error as e:
 
 
 @app.get("/campuses")
@@ -83,7 +80,7 @@ def get_campuses():
 
 
 @app.post("/campuses")
-def create_campus(request: CreateCampus, role: str):
+def create_campus(request: CreateCampus, role: str= "postgres"):
     try:
         db.create_campus(**request.model_dump(), role=role)
         return SuccessResponse(success=True)
@@ -92,7 +89,7 @@ def create_campus(request: CreateCampus, role: str):
 
 
 @app.delete("/campuses")
-def delete_campus(campus_id: int, role: str):
+def delete_campus(campus_id: int, role: str = "postgres"):
     try:
         db.delete_campus(campus_id, role=role)
         return SuccessResponse(success=True)
@@ -111,7 +108,7 @@ def get_locations(campus_id: Optional[int] = None):
 
 
 @app.post("/locations")
-def create_location(request: CreateLocation, role: str):
+def create_location(request: CreateLocation, role: Optional[str] = "postgres"):
     try:
         db.create_location(**request.model_dump(), role=role)
         return SuccessResponse(success=True)
@@ -120,7 +117,7 @@ def create_location(request: CreateLocation, role: str):
 
 
 @app.delete("/locations")
-def delete_location(location_id, role: str):
+def delete_location(location_id: int, role: Optional[str] = "postgres"):
     try:
         db.delete_location(location_id, role=role)
         return SuccessResponse(success=True)
@@ -139,7 +136,7 @@ def get_venues(location_id: Optional[int] = None):
 
 
 @app.post("/venues")
-def create_venue(request: CreateVenue, role: str):
+def create_venue(request: CreateVenue, role: Optional[str] = "postgres"):
     try:
         db.create_venue(**request.model_dump(), role=role)
         return SuccessResponse(success=True)
@@ -148,7 +145,7 @@ def create_venue(request: CreateVenue, role: str):
 
 
 @app.delete("/venues")
-def delete_venue(venue_id, role: str):
+def delete_venue(venue_id: int, role: Optional[str] = "postgres"):
     try:
         db.delete_venue(venue_id, role=role)
         return SuccessResponse(success=True)
@@ -218,9 +215,9 @@ def update_event_details(request: EditEvent):
 @app.post("/event")
 def create_event(request: CreateEvent):
     try:
-        result = db.create_event(**request.model_dump())
-        result = list(map(lambda x: EventCatalog(**x), result))
-        return result
+        db.create_event(**request.model_dump())
+        # result = list(map(lambda x: EventCatalog(**x), result))
+        return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -299,7 +296,7 @@ def get_blacklists():
 @app.post("/promote_visitor_to_editor")
 def promote_visitor_to_editor(user_id):
     try:
-        db.promote_visitor_to_editor()
+        db.promote_visitor_to_editor(user_id)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -308,7 +305,7 @@ def promote_visitor_to_editor(user_id):
 @app.post("/promote_visitor_to_organizer")
 def promote_visitor_to_organizer(user_id):
     try:
-        db.promote_visitor_to_organizer()
+        db.promote_visitor_to_organizer(user_id)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -317,7 +314,7 @@ def promote_visitor_to_organizer(user_id):
 @app.post("/promote_visitor_to_admin")
 def promote_visitor_to_admin(user_id):
     try:
-        db.promote_visitor_to_admin()
+        db.promote_visitor_to_admin(user_id)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -326,7 +323,7 @@ def promote_visitor_to_admin(user_id):
 @app.post("/promote_organizer_to_admin")
 def promote_organizer_to_admin(user_id):
     try:
-        db.promote_organizer_to_admin()
+        db.promote_organizer_to_admin(user_id)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))

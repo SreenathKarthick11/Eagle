@@ -89,7 +89,7 @@ export const AdminLocation = () => {
       const user: UserInfoItem = JSON.parse(
         localStorage.getItem("user") || "{}",
       );
-      const url = `http://localhost:8000/locations?role=${user.role}`;
+      const url = `http://localhost:8000/locations`;
 
       const res = await fetch(url, {
         method: "POST",
@@ -97,7 +97,7 @@ export const AdminLocation = () => {
         body: JSON.stringify({
           location_name: newLocation,
           landmark: landmark,
-          latitute: latitude,
+          latitude: latitude,
           longitude: longitude,
           campus_id: selectedCampus.campus_id,
         }),
@@ -133,7 +133,7 @@ export const AdminLocation = () => {
       const user: UserInfoItem = JSON.parse(
         localStorage.getItem("user") || "{}",
       );
-      const url = `http://localhost:8000/locations?location_id=${selectedLocation.location_id}&role=${user.role}`;
+      const url = `http://localhost:8000/locations?location_id=${selectedLocation.location_id}`;
 
       const res = await fetch(url, {
         method: "DELETE",

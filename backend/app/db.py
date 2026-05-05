@@ -295,7 +295,7 @@ class PGConnect:
         return self.call_function_rows("get_organizers", role=role)
 
     def get_visitors(self, role="postgres"):
-        return self.call_function_rows("get_visistors", role=role)
+        return self.call_function_rows("get_visitors", role=role)
 
     def get_blacklists(self, role="postgres"):
         return self.call_function_rows("get_blacklists", role=role)
@@ -341,6 +341,18 @@ class PGConnect:
 
     def get_event_participants(self, event_id: Optional[int] = None):
         return self.call_function_rows("get_event_participants", event_id)
+
+    def promote_visitor_to_editor(self, user_id):
+        return self.call_function_one("promote_visitor_to_editor", user_id)
+
+    def promote_visitor_to_organizer(self, user_id):
+        return self.call_function_one("promote_visitor_to_organizer", user_id)
+
+    def promote_visitor_to_admin(self, user_id):
+        return self.call_function_one("promote_visitor_to_admin", user_id)
+
+    def promote_organizer_to_admin(self, user_id):
+        return self.call_function_one("promote_organizer_to_admin", user_id)
 
     # def whitelist_user(self, user_id):
     #     self.call_function_one("whitelist_user", user_id)
