@@ -247,7 +247,7 @@ BEGIN
         RAISE EXCEPTION 'user is not a visitor';
     END IF;
 
-    IF v_strikes >= 5 THEN
+    IF v_strikes = 5 THEN
         RAISE EXCEPTION 'user is blacklisted';
     END IF;
 
@@ -302,7 +302,7 @@ AS $$
         SELECT 1
         FROM visitor
         WHERE visitor_id = p_user_id
-          AND strike_count >= 5
+          AND strike_count = 5
     );
 $$;
 
@@ -1239,7 +1239,7 @@ AS $$
         u.username
     FROM visitor v
     JOIN user_info u ON v.visitor_id = u.user_id
-    WHERE v.strike_count >= 5
+    WHERE v.strike_count = 5
     ORDER BY u.username;
 $$;
 
@@ -1423,6 +1423,7 @@ CREATE INDEX IF NOT EXISTS idx_location_campus ON location (campus_id);
 
 -- 4. visitor table
 CREATE INDEX IF NOT EXISTS idx_visitor_strike_count ON visitor (strike_count);
+CREATE INDEX IF NOT EXISTS idx_visitor_strike_count_hash ON visitor USING hash (strike_count);
 
 -- 5. visitor_of table (junction)
 CREATE INDEX IF NOT EXISTS idx_visitor_of_event ON visitor_of (event_id);
