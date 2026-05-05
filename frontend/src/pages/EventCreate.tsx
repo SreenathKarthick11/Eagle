@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import "./styles/EventCreate.css";
 
 import "@material/web/textfield/outlined-text-field.js";
@@ -17,6 +19,8 @@ import type { MdDialog } from "@material/web/dialog/dialog.js";
 import { CustomDialog } from "../components/customDialog";
 
 export const EventCreate = () => {
+  const navigate = useNavigate();
+
   type VenueItem = { venue_id: number; venue_name: string };
 
   // ------------------ REFS ------------------
@@ -256,7 +260,12 @@ export const EventCreate = () => {
         <div slot="headline">Success</div>
         <div slot="content">Event created successfully</div>
         <div slot="actions">
-          <md-filled-button onClick={() => dialogRef.current?.close()}>
+          <md-filled-button
+            onClick={() => {
+              dialogRef.current?.close();
+              navigate(0);
+            }}
+          >
             OK
           </md-filled-button>
         </div>
