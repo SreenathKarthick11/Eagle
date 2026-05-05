@@ -117,28 +117,7 @@ export const EventCreate = () => {
         return;
       }
 
-<<<<<<< Updated upstream
-            const res = await fetch("http://localhost:8000/event", { 
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    user_id: user.user_id,
-                    name: title,
-                    start_time: start_time,
-                    finish_time: end_time,
-                    // location,
-                    venue_id: Number(venue),
-                    secondary_organizer_ids: selectedOrganisers,
-                    capacity: capacity,
-                    tags: tags,
-                    description: description,
-                }),
-            });
-=======
       const tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()) : [];
->>>>>>> Stashed changes
 
       const res = await fetch("http://localhost:8000/event", {
         method: "POST",
