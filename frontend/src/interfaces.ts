@@ -22,6 +22,11 @@ export interface LocationItem {
   location_name: string
 }
 
+export interface VenueItem {
+  venue_id: string | number;
+  venue_name: string
+}
+
 export interface CreateLocation {
   location_name: string;
   landmark: string | null;
