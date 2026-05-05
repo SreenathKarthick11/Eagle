@@ -67,7 +67,7 @@ export const EventCreate = () => {
     const loadVenues = async (location?: string) => {
       try {
         const url = location
-          ? `http://localhost:8000/venues?location=${location}`
+          ? `http://localhost:8000/venues?location_id=${location}`
           : "http://localhost:8000/venues";
 
         const res = await fetch(url);
@@ -131,7 +131,7 @@ export const EventCreate = () => {
           finish_time: end_time,
           // location,
           venue_id: venue,
-          secondary_organizer_ids: selectedOrganisers,
+          secondary_organizer_ids: selectedOrganisers.map((o) => o.user_id),
           capacity: capacity,
           tags: tags,
           description: description,
