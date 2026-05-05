@@ -71,8 +71,8 @@ export const Navbar = () => {
           </md-text-button>
         )}
 
-        {/* Admin or Organizer only */}
-        {(isAdmin || isOrganizer) && (
+        {/* Organizer only */}
+        {isOrganizer && (
           <md-text-button onClick={() => navigate("/black-list")}>
             Black List
           </md-text-button>
