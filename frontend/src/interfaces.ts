@@ -1,6 +1,6 @@
 export interface EventItem {
   event_id: string | number;
-  title: string
+  event_name: string
 }
 
 export interface Visitor {

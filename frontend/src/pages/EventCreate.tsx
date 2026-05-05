@@ -10,6 +10,7 @@ import '@material/web/dialog/dialog.js';
 
 import type { MdOutlinedTextField } from "@material/web/textfield/outlined-text-field.js";
 import type { MdOutlinedSelect } from "@material/web/select/outlined-select.js";
+import type { UserSession } from "../interfaces";
 
 import { CustomDialog } from "../components/customDialog";
 import type { DialogHandle } from "../components/customDialog";
@@ -38,6 +39,7 @@ export const EventCreate = () => {
 
     const [venues, setVenues] = useState<VenueItem[]>([]);
 
+    const user: UserSession = JSON.parse(localStorage.getItem("user") || "{}");
 
     const showError = (msg: string) => {
         customDialogRef.current?.open("Error", msg);
@@ -47,7 +49,7 @@ export const EventCreate = () => {
     useEffect(() => {
         const loadOrganisers = async () => {
             try {
-                const res = await fetch("http://localhost:8000/organizers");  // TODO: update with actual url
+                const res = await fetch("http://localhost:8000/organizers");  
                 const data = await res.json();
                 setOrganisers(data.map((o: any) => o.username));
             } catch {
@@ -120,21 +122,22 @@ export const EventCreate = () => {
                 ? tagsRaw.split(",").map((t) => t.trim())
                 : [];
 
-            const res = await fetch("http://localhost:8000/events/create", {  // TODO: update
+            const res = await fetch("http://localhost:8000/event", { 
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    title,
-                    start_time,
-                    end_time,
-                    location,
-                    venue,
-                    organisers: selectedOrganisers,
-                    capacity,
-                    tags,
-                    description,
+                    user_id: user.user_id,
+                    name: title,
+                    start_time: start_time,
+                    finish_time: end_time,
+                    // location,
+                    venue_id: venue,
+                    secondary_organizer_ids: selectedOrganisers,
+                    capacity: capacity,
+                    tags: tags,
+                    description: description,
                 }),
             });
 

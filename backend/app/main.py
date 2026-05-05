@@ -297,7 +297,7 @@ def get_blacklists():
 
 
 @app.post("/promote_visitor_to_editor")
-def promote_visitor_to_editor(self, user_id):
+def promote_visitor_to_editor(user_id):
     try:
         db.promote_visitor_to_editor()
         return SuccessResponse(success=True)
@@ -306,7 +306,7 @@ def promote_visitor_to_editor(self, user_id):
 
 
 @app.post("/promote_visitor_to_organizer")
-def promote_visitor_to_organizer(self, user_id):
+def promote_visitor_to_organizer(user_id):
     try:
         db.promote_visitor_to_organizer()
         return SuccessResponse(success=True)
@@ -315,7 +315,7 @@ def promote_visitor_to_organizer(self, user_id):
 
 
 @app.post("/promote_visitor_to_admin")
-def promote_visitor_to_admin(self, user_id):
+def promote_visitor_to_admin(user_id):
     try:
         db.promote_visitor_to_admin()
         return SuccessResponse(success=True)
@@ -324,13 +324,46 @@ def promote_visitor_to_admin(self, user_id):
 
 
 @app.post("/promote_organizer_to_admin")
-def promote_organizer_to_admin(self, user_id):
+def promote_organizer_to_admin(user_id):
     try:
         db.promote_organizer_to_admin()
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@app.get("/events")
+def get_events_by_organizer(organizer_id: Optional[int] = None):
+    try:
+        result = db.get_events_of_organizer(organizer_id)
+        result = list(map(lambda x: EventItem(**x), result))
+        return result
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/event_participants")
+def event_participants(event_id):
+    try:
+        result = db.get_event_participants(event_id)
+        result = list(
+            map(
+                lambda x: UserItem(user_id=x["visitor_id"], username=x["username"]),
+                result,
+            )
+        )
+        return result
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/blacklist/{event_id}")
+def blacklist_user(user_id: int, visitor_id: int, event_id: int):
+    try:
+        db.blacklist_visitor(user_id, visitor_id, event_id)
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
     # try:
     #     pass
     # except psycopg.Error as e:

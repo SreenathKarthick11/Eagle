@@ -26,16 +26,18 @@ export const BlackList = () => {
   const customDialogRef = useRef<DialogHandle>(null);
 
   const showError = (msg: string) => {
-        customDialogRef.current?.open("Error", msg);
+    customDialogRef.current?.open("Error", msg);
   };
+
+  const user: UserSession = JSON.parse(localStorage.getItem("user") || "{}");
 
   // ---------------- LOAD EVENTS ----------------
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const user: UserSession = JSON.parse(localStorage.getItem("user") || "{}");
 
-        const res = await fetch(`http://localhost:8000/api/events/${user.user_id}`);  // TODO: update with actual url
+
+        const res = await fetch(`http://localhost:8000/events?organizer_id=${user.user_id}`);
         const data: EventItem[] = await res.json();
 
         setEvents(data);
@@ -54,7 +56,7 @@ export const BlackList = () => {
     const loadVisitors = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8000/api/events/${selectedEvent}/visitors`     // TODO: update with actual url
+          `http://localhost:8000/event_participants?event_id=${selectedEvent}`
         );
 
         const data: Visitor[] = await res.json();
@@ -78,7 +80,7 @@ export const BlackList = () => {
     if (!selectedVisitor) return;
 
     try {
-      const res = await fetch("http://localhost:8000/api/events/blacklist", {  // TODO: update the url
+      const res = await fetch(`http://localhost:8000/blacklist/${selectedEvent}?user_id=${user.user_id}&visitor_id=${selectedVisitor.user_id}`, {  
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,7 +127,7 @@ export const BlackList = () => {
           >
             {events.map((event) => (
               <md-select-option key={event.event_id} value={String(event.event_id)}>
-                <div slot="headline">{event.title}</div>
+                <div slot="headline">{event.event_name}</div>
               </md-select-option>
             ))}
           </md-filled-select>

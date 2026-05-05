@@ -258,7 +258,7 @@ class CreateEvent(BaseModel):
     venue_id: int
     secondary_organizer_ids: Optional[list[int]] = None
     capacity: Optional[int] = None
-    tags: Optional[str] = None
+    tags: Optional[list[str]] = None
     description: Optional[str] = None
 
 

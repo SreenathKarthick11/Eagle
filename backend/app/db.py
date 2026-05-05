@@ -301,7 +301,9 @@ class PGConnect:
         return self.call_function_rows("get_blacklists", role=role)
 
     def blacklist_visitor(self, user_id, visitor_id, event_id, role="postgres"):
-        return self.call_function_one("blacklist_visitor", user_id, visitor_id, event_id)
+        return self.call_function_one(
+            "blacklist_visitor", user_id, visitor_id, event_id
+        )
 
     def reset_blacklist(self, user_id, role="postgres"):
         return self.call_function_one("reset_blacklist", user_id, role=role)
@@ -313,7 +315,7 @@ class PGConnect:
         start_time,
         finish_time,
         venue_id,
-        secondary_organizers,
+        secondary_organizer_ids,
         capacity,
         tags,
         description,
@@ -325,14 +327,20 @@ class PGConnect:
             start_time,
             finish_time,
             venue_id,
-            secondary_organizers,
+            secondary_organizer_ids,
             capacity,
             tags,
             description,
         )
 
     def delete_event(self, event_id, role="postgres"):
-        self.call_function_one("delete_event", event_id, role=role)
+        return self.call_function_one("delete_event", event_id, role=role)
+
+    def get_events_of_organizer(self, organizer_id):
+        return self.call_function_rows("get_events_of_organizer", organizer_id)
+
+    def get_event_participants(self, event_id: Optional[int] = None):
+        return self.call_function_rows("get_event_participants", event_id)
 
     # def whitelist_user(self, user_id):
     #     self.call_function_one("whitelist_user", user_id)
