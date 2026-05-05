@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import "./styles/Profile.css";
 
 import '@material/web/textfield/outlined-text-field.js';
@@ -12,6 +14,8 @@ import { CustomDialog } from "../components/customDialog";
 import type { DialogHandle } from "../components/customDialog";
 
 export const Profile = () => {
+  const navigate = useNavigate();
+
   const dialogSaveChangesRef = useRef<MdDialog>(null);
   const dialogChangePassRef = useRef<MdDialog>(null);
   const customDialogRef = useRef<DialogHandle>(null);
@@ -34,7 +38,7 @@ export const Profile = () => {
         const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
         const user_id = storedUser.user_id;
 
-        const res = await fetch(`http://localhost:8000/profile?user_id=${user_id}&role=${storedUser.role}`); 
+        const res = await fetch(`http://localhost:8000/profile?user_id=${user_id}&role=${storedUser.role}`);
         let data: any = {};
         try {
           data = await res.json();
@@ -80,7 +84,7 @@ export const Profile = () => {
         }
       }
 
-      const res = await fetch(`http://localhost:8000/profile?role=${storedUser.role}`, { 
+      const res = await fetch(`http://localhost:8000/profile?role=${storedUser.role}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -196,13 +200,20 @@ export const Profile = () => {
           <md-filled-button onClick={handlePasswordChange}>Update</md-filled-button>
         </div>
       </md-dialog>
-      
+
 
       {/* SUCCESS DIALOG */}
       <md-dialog ref={dialogSaveChangesRef}>
         <div slot="headline">Successfully updated!</div>
         <div slot="actions">
-          <md-text-button onClick={() => dialogSaveChangesRef.current?.close()}>Ok</md-text-button>
+          <md-text-button
+            onClick={() => {
+              dialogSaveChangesRef.current?.close();
+              navigate(0);
+            }}
+          >
+            Ok
+          </md-text-button>
         </div>
       </md-dialog>
 
