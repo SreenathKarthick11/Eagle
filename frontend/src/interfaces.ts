@@ -17,6 +17,19 @@ export interface CampusItem {
   campus_name: string
 }
 
+export interface LocationItem {
+  location_id: string | number;
+  location_name: string
+}
+
+export interface CreateLocation {
+  location_name: string;
+  landmark: string | null;
+  latitude: string
+  longitude: string
+  campus_id: string | number
+}
+
 export interface UserInfoItem {
   user_id: string | number;
   role: string;
