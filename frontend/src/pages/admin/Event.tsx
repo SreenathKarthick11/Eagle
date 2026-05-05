@@ -100,7 +100,7 @@ export const AdminEvent = () => {
       <md-list className="event_list">
         {eventList.map((event, index) => (
           <md-list-item key={index}>
-            <div slot="headline">{event.title}</div>
+            <div slot="headline">{event.event_name}</div>
             <md-filled-tonal-icon-button
               slot="end"
               onClick={() => openConfirmDialog(event)}
@@ -113,7 +113,7 @@ export const AdminEvent = () => {
 
       <md-dialog ref={dialogRef}>
         <div slot="headline">
-          Delete event <b>{selectedEvent?.title}?</b>
+          Delete event <b>{selectedEvent?.event_name}?</b>
         </div>
         <div slot="actions">
           <md-text-button onClick={() => dialogRef.current?.close()}>
