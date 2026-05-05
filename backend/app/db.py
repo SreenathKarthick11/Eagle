@@ -270,36 +270,81 @@ class PGConnect:
         self, location_name, landmark, latitude, longitude, campus_id, role="postgres"
     ):
         return self.call_function_one(
-            "create_location", location_name, landmark, latitude, longitude, campus_id, role=role
+            "create_location",
+            location_name,
+            landmark,
+            latitude,
+            longitude,
+            campus_id,
+            role=role,
         )
 
     def create_venue(self, venue_name, capacity, location_id, role="postgres"):
         return self.call_function_one("create_venue", venue_name, capacity, location_id)
 
     def delete_campus(self, campus_id, role="postgres"):
-        self.call_function_one("delete_campus", campus_id)
+        return self.call_function_one("delete_campus", campus_id)
 
     def delete_location(self, location_id, role="postgres"):
-        self.call_function_one("delete_location", location_id)
+        return self.call_function_one("delete_location", location_id)
 
     def delete_venue(self, venue_id, role="postgres"):
-        self.call_function_one("delete_venue", venue_id)
+        return self.call_function_one("delete_venue", venue_id)
 
-    def get_blacklists(self, event_id: Optional[int] = None, role="postgres"):
-        self.call_function_rows("get_blacklists",event_id)
-    
-    def blacklist_visitor(self, user_id, visitor_id, event_id):
-        self.call_function_one("blacklist_visitor",user_id, visitor_id, event_id)
-    
+    def get_organizers(self, role="postgres"):
+        return self.call_function_rows("get_organizers", role=role)
+
+    def get_visitors(self, role="postgres"):
+        return self.call_function_rows("get_visistors", role=role)
+
+    def get_blacklists(self, role="postgres"):
+        return self.call_function_rows("get_blacklists", role=role)
+
+    def blacklist_visitor(self, user_id, visitor_id, event_id, role="postgres"):
+        return self.call_function_one(
+            "blacklist_visitor", user_id, visitor_id, event_id
+        )
+
     def reset_blacklist(self, user_id, role="postgres"):
-        self.call_function_one("reset_blacklist", user_id, role=role)
-    
+        return self.call_function_one("reset_blacklist", user_id, role=role)
 
-    
+    def create_event(
+        self,
+        user_id,
+        name,
+        start_time,
+        finish_time,
+        venue_id,
+        secondary_organizer_ids,
+        capacity,
+        tags,
+        description,
+    ):
+        self.call_function_one(
+            "create_event",
+            user_id,
+            name,
+            start_time,
+            finish_time,
+            venue_id,
+            secondary_organizer_ids,
+            capacity,
+            tags,
+            description,
+        )
+
+    def delete_event(self, event_id, role="postgres"):
+        return self.call_function_one("delete_event", event_id, role=role)
+
+    def get_events_of_organizer(self, organizer_id):
+        return self.call_function_rows("get_events_of_organizer", organizer_id)
+
+    def get_event_participants(self, event_id: Optional[int] = None):
+        return self.call_function_rows("get_event_participants", event_id)
+
     # def whitelist_user(self, user_id):
     #     self.call_function_one("whitelist_user", user_id)
-    
-    
+
 
 #     def signup_user(self, name, username, password, email_id, phone_no):
 #         hashed_password = password

@@ -14,6 +14,7 @@ import { AdminEvent } from "./pages/admin/Event";
 import { AdminPromoteToOrg } from "./pages/admin/PromoteToOrganiser";
 import { AdminPromoteToAdmin } from "./pages/admin/PromoteToAdmin";
 import { EventCreate } from "./pages/EventCreate";
+import { EventPage } from "./pages/Event";
 
 // import "./styles/light.css";
 import "./styles/light_new.css";
@@ -32,6 +33,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/black-list" element={<BlackList />} />
           <Route path="/create-event" element={<EventCreate />} />
+          <Route path="/event/:id" element={<EventPage />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="blacklist" element={<AdminBlackList />} />
             <Route path="campuses" element={<AdminCampus />} />

@@ -19,6 +19,8 @@ from app.models import (
     CreateCampus,
     CreateLocation,
     CreateVenue,
+    UserItem,
+    CreateEvent,
 )
 import psycopg
 from app.db import db
@@ -213,11 +215,31 @@ def update_event_details(request: EditEvent):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/event")
+def create_event(request: CreateEvent):
+    try:
+        result = db.create_event(**request.model_dump())
+        result = list(map(lambda x: EventCatalog(**x), result))
+        return result
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/event/{event_id}")
+def delete_event(event_id: int, role="postgres"):
+    try:
+        # print(request.model_dump())
+        db.delete_event(event_id=event_id, role=role)
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/is_user_registered")
 def is_user_registered(user_id: int, event_id: int):
     try:
         result = db.is_user_regsitered(user_id, event_id)
-        # print(result)
+        print("is user registered:", result)
         return SuccessResponse(success=result)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -242,6 +264,106 @@ def cancel_registration(user_id: int, event_id: int):
         # return SuccessResponse(success=False)
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@app.get("/organizers")
+def get_organizers():
+    try:
+        result = db.get_organizers()
+        print("Organizers:", result)
+        result = list(map(lambda x: UserItem(**x), result))
+        return result
+    except psycopg.Error as e:
+        return HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/visitors")
+def get_visitors():
+    try:
+        result = db.get_visitors()
+        result = list(map(lambda x: UserItem(**x), result))
+        return result
+    except psycopg.Error as e:
+        return HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/blacklists")
+def get_blacklists():
+    try:
+        result = db.get_blacklists()
+        result = list(map(lambda x: UserItem(**x), result))
+        return result
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/promote_visitor_to_editor")
+def promote_visitor_to_editor(user_id):
+    try:
+        db.promote_visitor_to_editor()
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/promote_visitor_to_organizer")
+def promote_visitor_to_organizer(user_id):
+    try:
+        db.promote_visitor_to_organizer()
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/promote_visitor_to_admin")
+def promote_visitor_to_admin(user_id):
+    try:
+        db.promote_visitor_to_admin()
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/promote_organizer_to_admin")
+def promote_organizer_to_admin(user_id):
+    try:
+        db.promote_organizer_to_admin()
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/events")
+def get_events_by_organizer(organizer_id: Optional[int] = None):
+    try:
+        result = db.get_events_of_organizer(organizer_id)
+        result = list(map(lambda x: EventItem(**x), result))
+        return result
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/event_participants")
+def event_participants(event_id):
+    try:
+        result = db.get_event_participants(event_id)
+        result = list(
+            map(
+                lambda x: UserItem(user_id=x["visitor_id"], username=x["username"]),
+                result,
+            )
+        )
+        return result
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/blacklist/{event_id}")
+def blacklist_user(user_id: int, visitor_id: int, event_id: int):
+    try:
+        db.blacklist_visitor(user_id, visitor_id, event_id)
+        return SuccessResponse(success=True)
+    except psycopg.Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
     # try:
     #     pass
     # except psycopg.Error as e:

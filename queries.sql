@@ -247,7 +247,7 @@ BEGIN
         RAISE EXCEPTION 'user is not a visitor';
     END IF;
 
-    IF v_strikes >= 5 THEN
+    IF v_strikes = 5 THEN
         RAISE EXCEPTION 'user is blacklisted';
     END IF;
 
@@ -302,7 +302,7 @@ AS $$
         SELECT 1
         FROM visitor
         WHERE visitor_id = p_user_id
-          AND strike_count >= 5
+          AND strike_count = 5
     );
 $$;
 
@@ -1239,7 +1239,7 @@ AS $$
         u.username
     FROM visitor v
     JOIN user_info u ON v.visitor_id = u.user_id
-    WHERE v.strike_count >= 5
+    WHERE v.strike_count = 5
     ORDER BY u.username;
 $$;
 
@@ -1406,6 +1406,7 @@ CREATE INDEX IF NOT EXISTS idx_event_venue_time_range
 -- B‑tree indexes for common filters and joins
 CREATE INDEX IF NOT EXISTS idx_event_organizer ON event (organizer_id);
 CREATE INDEX IF NOT EXISTS idx_event_start_time ON event (start_time);
+CREATE INDEX IF NOT EXISTS idx_event_finish_time ON event (finish_time);
 CREATE INDEX IF NOT EXISTS idx_event_venue_id ON event (venue_id);   -- supports join + FK
 
 -- GIN trigram indexes for substring search on name and description
@@ -1422,9 +1423,9 @@ CREATE INDEX IF NOT EXISTS idx_location_campus ON location (campus_id);
 
 -- 4. visitor table
 CREATE INDEX IF NOT EXISTS idx_visitor_strike_count ON visitor (strike_count);
+CREATE INDEX IF NOT EXISTS idx_visitor_strike_count_hash ON visitor USING hash (strike_count);
 
 -- 5. visitor_of table (junction)
-CREATE INDEX IF NOT EXISTS idx_visitor_of_event ON visitor_of (event_id);
 CREATE INDEX IF NOT EXISTS idx_visitor_of_visitor ON visitor_of (visitor_id);
 
 -- 6. secondary_organizers table (junction)
@@ -1438,7 +1439,6 @@ CREATE INDEX IF NOT EXISTS idx_editor_of_editor ON editor_of (editor_id);
 -- primary key (event_id, tag_name) covers event_id lookups; add index for tag-based reverse lookups
 CREATE INDEX IF NOT EXISTS idx_tagged_with_tag ON tagged_with (tag_name);
 
--- 9. tag table – no extra indexes needed (primary key)
+-- 9. tag table – substring search
+CREATE INDEX IF NOT EXISTS idx_tag_name_trgm ON tag USING gin (tag_name gin_trgm_ops);
 
--- 10. user_info – username already has unique index, other columns not heavily filtered
--- 11. role tables (admin, organizer, editor, visitor) – primary keys are sufficient

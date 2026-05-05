@@ -33,11 +33,12 @@ class ProfileDetails(BaseModel):
     user_id: int
     username: str
     name: str
-    email_id: str 
+    email_id: str
     phone_no: str
     active_role: str
     blacklist_count: int
     last_blacklisted_at: Optional[datetime] = None
+
 
 class UpdateProfile(BaseModel):
     user_id: int
@@ -46,9 +47,11 @@ class UpdateProfile(BaseModel):
     current_password: Optional[str] = None
     new_password: Optional[str] = None
 
+
 class IsRegistered(BaseModel):
     user_id: int
     event_id: int
+
 
 class ChangePasswordRequest(BaseModel):
     current_password: str
@@ -66,15 +69,15 @@ class UpdateProfileRequest(BaseModel):
 
 
 # GET /home without any request body, to get the the following response
-class GetHomeEventFiltersResponse(BaseModel):
-    campus_ids: List[int]
-    campus_names: List[str]
-    location_ids: List[int]
-    location_names: List[str]
-    venue_ids: List[int]
-    venue_names: List[str]
-    organizer_usernames: List[str]
-    tags: List[str]
+# class GetHomeEventFiltersResponse(BaseModel):
+#     campus_ids: List[int]
+#     campus_names: List[str]
+#     location_ids: List[int]
+#     location_names: List[str]
+#     venue_ids: List[int]
+#     venue_names: List[str]
+#     organizer_usernames: List[str]
+#     tags: List[str]
 
 
 # POST /home with the following request body to get response in the fomat PostSearchEventsResponse
@@ -92,14 +95,14 @@ class SearchEventsRequest(BaseModel):
     description_substring: Optional[str] = None
 
 
-class SearchEventDetail(BaseModel):
-    event_id: int
-    title: str
-    organizer_name: str
+# class SearchEventDetail(BaseModel):
+#     event_id: int
+#     title: str
+#     organizer_name: str
 
 
-class PostSearchEventsResponse(BaseModel):
-    items: List[SearchEventDetail]
+# class PostSearchEventsResponse(BaseModel):
+#     items: List[SearchEventDetail]
 
 
 # Event
@@ -108,40 +111,12 @@ class PostSearchEventsResponse(BaseModel):
 #     event_id: int
 
 
-# Event
-# GET /event/, with null request body, then the response
-class GetCreateEventOptions(BaseModel):
-    campus_ids: List[int]
-    campus_names: List[str]
-    location_ids: List[int]
-    location_names: List[str]
-    venue_ids: List[int]
-    venue_names: List[str]
-    organizer_usernames: List[str]
-    tags: List[str]
 
 
-# POST /event/, with the following request body
-class CreateEventRequest(BaseModel):
-    name: str
-    start_time: datetime
-    end_time: datetime
-    description: Optional[str] = None
-    capacity: Optional[int] = None
-    venue_id: int
-    # Note: frontend mentions location_id, campus_id, but the DB just needs venue_id.
-    # We will ignore location_id and campus_id in DB insertion or validate them.
-    # primary_organizer_id: not needed, token has it.
-    secondary_organizer_ids: List[int] = []
-    event_tags: List[str] = []
 
 
-class UpdateEventTextRequest(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
 
 
-# GET /event/{event_id}, then we get the following response
 class EventCatalog(BaseModel):
     event_id: int
     event_name: str
@@ -153,10 +128,11 @@ class EventCatalog(BaseModel):
     location_name: str
     campus_name: str
     primary_organizer: str
-    secondary_organizers: List[str]
-    tags: List[str]
+    secondary_organizers: Optional[List[str]] = None
+    tags: Optional[List[str]] = None
     registered_count: int
     is_full: bool
+
 
 class EditEvent(BaseModel):
     user_id: int
@@ -164,11 +140,12 @@ class EditEvent(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
 
-# PUT /event/{event_id}, to modify the details of an event
-class EditEventFields(BaseModel):
-    # For now ignoring the adding tags thing
-    title: str
-    description: str
+
+# # PUT /event/{event_id}, to modify the details of an event
+# class EditEventFields(BaseModel):
+#     # For now ignoring the adding tags thing
+#     title: str
+#     description: str
 
 
 # Admin
@@ -273,49 +250,23 @@ class AdminPromoteUser(BaseModel):
     role: str
 
 
-# class campuses(BaseModel):
-#     items: List[campuses]
+class CreateEvent(BaseModel):
+    user_id: int
+    name: str
+    start_time: datetime
+    finish_time: datetime
+    venue_id: int
+    secondary_organizer_ids: Optional[list[int]] = None
+    capacity: Optional[int] = None
+    tags: Optional[list[str]] = None
+    description: Optional[str] = None
 
-# # Home
-# class LocationItem(BaseModel):
-#     location_id: int
-#     name: str
-
-# class VenueItem(BaseModel):
-#     venue_id: int
-#     name: str
-
-# class TagItem(BaseModel):
-#     tag_name: str
-
-# class HomeGetResponse(BaseModel):
-#     location_list: List[LocationItem]
-#     venue_list: List[VenueItem]
-#     tag_list: List[TagItem]
-
-# class HomePostRequest(BaseModel):
-#     campus_name: Optional[str] = None
-#     venue_name: Optional[str] = None
-#     location_name: Optional[str] = None
-#     organizer_username: Optional[str] = None
-#     start_after: Optional[datetime] = None
-#     finish_before: Optional[datetime] = None
-#     tags: Optional[List[str]] = None
-#     require_all_tags: bool = False
-#     is_full: Optional[bool] = None
-#     title_substring: Optional[str] = None
-#     description_substring: Optional[str] = None
-
-# class HomePostResponse(BaseModel):
-#     event_list: List[EventListItem]
-
-# class BlacklistAddVisitorRequest(BaseModel):
-#     visitor_id: int
 
 
 class CreateCampus(BaseModel):
     campus_name: str
-    
+
+
 class CreateLocation(BaseModel):
     location_name: str
     landmark: Optional[str] = None
@@ -323,10 +274,8 @@ class CreateLocation(BaseModel):
     longitude: str
     campus_id: int
 
+
 class CreateVenue(BaseModel):
     venue_name: str
     capacity: int
     location_id: int
-    
-
-
