@@ -16,6 +16,8 @@ export const Navbar = () => {
   const editor_role = "editor_role";
   const visitor_role = "visitor_role";
 
+  console.log(role);
+
   function prettyRole(role: string) {
     switch (role) {
       case admin_role:

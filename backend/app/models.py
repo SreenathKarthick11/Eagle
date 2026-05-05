@@ -44,8 +44,6 @@ class UpdateProfile(BaseModel):
     user_id: int
     name: str
     phone_no: str
-    current_password: Optional[str] = None
-    new_password: Optional[str] = None
 
 
 class IsRegistered(BaseModel):

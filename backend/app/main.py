@@ -203,10 +203,10 @@ def event_details(event_id: int):
 
 
 @app.put("/event/{event_id}")
-def update_event_details(request: EditEvent):
+def update_event_details(request: EditEvent, role: str = "postgres"):
     try:
         # print(request.model_dump())
-        db.edit_event_details(**request.model_dump())
+        db.edit_event_details(**request.model_dump(), role=role)
         return SuccessResponse(success=True)
     except psycopg.Error as e:
         raise HTTPException(status_code=500, detail=str(e))

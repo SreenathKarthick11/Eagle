@@ -46,10 +46,10 @@ CREATE OR REPLACE VIEW user_roles AS
 SELECT
     u.user_id,
     CASE
-        WHEN a.admin_id IS NOT NULL THEN 'admin'
-        WHEN o.organizer_id IS NOT NULL THEN 'organizer'
-        WHEN e.editor_id IS NOT NULL THEN 'editor'
-        WHEN v.visitor_id IS NOT NULL THEN 'visitor'
+        WHEN a.admin_id IS NOT NULL THEN 'admin_role'
+        WHEN o.organizer_id IS NOT NULL THEN 'organizer_role'
+        WHEN e.editor_id IS NOT NULL THEN 'editor_role'
+        WHEN v.visitor_id IS NOT NULL THEN 'visitor_role'
         ELSE 'unknown'
     END AS role
 FROM user_info u

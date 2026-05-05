@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "./styles/Event.css";
 
 import '@material/web/textfield/outlined-text-field.js';
@@ -16,6 +16,7 @@ import type { DialogHandle } from "../components/customDialog";
 export const EventPage = () => {
   // "id" here must match the name used in the Route path (path="/event/:id")
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   // const [event, setEvent] = useState<any>(null);
 
   // useEffect(() => {
@@ -224,7 +225,10 @@ export const EventPage = () => {
         <div slot="headline">Success</div>
         <div slot="content">Action completed successfully</div>
         <div slot="actions">
-          <md-text-button onClick={() => successDialogRef.current?.close()}>
+          <md-text-button onClick={() => {
+            successDialogRef.current?.close();
+            navigate(0);
+          }}>
             OK
           </md-text-button>
         </div>
