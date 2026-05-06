@@ -39,6 +39,7 @@ export const EventPage = () => {
   // }, [id]);
   const customDialogRef = useRef<DialogHandle>(null);
   const successDialogRef = useRef<MdDialog>(null);
+  const confirmDeleteDialogRef = useRef<MdDialog>(null);
 
   const nameRef = useRef<MdOutlinedTextField>(null);
   const descRef = useRef<MdOutlinedTextField>(null);
@@ -164,6 +165,35 @@ export const EventPage = () => {
     fetchEvent();
     if (user_id) checkRegistration();
   }, [id]);
+
+  // ---- DELETE EVENT ----
+  const handleDelete = async () => {
+    try {
+      const res = await fetch(`http://localhost:8000/event/${id}?user_id=${user.user_id}&role=${user.role}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          event_id: id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.detail || "Failed to delete event");
+        return;
+      }
+
+      console.log("Deleted event: ", String(id));
+      confirmDeleteDialogRef.current?.close();
+      successDialogRef.current?.show();
+      navigate("/");
+    } catch {
+      showError("Server Error");
+    }
+  }
 
   // 2. UPDATE EVENT (organiser/editor)
   const handleUpdate = async () => {
@@ -317,6 +347,10 @@ export const EventPage = () => {
             <md-filled-button onClick={handleUpdate}>
               Save Changes
             </md-filled-button>
+
+            <md-filled-button onClick={handleDelete}>
+              Delete Event
+            </md-filled-button>
           </div>
         ) : (
           <div className="action-section">
@@ -353,6 +387,17 @@ export const EventPage = () => {
         </div>
       </md-dialog>
 
+      <md-dialog ref={confirmDeleteDialogRef}>
+        <div slot="headline">
+          Delete event?
+        </div>
+        <div slot="actions">
+          <md-text-button onClick={() => confirmDeleteDialogRef.current?.close()}>
+            No
+          </md-text-button>
+          <md-filled-button onClick={handleDelete}>Yes</md-filled-button>
+        </div>
+      </md-dialog>
       <CustomDialog ref={customDialogRef} />
     </div >
   );
