@@ -38,11 +38,8 @@ export const EventCreate = () => {
 
   // ------------------ STATE ------------------
   const [organisers, setOrganisers] = useState<Visitor[]>([]);
-  const [editors, setEditors] = useState<Visitor[]>([]);
   const [selectedOrganisers, setSelectedOrganisers] = useState<Visitor[]>([]);
-  const [selectedEditors, setSelectedEditors] = useState<Visitor[]>([]);
   const [searchOrganizer, setSearchOrganizer] = useState("");
-  const [searchEditor, setSearchEditor] = useState("");
 
   const [venues, setVenues] = useState<VenueItem[]>([]);
 
@@ -56,7 +53,9 @@ export const EventCreate = () => {
   useEffect(() => {
     const loadOrganisers = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/organizers?role=${user.role}`);
+        const res = await fetch(
+          `http://localhost:8000/organizers?role=${user.role}`,
+        );
         const data: Visitor[] = await res.json();
         setOrganisers(data);
         // setOrganisers(data.map((o) => o.username));
@@ -89,20 +88,6 @@ export const EventCreate = () => {
     loadVenues();
   }, []);
 
-  useEffect(() => {
-    const loadEditors = async () => {
-      try {
-        const res = await fetch(`http://localhost:8000/editors?role=${user.role}`);
-        const data: Visitor[] = await res.json();
-        setEditors(data);
-      } catch {
-        showError("Failed to load editors");
-      }
-    };
-
-    loadEditors();
-  }, []);
-
   // ------------------ TOGGLE ORGANISER ------------------
   const toggleOrganiser = (organiser: Visitor) => {
     setSelectedOrganisers((prev) =>
@@ -111,43 +96,10 @@ export const EventCreate = () => {
         : [...prev, organiser],
     );
   };
-  const toggleEditor = (editor: Visitor) => {
-    setSelectedEditors((prev) =>
-      prev.includes(editor)
-        ? prev.filter((e) => e !== editor)
-        : [...prev, editor]
-    );
-  };
 
   const filteredOrganisers = organisers.filter((o) =>
     o.username.toLowerCase().includes(searchOrganizer.toLowerCase()),
   );
-
-  const filteredEditors = editors.filter((e) =>
-    e.username.toLowerCase().includes(searchEditor.toLowerCase())
-  );
-
-  const addEditor = async (editor_event_id: [Visitor, number]) => {
-    const [editor, event_id] = editor_event_id;
-    try {
-      const res = await fetch(`http://localhost:8000/add_editor?user_id=${user.user_id}&editor_id=${editor.user_id}&event_id=${event_id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({}),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        showError(data.detail || "Failed to create event");
-        return;
-      }
-    } catch {
-      showError("Failed to add editor");
-    }
-  }
 
   // ------------------ CREATE EVENT ------------------
   const handleCreate = async () => {
@@ -157,7 +109,7 @@ export const EventCreate = () => {
       const end_time = endRef.current?.value;
       const location = locationRef.current?.value;
       const venue = venueRef.current?.value;
-      const capacity = parseInt(capacityRef.current?.value || "0");
+      const capacity = parseInt(capacityRef.current?.value);
       const tagsRaw = tagsRef.current?.value;
       const description = descRef.current?.value;
 
@@ -198,14 +150,11 @@ export const EventCreate = () => {
         showError(data.detail || "Failed to create event");
         return;
       }
-      
-      selectedEditors.map((e) => addEditor([e, data.event_id]));
 
       dialogRef.current?.show();
     } catch (err) {
       showError("Server error" + err);
     }
-
   };
 
   // ------------------ UI ------------------
@@ -256,7 +205,7 @@ export const EventCreate = () => {
                 setSearchOrganizer((e.target as MdOutlinedTextField).value)
               }
             />
-            
+
             <div className="selected-chips">
               {selectedOrganisers.map((org, i) => (
                 <span
@@ -277,43 +226,6 @@ export const EventCreate = () => {
                     onChange={() => toggleOrganiser(org)}
                   />
                   <span>{org.username}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-            {/* EDITORS */}
-            <div className="multi-select">
-            <label className="multi-label">Editors</label>
-
-            <md-outlined-text-field
-              label="Search editors"
-              value={searchEditor}
-              onInput={(e: React.InputEvent<MdOutlinedTextField>) =>
-                setSearchEditor((e.target as MdOutlinedTextField).value)
-              }
-            />
-            
-            <div className="selected-chips">
-              {selectedEditors.map((editor, i) => (
-                <span
-                  key={i}
-                  className="chip"
-                  onClick={() => toggleEditor(editor)}
-                >
-                  {editor.username} ✕
-                </span>
-              ))}
-            </div>
-
-            <div className="checkbox-list">
-              {filteredEditors.map((editor, index) => (
-                <div key={index} className="checkbox-item">
-                  <md-checkbox
-                    checked={selectedEditors.includes(editor)}
-                    onChange={() => toggleEditor(editor)}
-                  />
-                  <span>{editor.username}</span>
                 </div>
               ))}
             </div>
