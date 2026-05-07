@@ -39,6 +39,7 @@ export const EventPage = () => {
   // }, [id]);
   const customDialogRef = useRef<DialogHandle>(null);
   const successDialogRef = useRef<MdDialog>(null);
+  const successDialogRootRef = useRef<MdDialog>(null);
   const confirmDeleteDialogRef = useRef<MdDialog>(null);
 
   const nameRef = useRef<MdOutlinedTextField>(null);
@@ -188,8 +189,8 @@ export const EventPage = () => {
 
       console.log("Deleted event: ", String(id));
       confirmDeleteDialogRef.current?.close();
-      successDialogRef.current?.show();
-      navigate("/");
+      successDialogRootRef.current?.show();
+      // navigate("/");
     } catch {
       showError("Server Error");
     }
@@ -392,6 +393,20 @@ export const EventPage = () => {
           <md-text-button onClick={() => {
             successDialogRef.current?.close();
             navigate(0);
+          }}>
+            OK
+          </md-text-button>
+        </div>
+      </md-dialog>
+
+      {/* SUCCESS DIALOG NAVIGATE TO HOME */}
+      <md-dialog ref={successDialogRootRef}>
+        <div slot="headline">Success</div>
+        <div slot="content">Action completed successfully</div>
+        <div slot="actions">
+          <md-text-button onClick={() => {
+            successDialogRootRef.current?.close();
+            navigate("/");
           }}>
             OK
           </md-text-button>
