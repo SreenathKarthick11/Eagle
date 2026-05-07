@@ -122,21 +122,32 @@ export const Home = () => {
   // ---------------- FILTER ----------------
   const handleFilter = async () => {
     try {
+      const selectedCampusObj = campuses.find(c => String(c.campus_id) === campus);
+      const campusNameToSend = selectedCampusObj ? selectedCampusObj.campus_name : null;
+
+      const selectedLocationObj = locations.find(l => String(l.location_id) === location);
+      const locationNameToSend = selectedLocationObj ? selectedLocationObj.location_name : null;
+
+      const selectedVenueObj = venues.find(v => String(v.venue_id) === venue);
+      const venueNameToSend = selectedVenueObj ? selectedVenueObj.venue_name : null;
+
       const res = await fetch(`http://localhost:8000/search?role=${user.role}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          campus_name: campus || null,
-          location_name: location || null,
-          venue_name: venue || null,
+          campus_name: campusNameToSend,
+          location_name: locationNameToSend,
+          venue_name: venueNameToSend,
           tags: tags.length ? tags : null,
           title_substring: title || null,
           start_after: startTime || null,
           finish_before: endTime || null,
         }),
       });
+
+      console.log(campus);
 
       const data = await res.json();
 
