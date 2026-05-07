@@ -306,6 +306,17 @@ export const EventPage = () => {
               value={eventData.description}
             />
 
+            <div className="multi-select">
+              <label className="multi-label">Current Editors</label>
+
+              <md-list>
+                {presentEditors.map((e) =>
+                  <md-list-item>
+                    {e.username}
+                  </md-list-item>)}
+              </md-list>
+            </div>
+
             {/* EDITORS */}
             {isOgranizer && (< div className="multi-select">
               <label className="multi-label">Editors</label>
