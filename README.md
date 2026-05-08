@@ -8,15 +8,17 @@ It provides a unified system for:
 
 * Event creation and discovery
 * Venue allocation
-* Geo-location mapping
 * Capacity management
 * Role-based moderation
 * Event registration and tracking
 
----
 
 > [!NOTE]
 > Eagle was designed to solve fragmented event coordination across campuses by providing a single platform for organizers, administrators, and participants.
+
+### Home Page
+
+![Home Page](images/home.png)
 
 ---
 
