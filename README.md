@@ -81,6 +81,10 @@ The backend heavily utilizes PostgreSQL features including:
 
 ---
 
+## Database Schema
+
+![Database_Relational Diagram](images/schema.png)
+
 ## Event Lifecycle
 
 ```mermaid
