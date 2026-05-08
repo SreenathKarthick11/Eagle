@@ -111,41 +111,6 @@ sequenceDiagram
 > [!WARNING]
 > Events with overlapping time ranges at the same venue are automatically rejected by the database.
 
----
-
-# Search & Discovery
-
-Events can be filtered using:
-
-* Campus
-* Venue
-* Location
-* Organizer
-* Tags
-* Time ranges
-* Capacity status
-* Title substring
-* Description substring
-
----
-
-## Smart Search Support
-
-```mermaid
-graph TD
-    UserQuery --> Filters
-    Filters --> EventCatalog
-    EventCatalog --> Results
-```
-
-The platform uses:
-
-* GIN trigram indexes
-* GiST indexes
-* B-tree indexes
-* Hash indexes
-
-for fast and scalable querying.
 
 ---
 
